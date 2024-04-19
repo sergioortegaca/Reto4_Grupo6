@@ -3,7 +3,7 @@ public abstract class Usuario {
 	protected String nombre;
 	protected String apellido;
 	protected String usuario;
-	protected String contraseña;
+	protected String contrasena;
 	protected String fechaNacimiento;
 	protected String fechaRegistro;
 
