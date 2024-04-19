@@ -3,7 +3,7 @@ import javax.swing.JLayeredPane;
 
 public class Metodos {
 	// metodo para pasar de un panel a otro
-	public void moverseA(JLayeredPane nombreLayeredPane, String identificadorCapa) {
+	public void cambiarDePanel(JLayeredPane nombreLayeredPane, String identificadorCapa) {
 		// CardLayout es un manejador de contenido
 		CardLayout cardLayout = (CardLayout) nombreLayeredPane.getLayout();
 
