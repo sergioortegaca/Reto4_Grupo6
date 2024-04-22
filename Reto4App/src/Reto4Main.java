@@ -26,8 +26,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.JLabel;
 import java.awt.Color;
-import com.toedter.calendar.JDayChooser;
-import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
 
 public class Reto4Main extends JFrame {
