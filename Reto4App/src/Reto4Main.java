@@ -79,6 +79,7 @@ public class Reto4Main extends JFrame {
 		layeredPane.setLayout(new CardLayout(0, 0));
 
 		JPanel panelBienvenida = new JPanel();
+		panelBienvenida.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelBienvenida, "Bienvenida");
 		panelBienvenida.addMouseListener((MouseListener) new MouseListener() {
 			@Override
@@ -104,8 +105,10 @@ public class Reto4Main extends JFrame {
 		});
 		panelBienvenida.setLayout(null);
 
-		JLabel lblNewLabel = new JLabel("ergrthdrtrth");
-		lblNewLabel.setBounds(398, 218, 174, 14);
+		JLabel lblNewLabel = new JLabel("Bienvenido");
+		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 50));
+		lblNewLabel.setBounds(287, 155, 299, 141);
 		panelBienvenida.add(lblNewLabel);
 
 		JPanel panelLogin = new JPanel();
@@ -114,6 +117,7 @@ public class Reto4Main extends JFrame {
 		panelLogin.setLayout(null);
 
 		JLabel lblInicioDeSesion = new JLabel("Inicio de Sesión");
+		lblInicioDeSesion.setFont(new Font("Tahoma", Font.PLAIN, 22));
 		lblInicioDeSesion.setHorizontalAlignment(SwingConstants.CENTER);
 		lblInicioDeSesion.setBounds(0, 80, 874, 33);
 		panelLogin.add(lblInicioDeSesion);
@@ -183,12 +187,13 @@ public class Reto4Main extends JFrame {
 		panelLogin.add(btnCrear);
 
 		JPanel panelRegistro = new JPanel();
+		panelRegistro.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelRegistro, "Registro");
 		panelRegistro.setLayout(null);
 
 		JLabel lblTituloCrear = new JLabel("Crear Usuario");
+		lblTituloCrear.setFont(new Font("Tahoma", Font.PLAIN, 22));
 		lblTituloCrear.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTituloCrear.setFont(new Font("Book Antiqua", Font.BOLD, 21));
 		lblTituloCrear.setBounds(0, 40, 874, 33);
 		panelRegistro.add(lblTituloCrear);
 
@@ -212,27 +217,22 @@ public class Reto4Main extends JFrame {
 		panelRegistro.add(pswCrearContrasena);
 
 		JLabel lblNombre = new JLabel("Nombre:\r\n");
-		lblNombre.setFont(new Font("Book Antiqua", Font.BOLD, 13));
 		lblNombre.setBounds(274, 125, 148, 20);
 		panelRegistro.add(lblNombre);
 
 		JLabel lblApellidos = new JLabel("Apellidos:");
-		lblApellidos.setFont(new Font("Book Antiqua", Font.BOLD, 13));
 		lblApellidos.setBounds(274, 156, 148, 20);
 		panelRegistro.add(lblApellidos);
 
 		JLabel lblUsuarioRegistro = new JLabel("Nombre de usuario:");
-		lblUsuarioRegistro.setFont(new Font("Book Antiqua", Font.BOLD, 13));
 		lblUsuarioRegistro.setBounds(274, 187, 148, 20);
 		panelRegistro.add(lblUsuarioRegistro);
 
 		JLabel lblContrasenaRegistro = new JLabel("Contraseña:");
-		lblContrasenaRegistro.setFont(new Font("Book Antiqua", Font.BOLD, 13));
 		lblContrasenaRegistro.setBounds(274, 218, 148, 20);
 		panelRegistro.add(lblContrasenaRegistro);
 
 		JLabel lblNacimiento = new JLabel("Fecha de nacimiento:");
-		lblNacimiento.setFont(new Font("Book Antiqua", Font.BOLD, 13));
 		lblNacimiento.setBounds(274, 250, 148, 20);
 		panelRegistro.add(lblNacimiento);
 
@@ -242,7 +242,6 @@ public class Reto4Main extends JFrame {
 		btnCrearUsuario.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				String DNI = txtDni.getText().toUpperCase();
 				// if (txtNombre.getText().length() > 0 && txtNombre.getText().length() < 13) {
 				// if (txtApellidos.getText().length() > 0 && txtApellidos.getText().length() <
 				// 30) {
@@ -250,19 +249,19 @@ public class Reto4Main extends JFrame {
 				// && pswCrearContrasena.getPassword().length < 16) {
 
 				// Código para añadir datos de los clientes a la base de datos
-				String url = "jdbc:mysql://localhost:33060/reto3grupo6_m";
+				
 				try {
-					Connection conexion = DriverManager.getConnection(url, "mañana", "elorrieta");
+					Connection conexion = DriverManager.getConnection(linkBD, userBD, passBD);
 
-					String sql = "INSERT INTO cliente (dni, contraseña, nombre, apellidos, sexo) VALUES (?, ?, ?, ?, ?)";
+					String sql = "INSERT INTO cliente (Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo ) VALUES (?, ?, ?, ?, ?, ?, ?)";
 					PreparedStatement preparedStatement = conexion.prepareStatement(sql);
 					
-					preparedStatement.setString(1, txtNombre.getText());
 					preparedStatement.setString(2, txtNombre.getText());
 					preparedStatement.setString(3, txtApellidos.getText());
 					preparedStatement.setString(4, txtUsuario.getText());
 					preparedStatement.setString(5, new String(pswCrearContrasena.getPassword()));
-
+					//preparedStatement.setString(6, dateChooser.getDate());
+					
 					preparedStatement.executeUpdate();
 					preparedStatement.close();
 
@@ -314,7 +313,7 @@ public class Reto4Main extends JFrame {
 		btnVolverLogin.setBounds(452, 296, 122, 23);
 		panelRegistro.add(btnVolverLogin);
 
-		JDateChooser dateChooser = new JDateChooser();
+		JDateChooser dateChooser = 	new JDateChooser();
 		dateChooser.setBounds(412, 248, 175, 20);
 		panelRegistro.add(dateChooser);
 
