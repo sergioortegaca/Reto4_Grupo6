@@ -7,6 +7,7 @@ import java.awt.event.MouseListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,6 +39,7 @@ public class Reto4Main extends JFrame {
 	private JTextField txtDni;
 	private JPasswordField pswCrearContrasena;
 	Metodos metodos = new Metodos();
+	String linkBD = "jdbc:mysql://localhost:33060/reto4_grupo6", userBD = "mañana", passBD = "elorrieta";
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -136,32 +138,36 @@ public class Reto4Main extends JFrame {
 		JButton btnEntrar = new JButton("Entrar");
 		btnEntrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				/*
-				 * try { // Conexión con la base de datos Connection conexion =
-				 * DriverManager.getConnection("jdbc:mysql://localhost:33060/reto3grupo6_m",
-				 * "mañana", "elorrieta");
-				 * 
-				 * // Consulta PreparedStatement sentencia = (PreparedStatement) conexion
-				 * .prepareStatement("SELECT dni, contraseña from clientes where dni=? and contraseña=?"
-				 * );
-				 * 
-				 * sentencia.setString(1, txtUsuario.getText()); sentencia.setString(2, new
-				 * String(pswContrasena.getPassword())); ResultSet rs =
-				 * sentencia.executeQuery();
-				 * 
-				 * // Condición para comprobar si el usuario y la contraseña son correctos if
-				 * (rs.next()) { JOptionPane.showMessageDialog(null,
-				 * "Sesión iniciada correctamente");
-				 */
-				metodos.cambiarDePanel(layeredPane, "Menu");
-				/*
-				 * } else { JOptionPane.showMessageDialog(null,
-				 * "No se ha podido iniciar sesión. Usuario o contraseña incorrectos");
-				 * txtUsuario.setText(""); pswContrasena.setText(""); } sentencia.close(); }
-				 * catch (SQLException ex) { System.out.println("SQLException: " +
-				 * ex.getMessage()); System.out.println("SQLState: " + ex.getSQLState());
-				 * System.out.println("VendorError: " + ex.getErrorCode()); }
-				 */
+
+				String sentencia = "Select Usuario, Contrasena from Cliente where Usuario=? and Contrasena=?";
+				String textOk = "Has iniciado sesión correctamente";
+				String textNot = "Creedenciales incorrectas";
+
+				String user = txtUsuario.getText();
+				String pass = new String(pswContrasena.getPassword());
+
+				try {
+					Connection connection = (Connection) DriverManager.getConnection(linkBD, userBD, passBD);
+
+					PreparedStatement st = (PreparedStatement) connection.prepareStatement(sentencia);
+
+					st.setString(1, user);
+					st.setString(2, pass);
+
+					ResultSet rs = st.executeQuery();
+
+					if (rs.next()) {
+						JOptionPane.showMessageDialog(null, textOk);
+						metodos.cambiarDePanel(layeredPane, "Menu");
+					} else {
+						JOptionPane.showMessageDialog(null, textNot);
+						txtUsuario.setText("");
+						pswContrasena.setText("");
+					}
+				} catch (SQLException sqlException) {
+					sqlException.printStackTrace();
+				}
+
 			}
 		});
 		btnEntrar.setBounds(457, 283, 142, 23);
@@ -235,44 +241,59 @@ public class Reto4Main extends JFrame {
 		btnCrearUsuario.setFont(new Font("Book Antiqua", Font.BOLD, 13));
 		btnCrearUsuario.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				/*
-				 * String DNI = txtDni.getText().toUpperCase(); if (1 == 1) { if
-				 * (txtNombre.getText().length() > 0 && txtNombre.getText().length() < 13) { if
-				 * (txtApellidos.getText().length() > 0 && txtApellidos.getText().length() < 30)
-				 * { if (pswCrearContrasena.getPassword().length > 7 &&
-				 * pswCrearContrasena.getPassword().length < 16) {
-				 * 
-				 * // Código para añadir datos de los clientes a la base de datos String url =
-				 * "jdbc:mysql://localhost:33060/reto3grupo6_m"; try { Connection conexion =
-				 * DriverManager.getConnection(url, "mañana", "elorrieta");
-				 * 
-				 * String sql =
-				 * "INSERT INTO cliente (dni, contraseña, nombre, apellidos, sexo) VALUES (?, ?, ?, ?, ?)"
-				 * ; PreparedStatement preparedStatement = conexion.prepareStatement(sql);
-				 * 
-				 * preparedStatement.setString(1, txtDni.getText());
-				 * preparedStatement.setString(2, new String(pswCrearContrasena.getPassword()));
-				 * preparedStatement.setString(3, txtNombre.getText());
-				 * preparedStatement.setString(4, txtApellidos.getText());
-				 * 
-				 * preparedStatement.executeUpdate(); preparedStatement.close();
-				 * 
-				 * conexion.close(); } catch (SQLException ex) {
-				 * System.out.println("SQLException: " + ex.getMessage());
-				 * System.out.println("SQLState: " + ex.getSQLState());
-				 * System.out.println("VendorError: " + ex.getErrorCode()); }
-				 * JOptionPane.showMessageDialog(null, "El usuario se ha creado correctamente");
-				 * txtNombre.setText(""); txtApellidos.setText(""); txtDni.setText("");
-				 * pswCrearContrasena.setText(""); metodos.cambiarDePanel(layeredPane, "Login");
-				 * 
-				 * } else { JOptionPane.showMessageDialog(null,
-				 * "La Contraseña debe tener entre 8 y 16 caracteres"); } } else {
-				 * JOptionPane.showMessageDialog(null,
-				 * "Los apellidos no deben superar los 30 caracteres y el campo no debe estar vacío"
-				 * ); } } else { JOptionPane.showMessageDialog(null,
-				 * "El nombre no debe superar los 13 caracteres y el campo no debe estar vacío"
-				 * ); } } else { JOptionPane.showMessageDialog(null, "DNI Incorrecto"); }
-				 */
+
+				String DNI = txtDni.getText().toUpperCase();
+				// if (txtNombre.getText().length() > 0 && txtNombre.getText().length() < 13) {
+				// if (txtApellidos.getText().length() > 0 && txtApellidos.getText().length() <
+				// 30) {
+				// if (pswCrearContrasena.getPassword().length > 7
+				// && pswCrearContrasena.getPassword().length < 16) {
+
+				// Código para añadir datos de los clientes a la base de datos
+				String url = "jdbc:mysql://localhost:33060/reto3grupo6_m";
+				try {
+					Connection conexion = DriverManager.getConnection(url, "mañana", "elorrieta");
+
+					String sql = "INSERT INTO cliente (dni, contraseña, nombre, apellidos, sexo) VALUES (?, ?, ?, ?, ?)";
+					PreparedStatement preparedStatement = conexion.prepareStatement(sql);
+					
+					preparedStatement.setString(1, txtNombre.getText());
+					preparedStatement.setString(2, txtNombre.getText());
+					preparedStatement.setString(3, txtApellidos.getText());
+					preparedStatement.setString(4, txtUsuario.getText());
+					preparedStatement.setString(5, new String(pswCrearContrasena.getPassword()));
+
+					preparedStatement.executeUpdate();
+					preparedStatement.close();
+
+					conexion.close();
+				} catch (SQLException ex) {
+					System.out.println("SQLException: " + ex.getMessage());
+					System.out.println("SQLState: " + ex.getSQLState());
+					System.out.println("VendorError: " + ex.getErrorCode());
+				}
+				JOptionPane.showMessageDialog(null, "El usuario se ha creado correctamente");
+				txtNombre.setText("");
+				txtApellidos.setText("");
+				txtDni.setText("");
+				pswCrearContrasena.setText("");
+				metodos.cambiarDePanel(layeredPane, "Login");
+
+				// } else {
+				// JOptionPane.showMessageDialog(null, "La Contraseña debe tener entre 8 y 16
+				// caracteres");
+				// }
+				// } else {
+				// JOptionPane.showMessageDialog(null,
+				// "Los apellidos no deben superar los 30 caracteres y el campo no debe estar
+				// vacío");
+				// }
+				// } else {
+				// JOptionPane.showMessageDialog(null,
+				// "El nombre no debe superar los 13 caracteres y el campo no debe estar
+				// vacío");
+				// }
+
 			}
 		});
 		btnCrearUsuario.setBounds(287, 296, 122, 23);
