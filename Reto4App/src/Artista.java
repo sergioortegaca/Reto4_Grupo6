@@ -1,5 +1,5 @@
 public abstract class Artista {
-	protected String artistaID;
+	protected int artistaID;
 	protected String nombreArtistico;
 	protected String imagenArtista;
 }

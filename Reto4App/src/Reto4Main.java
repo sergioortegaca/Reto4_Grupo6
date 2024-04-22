@@ -11,10 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -26,17 +23,14 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.JLabel;
 import java.awt.Color;
-import com.toedter.calendar.JDayChooser;
-import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
 
 public class Reto4Main extends JFrame {
 	private JTextField txtUsuario;
 	private JPasswordField pswContrasena;
-	private JButton btnVolverPelis;
 	private JTextField txtNombre;
 	private JTextField txtApellidos;
-	private JTextField txtDni;
+	private JTextField txtUsuarioRegistro;
 	private JPasswordField pswCrearContrasena;
 	Metodos metodos = new Metodos();
 	String linkBD = "jdbc:mysql://localhost:33060/reto4_grupo6", userBD = "mañana", passBD = "elorrieta";
@@ -207,10 +201,10 @@ public class Reto4Main extends JFrame {
 		txtApellidos.setBounds(412, 156, 175, 20);
 		panelRegistro.add(txtApellidos);
 
-		txtDni = new JTextField();
-		txtDni.setColumns(10);
-		txtDni.setBounds(412, 187, 175, 20);
-		panelRegistro.add(txtDni);
+		txtUsuarioRegistro = new JTextField();
+		txtUsuarioRegistro.setColumns(10);
+		txtUsuarioRegistro.setBounds(412, 187, 175, 20);
+		panelRegistro.add(txtUsuarioRegistro);
 
 		pswCrearContrasena = new JPasswordField();
 		pswCrearContrasena.setBounds(412, 218, 175, 20);
@@ -249,19 +243,19 @@ public class Reto4Main extends JFrame {
 				// && pswCrearContrasena.getPassword().length < 16) {
 
 				// Código para añadir datos de los clientes a la base de datos
-				
+
 				try {
 					Connection conexion = DriverManager.getConnection(linkBD, userBD, passBD);
 
 					String sql = "INSERT INTO cliente (Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo ) VALUES (?, ?, ?, ?, ?, ?, ?)";
 					PreparedStatement preparedStatement = conexion.prepareStatement(sql);
-					
+
 					preparedStatement.setString(2, txtNombre.getText());
 					preparedStatement.setString(3, txtApellidos.getText());
 					preparedStatement.setString(4, txtUsuario.getText());
 					preparedStatement.setString(5, new String(pswCrearContrasena.getPassword()));
-					//preparedStatement.setString(6, dateChooser.getDate());
-					
+					// preparedStatement.setString(6, dateChooser.getDate());
+
 					preparedStatement.executeUpdate();
 					preparedStatement.close();
 
@@ -274,7 +268,7 @@ public class Reto4Main extends JFrame {
 				JOptionPane.showMessageDialog(null, "El usuario se ha creado correctamente");
 				txtNombre.setText("");
 				txtApellidos.setText("");
-				txtDni.setText("");
+				txtUsuarioRegistro.setText("");
 				pswCrearContrasena.setText("");
 				metodos.cambiarDePanel(layeredPane, "Login");
 
@@ -298,38 +292,85 @@ public class Reto4Main extends JFrame {
 		btnCrearUsuario.setBounds(287, 296, 122, 23);
 		panelRegistro.add(btnCrearUsuario);
 
-		JButton btnVolverLogin = new JButton("Volver");
-		btnVolverLogin.setBackground(Color.LIGHT_GRAY);
-		btnVolverLogin.setFont(new Font("Book Antiqua", Font.BOLD, 13));
-		btnVolverLogin.addActionListener(new ActionListener() {
+		JButton btnAtrasLogin = new JButton("Atras");
+		btnAtrasLogin.setBackground(Color.LIGHT_GRAY);
+		btnAtrasLogin.setFont(new Font("Book Antiqua", Font.BOLD, 13));
+		btnAtrasLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				txtNombre.setText("");
 				txtApellidos.setText("");
-				txtDni.setText("");
+				txtUsuarioRegistro.setText("");
 				pswCrearContrasena.setText("");
 				metodos.cambiarDePanel(layeredPane, "Login");
 			}
 		});
-		btnVolverLogin.setBounds(452, 296, 122, 23);
-		panelRegistro.add(btnVolverLogin);
+		btnAtrasLogin.setBounds(452, 296, 122, 23);
+		panelRegistro.add(btnAtrasLogin);
 
-		JDateChooser dateChooser = 	new JDateChooser();
-		dateChooser.setBounds(412, 248, 175, 20);
-		panelRegistro.add(dateChooser);
+		JDateChooser fechaNacimiento = new JDateChooser();
+		fechaNacimiento.setBounds(412, 248, 175, 20);
+		panelRegistro.add(fechaNacimiento);
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		String dateString = "2024-04-01";
 		String maxString = "2024-04-25";
 		try {
-			dateChooser.setMaxSelectableDate(dateFormat.parse(maxString));
-			dateChooser.setMinSelectableDate(dateFormat.parse(dateString));
+			fechaNacimiento.setMaxSelectableDate(dateFormat.parse(maxString));
+			fechaNacimiento.setMinSelectableDate(dateFormat.parse(dateString));
 		} catch (ParseException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
 		JPanel panelMenu = new JPanel();
+		panelMenu.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelMenu, "Menu");
 		panelMenu.setLayout(null);
+
+		JButton btnAtrasMenu = new JButton("Atrás");
+		btnAtrasMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				metodos.cambiarDePanel(layeredPane, "Login");
+			}
+		});
+		btnAtrasMenu.setBounds(55, 39, 89, 23);
+		panelMenu.add(btnAtrasMenu);
+
+		JButton btnPerfil = new JButton(txtUsuario.getText());
+		btnPerfil.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnPerfil.setBounds(735, 39, 89, 23);
+		panelMenu.add(btnPerfil);
+
+		JButton btnNewButton_2 = new JButton("New button");
+		btnNewButton_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnNewButton_2.setBounds(304, 171, 265, 23);
+		panelMenu.add(btnNewButton_2);
+
+		JButton btnNewButton_3 = new JButton("New button");
+		btnNewButton_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnNewButton_3.setBounds(304, 219, 265, 23);
+		panelMenu.add(btnNewButton_3);
+
+		JButton btnNewButton_4 = new JButton("New button");
+		btnNewButton_4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnNewButton_4.setBounds(304, 265, 265, 23);
+		panelMenu.add(btnNewButton_4);
+		
+		JLabel lblNewLabel_1 = new JLabel("Bienvenido");
+		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 50));
+		lblNewLabel_1.setBounds(287, 19, 299, 141);
+		panelMenu.add(lblNewLabel_1);
 	}
 }
