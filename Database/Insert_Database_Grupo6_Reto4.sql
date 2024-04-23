@@ -21,7 +21,8 @@ VALUES
 (1, 1);
 INSERT IGNORE INTO Cliente(Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo)
 VALUES
-('Ibai', 'Zaballa', 'Furaik', '123456789abc', '2003-01-01', '2024-04-18', 'Premium');
+('Ibai', 'Zaballa', 'Furaik', '123456789abc', '2003-01-01', '2024-04-18', 'Premium'),
+('admin', 'admin', 'admin', 'admin', '2000-01-01', '2000-01-01', 'Premium');
 INSERT IGNORE INTO Premium(FechaCaducidad)
 VALUES
 ('2025-05-18');
