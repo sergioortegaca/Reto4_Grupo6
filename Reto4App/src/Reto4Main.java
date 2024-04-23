@@ -39,6 +39,7 @@ public class Reto4Main extends JFrame {
 	String timeStamp;
 	Metodos metodos = new Metodos();
 	String linkBD = "jdbc:mysql://localhost:33060/reto4_grupo6", userBD = "mañana", passBD = "elorrieta";
+	String user;
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -146,7 +147,7 @@ public class Reto4Main extends JFrame {
 				String textOk = "Has iniciado sesión correctamente";
 				String textNot = "Creedenciales incorrectas";
 
-				String user = txtUsuario.getText();
+				user = txtUsuario.getText();
 				String pass = new String(pswContrasena.getPassword());
 
 				try {
@@ -262,7 +263,6 @@ public class Reto4Main extends JFrame {
 					preparedStatement.setString(6, dateFormat.format(fechaNacimiento.getDate()));
 					preparedStatement.setString(7, timeStamp);
 
-
 					preparedStatement.executeUpdate();
 					preparedStatement.close();
 
@@ -342,7 +342,7 @@ public class Reto4Main extends JFrame {
 		btnAtrasMenu.setBounds(55, 39, 89, 23);
 		panelMenu.add(btnAtrasMenu);
 
-		JButton btnPerfil = new JButton(txtUsuario.getText());
+		JButton btnPerfil = new JButton(user);
 		btnPerfil.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -350,7 +350,7 @@ public class Reto4Main extends JFrame {
 		btnPerfil.setBounds(735, 39, 89, 23);
 		panelMenu.add(btnPerfil);
 
-		JButton btnNewButton_2 = new JButton("New button");
+		JButton btnNewButton_2 = new JButton("Descubir música");
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -358,7 +358,7 @@ public class Reto4Main extends JFrame {
 		btnNewButton_2.setBounds(304, 171, 265, 23);
 		panelMenu.add(btnNewButton_2);
 
-		JButton btnNewButton_3 = new JButton("New button");
+		JButton btnNewButton_3 = new JButton("Descubrir podcasts");
 		btnNewButton_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -366,14 +366,14 @@ public class Reto4Main extends JFrame {
 		btnNewButton_3.setBounds(304, 219, 265, 23);
 		panelMenu.add(btnNewButton_3);
 
-		JButton btnNewButton_4 = new JButton("New button");
+		JButton btnNewButton_4 = new JButton("Mis PlayLists");
 		btnNewButton_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
 		btnNewButton_4.setBounds(304, 265, 265, 23);
 		panelMenu.add(btnNewButton_4);
-		
+
 		JLabel lblNewLabel_1 = new JLabel("Bienvenido");
 		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 50));
