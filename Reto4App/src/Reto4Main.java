@@ -262,6 +262,7 @@ public class Reto4Main extends JFrame {
 					preparedStatement.setString(6, dateFormat.format(fechaNacimiento.getDate()));
 					preparedStatement.setString(7, timeStamp);
 
+
 					preparedStatement.executeUpdate();
 					preparedStatement.close();
 
@@ -298,10 +299,10 @@ public class Reto4Main extends JFrame {
 		btnCrearUsuario.setBounds(287, 296, 122, 23);
 		panelRegistro.add(btnCrearUsuario);
 
-		JButton btnVolverLogin = new JButton("Volver");
-		btnVolverLogin.setBackground(Color.LIGHT_GRAY);
-		btnVolverLogin.setFont(new Font("Book Antiqua", Font.BOLD, 13));
-		btnVolverLogin.addActionListener(new ActionListener() {
+		JButton btnAtrasLogin = new JButton("Atras");
+		btnAtrasLogin.setBackground(Color.LIGHT_GRAY);
+		btnAtrasLogin.setFont(new Font("Book Antiqua", Font.BOLD, 13));
+		btnAtrasLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				txtNombre.setText("");
 				txtApellidos.setText("");
@@ -310,8 +311,8 @@ public class Reto4Main extends JFrame {
 				metodos.cambiarDePanel(layeredPane, "Login");
 			}
 		});
-		btnVolverLogin.setBounds(452, 296, 122, 23);
-		panelRegistro.add(btnVolverLogin);
+		btnAtrasLogin.setBounds(452, 296, 122, 23);
+		panelRegistro.add(btnAtrasLogin);
 
 		fechaNacimiento = new JDateChooser();
 		fechaNacimiento.setBounds(412, 248, 175, 20);
@@ -324,12 +325,59 @@ public class Reto4Main extends JFrame {
 			fechaNacimiento.setMaxSelectableDate(dateFormat.parse(maxString));
 			fechaNacimiento.setMinSelectableDate(dateFormat.parse(dateString));
 		} catch (ParseException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
 		JPanel panelMenu = new JPanel();
+		panelMenu.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelMenu, "Menu");
 		panelMenu.setLayout(null);
+
+		JButton btnAtrasMenu = new JButton("Atrás");
+		btnAtrasMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				metodos.cambiarDePanel(layeredPane, "Login");
+			}
+		});
+		btnAtrasMenu.setBounds(55, 39, 89, 23);
+		panelMenu.add(btnAtrasMenu);
+
+		JButton btnPerfil = new JButton(txtUsuario.getText());
+		btnPerfil.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnPerfil.setBounds(735, 39, 89, 23);
+		panelMenu.add(btnPerfil);
+
+		JButton btnNewButton_2 = new JButton("New button");
+		btnNewButton_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnNewButton_2.setBounds(304, 171, 265, 23);
+		panelMenu.add(btnNewButton_2);
+
+		JButton btnNewButton_3 = new JButton("New button");
+		btnNewButton_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnNewButton_3.setBounds(304, 219, 265, 23);
+		panelMenu.add(btnNewButton_3);
+
+		JButton btnNewButton_4 = new JButton("New button");
+		btnNewButton_4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnNewButton_4.setBounds(304, 265, 265, 23);
+		panelMenu.add(btnNewButton_4);
+		
+		JLabel lblNewLabel_1 = new JLabel("Bienvenido");
+		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 50));
+		lblNewLabel_1.setBounds(287, 19, 299, 141);
+		panelMenu.add(lblNewLabel_1);
 	}
 }

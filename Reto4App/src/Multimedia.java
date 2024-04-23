@@ -1,5 +1,5 @@
 public abstract class Multimedia {
-	protected String audioID;
+	protected int audioID;
 	protected String nombreMultimedia;
 	protected int duracion;
 	protected String imagenMultimedia;

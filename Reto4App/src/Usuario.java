@@ -1,5 +1,5 @@
 public abstract class Usuario {
-	protected String clienteID;
+	protected int clienteID;
 	protected String nombre;
 	protected String apellido;
 	protected String usuario;
