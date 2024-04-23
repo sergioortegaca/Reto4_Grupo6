@@ -14,7 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -26,18 +25,18 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.JLabel;
 import java.awt.Color;
-import com.toedter.calendar.JDayChooser;
-import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
 
 public class Reto4Main extends JFrame {
 	private JTextField txtUsuario;
 	private JPasswordField pswContrasena;
-	private JButton btnVolverPelis;
 	private JTextField txtNombre;
 	private JTextField txtApellidos;
-	private JTextField txtDni;
+	private JTextField txtUsuarioRegistro;
 	private JPasswordField pswCrearContrasena;
+	JDateChooser fechaNacimiento;
+	SimpleDateFormat dateFormat;
+	String timeStamp;
 	Metodos metodos = new Metodos();
 	String linkBD = "jdbc:mysql://localhost:33060/reto4_grupo6", userBD = "mañana", passBD = "elorrieta";
 
@@ -71,8 +70,8 @@ public class Reto4Main extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(new CardLayout(0, 0));
 
-		// COGER LA HORA ACTUAL PARA EL REGISTRO: String timeStamp = new
-		// SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
+		// COGER LA HORA ACTUAL PARA EL REGISTRO:
+		timeStamp = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
 
 		JLayeredPane layeredPane = new JLayeredPane();
 		contentPane.add(layeredPane, "LayeredPane");
@@ -207,10 +206,10 @@ public class Reto4Main extends JFrame {
 		txtApellidos.setBounds(412, 156, 175, 20);
 		panelRegistro.add(txtApellidos);
 
-		txtDni = new JTextField();
-		txtDni.setColumns(10);
-		txtDni.setBounds(412, 187, 175, 20);
-		panelRegistro.add(txtDni);
+		txtUsuarioRegistro = new JTextField();
+		txtUsuarioRegistro.setColumns(10);
+		txtUsuarioRegistro.setBounds(412, 187, 175, 20);
+		panelRegistro.add(txtUsuarioRegistro);
 
 		pswCrearContrasena = new JPasswordField();
 		pswCrearContrasena.setBounds(412, 218, 175, 20);
@@ -249,19 +248,20 @@ public class Reto4Main extends JFrame {
 				// && pswCrearContrasena.getPassword().length < 16) {
 
 				// Código para añadir datos de los clientes a la base de datos
-				
+
 				try {
 					Connection conexion = DriverManager.getConnection(linkBD, userBD, passBD);
 
 					String sql = "INSERT INTO cliente (Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo ) VALUES (?, ?, ?, ?, ?, ?, ?)";
 					PreparedStatement preparedStatement = conexion.prepareStatement(sql);
-					
+
 					preparedStatement.setString(2, txtNombre.getText());
 					preparedStatement.setString(3, txtApellidos.getText());
-					preparedStatement.setString(4, txtUsuario.getText());
+					preparedStatement.setString(4, txtUsuarioRegistro.getText());
 					preparedStatement.setString(5, new String(pswCrearContrasena.getPassword()));
-					//preparedStatement.setString(6, dateChooser.getDate());
-					
+					preparedStatement.setString(6, dateFormat.format(fechaNacimiento.getDate()));
+					preparedStatement.setString(7, timeStamp);
+
 					preparedStatement.executeUpdate();
 					preparedStatement.close();
 
@@ -274,7 +274,7 @@ public class Reto4Main extends JFrame {
 				JOptionPane.showMessageDialog(null, "El usuario se ha creado correctamente");
 				txtNombre.setText("");
 				txtApellidos.setText("");
-				txtDni.setText("");
+				txtUsuarioRegistro.setText("");
 				pswCrearContrasena.setText("");
 				metodos.cambiarDePanel(layeredPane, "Login");
 
@@ -305,7 +305,7 @@ public class Reto4Main extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				txtNombre.setText("");
 				txtApellidos.setText("");
-				txtDni.setText("");
+				txtUsuarioRegistro.setText("");
 				pswCrearContrasena.setText("");
 				metodos.cambiarDePanel(layeredPane, "Login");
 			}
@@ -313,16 +313,16 @@ public class Reto4Main extends JFrame {
 		btnVolverLogin.setBounds(452, 296, 122, 23);
 		panelRegistro.add(btnVolverLogin);
 
-		JDateChooser dateChooser = 	new JDateChooser();
-		dateChooser.setBounds(412, 248, 175, 20);
-		panelRegistro.add(dateChooser);
+		fechaNacimiento = new JDateChooser();
+		fechaNacimiento.setBounds(412, 248, 175, 20);
+		panelRegistro.add(fechaNacimiento);
 
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		String dateString = "2024-04-01";
 		String maxString = "2024-04-25";
 		try {
-			dateChooser.setMaxSelectableDate(dateFormat.parse(maxString));
-			dateChooser.setMinSelectableDate(dateFormat.parse(dateString));
+			fechaNacimiento.setMaxSelectableDate(dateFormat.parse(maxString));
+			fechaNacimiento.setMinSelectableDate(dateFormat.parse(dateString));
 		} catch (ParseException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
