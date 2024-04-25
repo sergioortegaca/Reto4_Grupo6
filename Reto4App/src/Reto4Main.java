@@ -34,7 +34,7 @@ public class Reto4Main extends JFrame {
 	private JTextField txtApellidos;
 	private JTextField txtUsuarioRegistro;
 	private JPasswordField pswCrearContrasena;
-	JDateChooser fechaNacimiento;
+	JDateChooser fechaNacimientoCalendar;
 	SimpleDateFormat dateFormat;
 	String timeStamp;
 	Metodos metodos = new Metodos();
@@ -106,11 +106,11 @@ public class Reto4Main extends JFrame {
 		});
 		panelBienvenida.setLayout(null);
 
-		JLabel lblNewLabel = new JLabel("Bienvenido");
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 50));
-		lblNewLabel.setBounds(287, 155, 299, 141);
-		panelBienvenida.add(lblNewLabel);
+		JLabel lblBienvenido = new JLabel("Bienvenido");
+		lblBienvenido.setHorizontalAlignment(SwingConstants.CENTER);
+		lblBienvenido.setFont(new Font("Tahoma", Font.BOLD, 50));
+		lblBienvenido.setBounds(287, 155, 299, 141);
+		panelBienvenida.add(lblBienvenido);
 
 		// ****************************************************************INICIO DE
 		// SESIÓN
@@ -247,6 +247,18 @@ public class Reto4Main extends JFrame {
 		btnCrearUsuario.setFont(new Font("Book Antiqua", Font.BOLD, 13));
 		btnCrearUsuario.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				// OBJETOS
+				int clienteID = 0;
+				String nombre = txtNombre.getText(), apellido = txtApellidos.getText(),
+						usuario = txtUsuarioRegistro.getText(),
+						contrasena = new String(pswCrearContrasena.getPassword()),
+						fechaNacimiento = dateFormat.format(fechaNacimientoCalendar.getDate()),
+						fechaRegistro = timeStamp;
+
+				UsuarioFree UsuarioNuevo = new UsuarioFree(clienteID, nombre, apellido, usuario, contrasena,
+						fechaNacimiento, fechaRegistro);
+
+				System.out.println(UsuarioNuevo.nombre);
 
 				// if (txtNombre.getText().length() > 0 && txtNombre.getText().length() < 13) {
 				// if (txtApellidos.getText().length() > 0 && txtApellidos.getText().length() <
@@ -262,12 +274,12 @@ public class Reto4Main extends JFrame {
 					String sql = "INSERT INTO cliente (Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo ) VALUES (?, ?, ?, ?, ?, ?, ?)";
 					PreparedStatement preparedStatement = conexion.prepareStatement(sql);
 
-					preparedStatement.setString(2, txtNombre.getText());
-					preparedStatement.setString(3, txtApellidos.getText());
-					preparedStatement.setString(4, txtUsuarioRegistro.getText());
-					preparedStatement.setString(5, new String(pswCrearContrasena.getPassword()));
-					preparedStatement.setString(6, dateFormat.format(fechaNacimiento.getDate()));
-					preparedStatement.setString(7, timeStamp);
+					preparedStatement.setString(2, UsuarioNuevo.nombre);
+					preparedStatement.setString(3, UsuarioNuevo.apellido);
+					preparedStatement.setString(4, UsuarioNuevo.usuario);
+					preparedStatement.setString(5, UsuarioNuevo.contrasena);
+					preparedStatement.setString(6, UsuarioNuevo.fechaNacimiento);
+					preparedStatement.setString(7, UsuarioNuevo.fechaRegistro);
 
 					preparedStatement.executeUpdate();
 					preparedStatement.close();
@@ -316,16 +328,16 @@ public class Reto4Main extends JFrame {
 		btnAtrasLogin.setBounds(452, 296, 122, 23);
 		panelRegistro.add(btnAtrasLogin);
 
-		fechaNacimiento = new JDateChooser();
-		fechaNacimiento.setBounds(412, 248, 175, 20);
-		panelRegistro.add(fechaNacimiento);
+		fechaNacimientoCalendar = new JDateChooser();
+		fechaNacimientoCalendar.setBounds(412, 248, 175, 20);
+		panelRegistro.add(fechaNacimientoCalendar);
 
 		dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		String dateString = "2024-04-01";
 		String maxString = "2024-04-25";
 		try {
-			fechaNacimiento.setMaxSelectableDate(dateFormat.parse(maxString));
-			fechaNacimiento.setMinSelectableDate(dateFormat.parse(dateString));
+			fechaNacimientoCalendar.setMaxSelectableDate(dateFormat.parse(maxString));
+			fechaNacimientoCalendar.setMinSelectableDate(dateFormat.parse(dateString));
 		} catch (ParseException e1) {
 			e1.printStackTrace();
 		}
@@ -386,5 +398,14 @@ public class Reto4Main extends JFrame {
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 50));
 		lblNewLabel_1.setBounds(287, 19, 299, 141);
 		panelMenu.add(lblNewLabel_1);
+
+		JPanel panelDescubrirMusica = new JPanel();
+		layeredPane.add(panelDescubrirMusica, "name_864849394699100");
+
+		JPanel panel_1 = new JPanel();
+		layeredPane.add(panel_1, "name_864854377472300");
+
+		JPanel panel_2 = new JPanel();
+		layeredPane.add(panel_2, "name_864855725224800");
 	}
 }
