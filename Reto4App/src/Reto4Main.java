@@ -222,7 +222,7 @@ public class Reto4Main extends JFrame {
 		pswCrearContrasena.setBounds(412, 218, 175, 20);
 		panelRegistro.add(pswCrearContrasena);
 
-		JLabel lblNombre = new JLabel("Nombre:\r\n");
+		JLabel lblNombre = new JLabel("Nombre:");
 		lblNombre.setBounds(274, 125, 148, 20);
 		panelRegistro.add(lblNombre);
 
@@ -271,7 +271,7 @@ public class Reto4Main extends JFrame {
 				try {
 					Connection conexion = DriverManager.getConnection(linkBD, userBD, passBD);
 
-					String sql = "INSERT INTO cliente (Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo ) VALUES (?, ?, ?, ?, ?, ?, ?)";
+					String sql = "INSERT INTO cliente (Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
 					PreparedStatement preparedStatement = conexion.prepareStatement(sql);
 
 					preparedStatement.setString(2, UsuarioNuevo.nombre);
@@ -280,6 +280,7 @@ public class Reto4Main extends JFrame {
 					preparedStatement.setString(5, UsuarioNuevo.contrasena);
 					preparedStatement.setString(6, UsuarioNuevo.fechaNacimiento);
 					preparedStatement.setString(7, UsuarioNuevo.fechaRegistro);
+					// preparedStatement.setString(8, UsuarioNuevo.Tipo);
 
 					preparedStatement.executeUpdate();
 					preparedStatement.close();
@@ -369,43 +370,60 @@ public class Reto4Main extends JFrame {
 		btnPerfil.setBounds(735, 39, 89, 23);
 		panelMenu.add(btnPerfil);
 
-		JButton btnNewButton_2 = new JButton("Descubir música");
-		btnNewButton_2.addActionListener(new ActionListener() {
+		// ****************************************************************DESCUBRIR
+		// MÚSICA
+		JButton btnDescubrirMusica = new JButton("Descubir música");
+		btnDescubrirMusica.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				metodos.cambiarDePanel(layeredPane, "DescubrirMusica");
 			}
 		});
-		btnNewButton_2.setBounds(304, 171, 265, 23);
-		panelMenu.add(btnNewButton_2);
+		btnDescubrirMusica.setBounds(304, 171, 265, 23);
+		panelMenu.add(btnDescubrirMusica);
 
-		JButton btnNewButton_3 = new JButton("Descubrir podcasts");
-		btnNewButton_3.addActionListener(new ActionListener() {
+		// ****************************************************************DESCUBRIR
+		// PODCASTS
+		JButton btnDescubrirPodcasts = new JButton("Descubrir podcasts");
+		btnDescubrirPodcasts.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				metodos.cambiarDePanel(layeredPane, "DescubrirPoscasts");
 			}
 		});
-		btnNewButton_3.setBounds(304, 219, 265, 23);
-		panelMenu.add(btnNewButton_3);
+		btnDescubrirPodcasts.setBounds(304, 219, 265, 23);
+		panelMenu.add(btnDescubrirPodcasts);
 
+		// ****************************************************************MIS PLAYLISTS
 		JButton btnNewButton_4 = new JButton("Mis PlayLists");
 		btnNewButton_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				metodos.cambiarDePanel(layeredPane, "MisPlaylists");
+
 			}
 		});
 		btnNewButton_4.setBounds(304, 265, 265, 23);
 		panelMenu.add(btnNewButton_4);
 
-		JLabel lblNewLabel_1 = new JLabel("Bienvenido");
-		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 50));
-		lblNewLabel_1.setBounds(287, 19, 299, 141);
-		panelMenu.add(lblNewLabel_1);
+		
+		
+		JLabel lblMenu = new JLabel("");
+		lblMenu.setHorizontalAlignment(SwingConstants.CENTER);
+		lblMenu.setFont(new Font("Tahoma", Font.BOLD, 50));
+		lblMenu.setBounds(287, 19, 299, 141);
+		panelMenu.add(lblMenu);
 
 		JPanel panelDescubrirMusica = new JPanel();
-		layeredPane.add(panelDescubrirMusica, "name_864849394699100");
+		panelDescubrirMusica.setBackground(new Color(255, 255, 255));
+		layeredPane.add(panelDescubrirMusica, "DescubrirMusica");
+		panelDescubrirMusica.setLayout(null);
 
-		JPanel panel_1 = new JPanel();
-		layeredPane.add(panel_1, "name_864854377472300");
+		JPanel panelDescubirPodcasts = new JPanel();
+		panelDescubirPodcasts.setBackground(new Color(255, 255, 255));
+		layeredPane.add(panelDescubirPodcasts, "DescubirPodcasts");
+		panelDescubirPodcasts.setLayout(null);
 
-		JPanel panel_2 = new JPanel();
-		layeredPane.add(panel_2, "name_864855725224800");
+		JPanel panelMisPlaylists = new JPanel();
+		panelMisPlaylists.setBackground(new Color(255, 255, 255));
+		layeredPane.add(panelMisPlaylists, "MisPlaylists");
+		panelMisPlaylists.setLayout(null);
 	}
 }
