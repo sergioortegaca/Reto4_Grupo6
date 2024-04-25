@@ -1,3 +1,4 @@
+package Main;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -26,6 +27,8 @@ import javax.swing.SwingConstants;
 import javax.swing.JLabel;
 import java.awt.Color;
 import com.toedter.calendar.JDateChooser;
+
+import Objetos.UsuarioFree;
 
 public class Reto4Main extends JFrame {
 	JDateChooser fechaNacimientoCalendar;
@@ -63,9 +66,9 @@ public class Reto4Main extends JFrame {
 		JPasswordField pswCrearContrasena;
 		String nombrePanel = "";
 		String timeStamp;
-		//Metodos metodos = new Metodos();
+		Metodos metodos = new Metodos();
 		String linkBD = "jdbc:mysql://localhost:33060/reto4_grupo6", userBD = "mañana", passBD = "elorrieta";
-
+		JPanel panelMenu ;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(230, 130, 900, 500);
 		contentPane = new JPanel();
@@ -113,6 +116,10 @@ public class Reto4Main extends JFrame {
 		lblBienvenido.setFont(new Font("Tahoma", Font.BOLD, 50));
 		lblBienvenido.setBounds(287, 155, 299, 141);
 		panelBienvenida.add(lblBienvenido);
+		 panelMenu = new JPanel();
+			panelMenu.setBackground(new Color(255, 255, 255));
+			layeredPane.add(panelMenu, "Menu");
+			panelMenu.setLayout(null);
 
 		// ****************************************************************INICIO DE
 		// SESIÓN
@@ -168,6 +175,9 @@ public class Reto4Main extends JFrame {
 					if (rs.next()) {
 						JOptionPane.showMessageDialog(null, textOk);
 						metodos.cambiarDePanel(layeredPane, "Menu");
+						panelMenu.repaint();
+						panelMenu.revalidate();
+						
 					} else {
 						JOptionPane.showMessageDialog(null, textNot);
 					}
@@ -178,7 +188,7 @@ public class Reto4Main extends JFrame {
 					rs.close();
 					st.close();
 					connection.close();
-
+					
 				} catch (SQLException sqlException) {
 					sqlException.printStackTrace();
 				}
@@ -231,6 +241,9 @@ public class Reto4Main extends JFrame {
 		pswCrearContrasena.setBounds(412, 218, 175, 20);
 		panelRegistro.add(pswCrearContrasena);
 
+		
+		
+		
 		JLabel lblNombre = new JLabel("Nombre:");
 		lblNombre.setBounds(274, 125, 148, 20);
 		panelRegistro.add(lblNombre);
@@ -267,8 +280,6 @@ public class Reto4Main extends JFrame {
 				UsuarioFree UsuarioNuevo = new UsuarioFree(clienteID, nombre, apellido, usuario, contrasena,
 						fechaNacimiento, fechaRegistro);
 
-				System.out.println(UsuarioNuevo.nombre);
-
 				// if (txtNombre.getText().length() > 0 && txtNombre.getText().length() < 13) {
 				// if (txtApellidos.getText().length() > 0 && txtApellidos.getText().length() <
 				// 30) {
@@ -283,19 +294,18 @@ public class Reto4Main extends JFrame {
 					String sql = "INSERT INTO cliente (Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
 					PreparedStatement preparedStatement = conexion.prepareStatement(sql);
 
-					preparedStatement.setString(2, UsuarioNuevo.nombre);
-					preparedStatement.setString(3, UsuarioNuevo.apellido);
-					preparedStatement.setString(4, UsuarioNuevo.usuario);
-					preparedStatement.setString(5, UsuarioNuevo.contrasena);
-					preparedStatement.setString(6, UsuarioNuevo.fechaNacimiento);
-					preparedStatement.setString(7, UsuarioNuevo.fechaRegistro);
+				//	preparedStatement.setString(2, UsuarioNuevo.nombre);
+					//preparedStatement.setString(3, UsuarioNuevo.apellido);
+					//preparedStatement.setString(4, UsuarioNuevo.usuario);
+					//preparedStatement.setString(5, UsuarioNuevo.contrasena);
+					//preparedStatement.setString(6, UsuarioNuevo.fechaNacimiento);
+					//preparedStatement.setString(7, UsuarioNuevo.fechaRegistro);
 					// preparedStatement.setString(8, UsuarioNuevo.Tipo);
 
 					preparedStatement.executeUpdate();
-
 					preparedStatement.close();
-					conexion.close();
 
+					conexion.close();
 				} catch (SQLException ex) {
 					System.out.println("SQLException: " + ex.getMessage());
 					System.out.println("SQLState: " + ex.getSQLState());
@@ -347,24 +357,13 @@ public class Reto4Main extends JFrame {
 		}
 
 		// ****************************************************************MENÚ
-		JPanel panelMenu = new JPanel();
-		panelMenu.setBackground(new Color(255, 255, 255));
-		layeredPane.add(panelMenu, "Menu");
-		panelMenu.setLayout(null);
-
 		metodos.botonPerfil(layeredPane, panelMenu, user);
 		nombrePanel = "Login";
 		metodos.botonAtras(layeredPane, nombrePanel, panelMenu);
 
-		JLabel lblMenu = new JLabel(metodos.bienvenidaMenu());
-		lblMenu.setHorizontalAlignment(SwingConstants.CENTER);
-		lblMenu.setFont(new Font("Tahoma", Font.BOLD, 40));
-		lblMenu.setBounds(262, 59, 349, 83);
-		panelMenu.add(lblMenu);
-
 		// ****************************************************************DESCUBRIR
 		// MÚSICA
-		JButton btnDescubrirMusica = new JButton("Descubir música");
+		JButton btnDescubrirMusica = new JButton("Descubrir música");
 		btnDescubrirMusica.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				metodos.cambiarDePanel(layeredPane, "DescubrirMusica");
@@ -372,15 +371,6 @@ public class Reto4Main extends JFrame {
 		});
 		btnDescubrirMusica.setBounds(304, 171, 265, 23);
 		panelMenu.add(btnDescubrirMusica);
-
-		JPanel panelDescubrirMusica = new JPanel();
-		panelDescubrirMusica.setBackground(new Color(255, 255, 255));
-		layeredPane.add(panelDescubrirMusica, "DescubrirMusica");
-		panelDescubrirMusica.setLayout(null);
-
-		metodos.botonPerfil(layeredPane, panelDescubrirMusica, user);
-		nombrePanel = "Menu";
-		metodos.botonAtras(layeredPane, nombrePanel, panelDescubrirMusica);
 
 		// ****************************************************************DESCUBRIR
 		// PODCASTS
@@ -393,15 +383,6 @@ public class Reto4Main extends JFrame {
 		btnDescubrirPodcasts.setBounds(304, 219, 265, 23);
 		panelMenu.add(btnDescubrirPodcasts);
 
-		JPanel panelDescubirPodcasts = new JPanel();
-		panelDescubirPodcasts.setBackground(new Color(255, 255, 255));
-		layeredPane.add(panelDescubirPodcasts, "DescubrirPodcasts");
-		panelDescubirPodcasts.setLayout(null);
-
-		metodos.botonPerfil(layeredPane, panelDescubirPodcasts, user);
-		nombrePanel = "Menu";
-		metodos.botonAtras(layeredPane, nombrePanel, panelDescubirPodcasts);
-
 		// ****************************************************************MIS PLAYLISTS
 		JButton btnNewButton_4 = new JButton("Mis PlayLists");
 		btnNewButton_4.addActionListener(new ActionListener() {
@@ -411,6 +392,30 @@ public class Reto4Main extends JFrame {
 		});
 		btnNewButton_4.setBounds(304, 265, 265, 23);
 		panelMenu.add(btnNewButton_4);
+
+		JLabel lblMenu = new JLabel(metodos.bienvenidaMenu());
+		lblMenu.setHorizontalAlignment(SwingConstants.CENTER);
+		lblMenu.setFont(new Font("Tahoma", Font.BOLD, 40));
+		lblMenu.setBounds(262, 59, 349, 83);
+		panelMenu.add(lblMenu);
+
+		JPanel panelDescubrirMusica = new JPanel();
+		panelDescubrirMusica.setBackground(new Color(255, 255, 255));
+		layeredPane.add(panelDescubrirMusica, "DescubrirMusica");
+		panelDescubrirMusica.setLayout(null);
+
+		metodos.botonPerfil(layeredPane, panelDescubrirMusica, user);
+		nombrePanel = "Menu";
+		metodos.botonAtras(layeredPane, nombrePanel, panelDescubrirMusica);
+
+		JPanel panelDescubirPodcasts = new JPanel();
+		panelDescubirPodcasts.setBackground(new Color(255, 255, 255));
+		layeredPane.add(panelDescubirPodcasts, "DescubrirPodcasts");
+		panelDescubirPodcasts.setLayout(null);
+
+		metodos.botonPerfil(layeredPane, panelDescubirPodcasts, user);
+		nombrePanel = "Menu";
+		metodos.botonAtras(layeredPane, nombrePanel, panelDescubirPodcasts);
 
 		JPanel panelMisPlaylists = new JPanel();
 		panelMisPlaylists.setBackground(new Color(255, 255, 255));
