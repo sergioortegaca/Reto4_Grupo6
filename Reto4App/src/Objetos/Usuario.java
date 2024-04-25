@@ -1,3 +1,4 @@
+package Objetos;
 public abstract class Usuario {
 	protected int clienteID;
 	protected String nombre;

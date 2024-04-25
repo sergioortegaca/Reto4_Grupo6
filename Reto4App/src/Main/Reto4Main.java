@@ -1,3 +1,4 @@
+package Main;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -26,6 +27,8 @@ import javax.swing.SwingConstants;
 import javax.swing.JLabel;
 import java.awt.Color;
 import com.toedter.calendar.JDateChooser;
+
+import Objetos.UsuarioFree;
 
 public class Reto4Main extends JFrame {
 	JDateChooser fechaNacimientoCalendar;
@@ -277,8 +280,6 @@ public class Reto4Main extends JFrame {
 				UsuarioFree UsuarioNuevo = new UsuarioFree(clienteID, nombre, apellido, usuario, contrasena,
 						fechaNacimiento, fechaRegistro);
 
-				System.out.println(UsuarioNuevo.nombre);
-
 				// if (txtNombre.getText().length() > 0 && txtNombre.getText().length() < 13) {
 				// if (txtApellidos.getText().length() > 0 && txtApellidos.getText().length() <
 				// 30) {
@@ -293,12 +294,12 @@ public class Reto4Main extends JFrame {
 					String sql = "INSERT INTO cliente (Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
 					PreparedStatement preparedStatement = conexion.prepareStatement(sql);
 
-					preparedStatement.setString(2, UsuarioNuevo.nombre);
-					preparedStatement.setString(3, UsuarioNuevo.apellido);
-					preparedStatement.setString(4, UsuarioNuevo.usuario);
-					preparedStatement.setString(5, UsuarioNuevo.contrasena);
-					preparedStatement.setString(6, UsuarioNuevo.fechaNacimiento);
-					preparedStatement.setString(7, UsuarioNuevo.fechaRegistro);
+				//	preparedStatement.setString(2, UsuarioNuevo.nombre);
+					//preparedStatement.setString(3, UsuarioNuevo.apellido);
+					//preparedStatement.setString(4, UsuarioNuevo.usuario);
+					//preparedStatement.setString(5, UsuarioNuevo.contrasena);
+					//preparedStatement.setString(6, UsuarioNuevo.fechaNacimiento);
+					//preparedStatement.setString(7, UsuarioNuevo.fechaRegistro);
 					// preparedStatement.setString(8, UsuarioNuevo.Tipo);
 
 					preparedStatement.executeUpdate();

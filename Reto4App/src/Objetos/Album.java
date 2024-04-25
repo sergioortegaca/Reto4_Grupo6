@@ -1,3 +1,4 @@
+package Objetos;
 public class Album extends Musico {
 	protected int albumID;
 	protected String tituloAlbum;
