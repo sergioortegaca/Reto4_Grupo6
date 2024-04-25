@@ -63,7 +63,7 @@ public class Reto4Main extends JFrame {
 		JPasswordField pswCrearContrasena;
 		String nombrePanel = "";
 		String timeStamp;
-		Metodos metodos = new Metodos();
+		//Metodos metodos = new Metodos();
 		String linkBD = "jdbc:mysql://localhost:33060/reto4_grupo6", userBD = "mañana", passBD = "elorrieta";
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

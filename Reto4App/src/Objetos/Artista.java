@@ -1,3 +1,4 @@
+package Objetos;
 public abstract class Artista {
 	protected int artistaID;
 	protected String nombreArtistico;

@@ -1,9 +1,9 @@
+package Main;
+
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
 import javax.swing.JButton;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
@@ -61,6 +61,8 @@ public class Metodos {
 
 	public void botonPerfil(JLayeredPane layeredPane, JPanel variablePanel, String user) {
 		JButton btnPerfil = new JButton(user);
+		System.out.println(user);
+
 		btnPerfil.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cambiarDePanel(layeredPane, "Perfil");

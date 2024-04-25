@@ -1,3 +1,4 @@
+package Objetos;
 public abstract class Multimedia {
 	protected int audioID;
 	protected String nombreMultimedia;
