@@ -78,6 +78,7 @@ public class Reto4Main extends JFrame {
 		contentPane.add(layeredPane, "LayeredPane");
 		layeredPane.setLayout(new CardLayout(0, 0));
 
+		// ****************************************************************BIENVENIDA
 		JPanel panelBienvenida = new JPanel();
 		panelBienvenida.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelBienvenida, "Bienvenida");
@@ -111,6 +112,8 @@ public class Reto4Main extends JFrame {
 		lblNewLabel.setBounds(287, 155, 299, 141);
 		panelBienvenida.add(lblNewLabel);
 
+		// ****************************************************************INICIO DE
+		// SESIÓN
 		JPanel panelLogin = new JPanel();
 		panelLogin.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelLogin, "Login");
@@ -165,9 +168,11 @@ public class Reto4Main extends JFrame {
 						metodos.cambiarDePanel(layeredPane, "Menu");
 					} else {
 						JOptionPane.showMessageDialog(null, textNot);
-						txtUsuario.setText("");
-						pswContrasena.setText("");
 					}
+
+					txtUsuario.setText("");
+					pswContrasena.setText("");
+
 				} catch (SQLException sqlException) {
 					sqlException.printStackTrace();
 				}
@@ -186,6 +191,7 @@ public class Reto4Main extends JFrame {
 		btnCrear.setBounds(255, 283, 159, 23);
 		panelLogin.add(btnCrear);
 
+		// ****************************************************************REGISTRO
 		JPanel panelRegistro = new JPanel();
 		panelRegistro.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelRegistro, "Registro");
@@ -304,10 +310,6 @@ public class Reto4Main extends JFrame {
 		btnAtrasLogin.setFont(new Font("Book Antiqua", Font.BOLD, 13));
 		btnAtrasLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				txtNombre.setText("");
-				txtApellidos.setText("");
-				txtUsuarioRegistro.setText("");
-				pswCrearContrasena.setText("");
 				metodos.cambiarDePanel(layeredPane, "Login");
 			}
 		});
@@ -328,6 +330,7 @@ public class Reto4Main extends JFrame {
 			e1.printStackTrace();
 		}
 
+		// ****************************************************************MENÚ
 		JPanel panelMenu = new JPanel();
 		panelMenu.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelMenu, "Menu");
@@ -336,6 +339,10 @@ public class Reto4Main extends JFrame {
 		JButton btnAtrasMenu = new JButton("Atrás");
 		btnAtrasMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				txtNombre.setText("");
+				txtApellidos.setText("");
+				txtUsuarioRegistro.setText("");
+				pswCrearContrasena.setText("");
 				metodos.cambiarDePanel(layeredPane, "Login");
 			}
 		});
