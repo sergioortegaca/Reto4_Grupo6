@@ -391,5 +391,14 @@ public class Reto4Main extends JFrame {
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 50));
 		lblNewLabel_1.setBounds(287, 19, 299, 141);
 		panelMenu.add(lblNewLabel_1);
+
+		JPanel panelDescubrirMusica = new JPanel();
+		layeredPane.add(panelDescubrirMusica, "name_864849394699100");
+
+		JPanel panel_1 = new JPanel();
+		layeredPane.add(panel_1, "name_864854377472300");
+
+		JPanel panel_2 = new JPanel();
+		layeredPane.add(panel_2, "name_864855725224800");
 	}
 }
