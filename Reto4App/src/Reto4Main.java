@@ -28,17 +28,8 @@ import java.awt.Color;
 import com.toedter.calendar.JDateChooser;
 
 public class Reto4Main extends JFrame {
-	private JTextField txtUsuario;
-	private JPasswordField pswContrasena;
-	private JTextField txtNombre;
-	private JTextField txtApellidos;
-	private JTextField txtUsuarioRegistro;
-	private JPasswordField pswCrearContrasena;
 	JDateChooser fechaNacimientoCalendar;
 	SimpleDateFormat dateFormat;
-	String timeStamp;
-	Metodos metodos = new Metodos();
-	String linkBD = "jdbc:mysql://localhost:33060/reto4_grupo6", userBD = "mañana", passBD = "elorrieta";
 	String user;
 
 	private static final long serialVersionUID = 1L;
@@ -64,6 +55,17 @@ public class Reto4Main extends JFrame {
 	 * Create the frame.
 	 */
 	public Reto4Main() {
+		JTextField txtUsuario;
+		JPasswordField pswContrasena;
+		JTextField txtNombre;
+		JTextField txtApellidos;
+		JTextField txtUsuarioRegistro;
+		JPasswordField pswCrearContrasena;
+		String nombrePanel = "";
+		String timeStamp;
+		Metodos metodos = new Metodos();
+		String linkBD = "jdbc:mysql://localhost:33060/reto4_grupo6", userBD = "mañana", passBD = "elorrieta";
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(230, 130, 900, 500);
 		contentPane = new JPanel();
@@ -196,6 +198,9 @@ public class Reto4Main extends JFrame {
 		panelRegistro.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelRegistro, "Registro");
 		panelRegistro.setLayout(null);
+
+		nombrePanel = "Login";
+		metodos.botonAtras(layeredPane, nombrePanel, panelRegistro);
 
 		JLabel lblTituloCrear = new JLabel("Crear Usuario");
 		lblTituloCrear.setFont(new Font("Tahoma", Font.PLAIN, 22));
@@ -348,18 +353,8 @@ public class Reto4Main extends JFrame {
 		layeredPane.add(panelMenu, "Menu");
 		panelMenu.setLayout(null);
 
-		JButton btnAtrasMenu = new JButton("Atrás");
-		btnAtrasMenu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				txtNombre.setText("");
-				txtApellidos.setText("");
-				txtUsuarioRegistro.setText("");
-				pswCrearContrasena.setText("");
-				metodos.cambiarDePanel(layeredPane, "Login");
-			}
-		});
-		btnAtrasMenu.setBounds(55, 39, 89, 23);
-		panelMenu.add(btnAtrasMenu);
+		nombrePanel = "Login";
+		metodos.botonAtras(layeredPane, nombrePanel, panelMenu);
 
 		JButton btnPerfil = new JButton(user);
 		btnPerfil.addActionListener(new ActionListener() {
