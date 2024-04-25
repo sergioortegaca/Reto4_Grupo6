@@ -392,10 +392,10 @@ public class Reto4Main extends JFrame {
 		btnNewButton_4.setBounds(304, 265, 265, 23);
 		panelMenu.add(btnNewButton_4);
 
-		JLabel lblMenu = new JLabel("");
+		JLabel lblMenu = new JLabel(metodos.bienvenidaMenu());
 		lblMenu.setHorizontalAlignment(SwingConstants.CENTER);
-		lblMenu.setFont(new Font("Tahoma", Font.BOLD, 50));
-		lblMenu.setBounds(287, 19, 299, 141);
+		lblMenu.setFont(new Font("Tahoma", Font.BOLD, 40));
+		lblMenu.setBounds(262, 59, 349, 83);
 		panelMenu.add(lblMenu);
 
 		JPanel panelDescubrirMusica = new JPanel();
