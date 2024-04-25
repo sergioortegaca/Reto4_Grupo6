@@ -323,16 +323,9 @@ public class Reto4Main extends JFrame {
 		btnCrearUsuario.setBounds(287, 296, 122, 23);
 		panelRegistro.add(btnCrearUsuario);
 
-		JButton btnAtrasLogin = new JButton("Atras");
-		btnAtrasLogin.setBackground(Color.LIGHT_GRAY);
-		btnAtrasLogin.setFont(new Font("Book Antiqua", Font.BOLD, 13));
-		btnAtrasLogin.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				metodos.cambiarDePanel(layeredPane, "Login");
-			}
-		});
-		btnAtrasLogin.setBounds(452, 296, 122, 23);
-		panelRegistro.add(btnAtrasLogin);
+		JPanel panelPerfil = new JPanel();
+		panelPerfil.setBackground(new Color(255, 255, 255));
+		layeredPane.add(panelPerfil, "Perfil");
 
 		fechaNacimientoCalendar = new JDateChooser();
 		fechaNacimientoCalendar.setBounds(412, 248, 175, 20);
@@ -354,16 +347,9 @@ public class Reto4Main extends JFrame {
 		layeredPane.add(panelMenu, "Menu");
 		panelMenu.setLayout(null);
 
+		metodos.botonPerfil(layeredPane, panelMenu, user);
 		nombrePanel = "Login";
 		metodos.botonAtras(layeredPane, nombrePanel, panelMenu);
-
-		JButton btnPerfil = new JButton(user);
-		btnPerfil.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		btnPerfil.setBounds(735, 39, 89, 23);
-		panelMenu.add(btnPerfil);
 
 		// ****************************************************************DESCUBRIR
 		// MÚSICA
@@ -392,7 +378,6 @@ public class Reto4Main extends JFrame {
 		btnNewButton_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				metodos.cambiarDePanel(layeredPane, "MisPlaylists");
-
 			}
 		});
 		btnNewButton_4.setBounds(304, 265, 265, 23);
@@ -409,14 +394,47 @@ public class Reto4Main extends JFrame {
 		layeredPane.add(panelDescubrirMusica, "DescubrirMusica");
 		panelDescubrirMusica.setLayout(null);
 
+		metodos.botonPerfil(layeredPane, panelDescubrirMusica, user);
+		nombrePanel = "Menu";
+		metodos.botonAtras(layeredPane, nombrePanel, panelDescubrirMusica);
+
 		JPanel panelDescubirPodcasts = new JPanel();
 		panelDescubirPodcasts.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelDescubirPodcasts, "DescubrirPodcasts");
 		panelDescubirPodcasts.setLayout(null);
 
+		metodos.botonPerfil(layeredPane, panelDescubirPodcasts, user);
+		nombrePanel = "Menu";
+		metodos.botonAtras(layeredPane, nombrePanel, panelDescubirPodcasts);
+
 		JPanel panelMisPlaylists = new JPanel();
 		panelMisPlaylists.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelMisPlaylists, "MisPlaylists");
 		panelMisPlaylists.setLayout(null);
+
+		metodos.botonPerfil(layeredPane, panelMisPlaylists, user);
+		nombrePanel = "Menu";
+		metodos.botonAtras(layeredPane, nombrePanel, panelMisPlaylists);
+
+		JPanel panelArtista = new JPanel();
+		layeredPane.add(panelArtista, "Artista");
+
+		metodos.botonPerfil(layeredPane, panelArtista, user);
+		nombrePanel = "MisPlaylists";
+		metodos.botonAtras(layeredPane, nombrePanel, panelArtista);
+
+		JPanel panelAlbum = new JPanel();
+		layeredPane.add(panelAlbum, "Album");
+
+		metodos.botonPerfil(layeredPane, panelAlbum, user);
+		nombrePanel = "Artista";
+		metodos.botonAtras(layeredPane, nombrePanel, panelAlbum);
+
+		JPanel panelReproduccion = new JPanel();
+		layeredPane.add(panelReproduccion, "Reproduccion");
+
+		metodos.botonPerfil(layeredPane, panelReproduccion, user);
+		nombrePanel = "Album";
+		metodos.botonAtras(layeredPane, nombrePanel, panelReproduccion);
 	}
 }
