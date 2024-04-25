@@ -65,7 +65,7 @@ public class Reto4Main extends JFrame {
 		String timeStamp;
 		Metodos metodos = new Metodos();
 		String linkBD = "jdbc:mysql://localhost:33060/reto4_grupo6", userBD = "mañana", passBD = "elorrieta";
-
+		JPanel panelMenu ;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(230, 130, 900, 500);
 		contentPane = new JPanel();
@@ -113,6 +113,10 @@ public class Reto4Main extends JFrame {
 		lblBienvenido.setFont(new Font("Tahoma", Font.BOLD, 50));
 		lblBienvenido.setBounds(287, 155, 299, 141);
 		panelBienvenida.add(lblBienvenido);
+		 panelMenu = new JPanel();
+			panelMenu.setBackground(new Color(255, 255, 255));
+			layeredPane.add(panelMenu, "Menu");
+			panelMenu.setLayout(null);
 
 		// ****************************************************************INICIO DE
 		// SESIÓN
@@ -168,6 +172,9 @@ public class Reto4Main extends JFrame {
 					if (rs.next()) {
 						JOptionPane.showMessageDialog(null, textOk);
 						metodos.cambiarDePanel(layeredPane, "Menu");
+						panelMenu.repaint();
+						panelMenu.revalidate();
+						
 					} else {
 						JOptionPane.showMessageDialog(null, textNot);
 					}
@@ -175,6 +182,10 @@ public class Reto4Main extends JFrame {
 					txtUsuario.setText("");
 					pswContrasena.setText("");
 
+					rs.close();
+					st.close();
+					connection.close();
+					
 				} catch (SQLException sqlException) {
 					sqlException.printStackTrace();
 				}
@@ -227,6 +238,9 @@ public class Reto4Main extends JFrame {
 		pswCrearContrasena.setBounds(412, 218, 175, 20);
 		panelRegistro.add(pswCrearContrasena);
 
+		
+		
+		
 		JLabel lblNombre = new JLabel("Nombre:");
 		lblNombre.setBounds(274, 125, 148, 20);
 		panelRegistro.add(lblNombre);
@@ -342,11 +356,6 @@ public class Reto4Main extends JFrame {
 		}
 
 		// ****************************************************************MENÚ
-		JPanel panelMenu = new JPanel();
-		panelMenu.setBackground(new Color(255, 255, 255));
-		layeredPane.add(panelMenu, "Menu");
-		panelMenu.setLayout(null);
-
 		metodos.botonPerfil(layeredPane, panelMenu, user);
 		nombrePanel = "Login";
 		metodos.botonAtras(layeredPane, nombrePanel, panelMenu);
