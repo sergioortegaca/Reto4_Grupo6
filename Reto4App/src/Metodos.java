@@ -1,6 +1,9 @@
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import javax.swing.JButton;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
@@ -37,5 +40,22 @@ public class Metodos {
 		});
 		btnAtras.setBounds(55, 39, 89, 23);
 		variablePanel.add(btnAtras);
+	}
+
+	public String bienvenidaMenu() {
+		String msgBienvenida = "";
+
+		Calendar rightNow = Calendar.getInstance();
+		int hour = rightNow.get(Calendar.HOUR_OF_DAY);
+
+		if (hour < 6 || hour == 21 || hour == 22 || hour == 23)
+			msgBienvenida = "¡Buenas noches!";
+		else if (hour >= 6 && hour < 12)
+			msgBienvenida = "¡Buenos días!";
+		else
+			msgBienvenida = "¡Buenas tardes!";
+
+		return msgBienvenida;
+
 	}
 }

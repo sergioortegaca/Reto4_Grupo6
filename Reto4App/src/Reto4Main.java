@@ -381,7 +381,7 @@ public class Reto4Main extends JFrame {
 		JButton btnDescubrirPodcasts = new JButton("Descubrir podcasts");
 		btnDescubrirPodcasts.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				metodos.cambiarDePanel(layeredPane, "DescubrirPoscasts");
+				metodos.cambiarDePanel(layeredPane, "DescubrirPodcasts");
 			}
 		});
 		btnDescubrirPodcasts.setBounds(304, 219, 265, 23);
@@ -398,12 +398,10 @@ public class Reto4Main extends JFrame {
 		btnNewButton_4.setBounds(304, 265, 265, 23);
 		panelMenu.add(btnNewButton_4);
 
-		
-		
-		JLabel lblMenu = new JLabel("");
+		JLabel lblMenu = new JLabel(metodos.bienvenidaMenu());
 		lblMenu.setHorizontalAlignment(SwingConstants.CENTER);
-		lblMenu.setFont(new Font("Tahoma", Font.BOLD, 50));
-		lblMenu.setBounds(287, 19, 299, 141);
+		lblMenu.setFont(new Font("Tahoma", Font.BOLD, 40));
+		lblMenu.setBounds(262, 59, 349, 83);
 		panelMenu.add(lblMenu);
 
 		JPanel panelDescubrirMusica = new JPanel();
@@ -413,7 +411,7 @@ public class Reto4Main extends JFrame {
 
 		JPanel panelDescubirPodcasts = new JPanel();
 		panelDescubirPodcasts.setBackground(new Color(255, 255, 255));
-		layeredPane.add(panelDescubirPodcasts, "DescubirPodcasts");
+		layeredPane.add(panelDescubirPodcasts, "DescubrirPodcasts");
 		panelDescubirPodcasts.setLayout(null);
 
 		JPanel panelMisPlaylists = new JPanel();
