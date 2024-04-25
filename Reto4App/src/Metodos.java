@@ -38,4 +38,15 @@ public class Metodos {
 		btnAtras.setBounds(55, 39, 89, 23);
 		variablePanel.add(btnAtras);
 	}
+
+	public void botonPerfil(JLayeredPane layeredPane, JPanel variablePanel, String user) {
+		JButton btnPerfil = new JButton(user);
+		btnPerfil.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cambiarDePanel(layeredPane, "Perfil");
+			}
+		});
+		btnPerfil.setBounds(735, 39, 89, 23);
+		variablePanel.add(btnPerfil);
+	}
 }
