@@ -1,4 +1,5 @@
 package Main;
+
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -68,7 +69,7 @@ public class Reto4Main extends JFrame {
 		String timeStamp;
 		Metodos metodos = new Metodos();
 		String linkBD = "jdbc:mysql://localhost:33060/reto4_grupo6", userBD = "mañana", passBD = "elorrieta";
-		JPanel panelMenu ;
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(230, 130, 900, 500);
 		contentPane = new JPanel();
@@ -111,15 +112,17 @@ public class Reto4Main extends JFrame {
 		});
 		panelBienvenida.setLayout(null);
 
-		JLabel lblBienvenido = new JLabel("Bienvenido");
+		JLabel lblBienvenido = new JLabel("Bienvenido a");
 		lblBienvenido.setHorizontalAlignment(SwingConstants.CENTER);
 		lblBienvenido.setFont(new Font("Tahoma", Font.BOLD, 50));
-		lblBienvenido.setBounds(287, 155, 299, 141);
+		lblBienvenido.setBounds(254, 130, 365, 131);
 		panelBienvenida.add(lblBienvenido);
-		 panelMenu = new JPanel();
-			panelMenu.setBackground(new Color(255, 255, 255));
-			layeredPane.add(panelMenu, "Menu");
-			panelMenu.setLayout(null);
+		
+		JLabel lblRhythmicity = new JLabel("Rhythmicity");
+		lblRhythmicity.setHorizontalAlignment(SwingConstants.CENTER);
+		lblRhythmicity.setFont(new Font("Tahoma", Font.BOLD, 50));
+		lblRhythmicity.setBounds(236, 180, 402, 160);
+		panelBienvenida.add(lblRhythmicity);
 
 		// ****************************************************************INICIO DE
 		// SESIÓN
@@ -175,9 +178,7 @@ public class Reto4Main extends JFrame {
 					if (rs.next()) {
 						JOptionPane.showMessageDialog(null, textOk);
 						metodos.cambiarDePanel(layeredPane, "Menu");
-						panelMenu.repaint();
-						panelMenu.revalidate();
-						
+
 					} else {
 						JOptionPane.showMessageDialog(null, textNot);
 					}
@@ -188,7 +189,7 @@ public class Reto4Main extends JFrame {
 					rs.close();
 					st.close();
 					connection.close();
-					
+
 				} catch (SQLException sqlException) {
 					sqlException.printStackTrace();
 				}
@@ -241,9 +242,6 @@ public class Reto4Main extends JFrame {
 		pswCrearContrasena.setBounds(412, 218, 175, 20);
 		panelRegistro.add(pswCrearContrasena);
 
-		
-		
-		
 		JLabel lblNombre = new JLabel("Nombre:");
 		lblNombre.setBounds(274, 125, 148, 20);
 		panelRegistro.add(lblNombre);
@@ -294,12 +292,12 @@ public class Reto4Main extends JFrame {
 					String sql = "INSERT INTO cliente (Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
 					PreparedStatement preparedStatement = conexion.prepareStatement(sql);
 
-				//	preparedStatement.setString(2, UsuarioNuevo.nombre);
-					//preparedStatement.setString(3, UsuarioNuevo.apellido);
-					//preparedStatement.setString(4, UsuarioNuevo.usuario);
-					//preparedStatement.setString(5, UsuarioNuevo.contrasena);
-					//preparedStatement.setString(6, UsuarioNuevo.fechaNacimiento);
-					//preparedStatement.setString(7, UsuarioNuevo.fechaRegistro);
+					//preparedStatement.setString(2, UsuarioNuevo.nombre);
+					// preparedStatement.setString(3, UsuarioNuevo.apellido);
+					// preparedStatement.setString(4, UsuarioNuevo.usuario);
+					// preparedStatement.setString(5, UsuarioNuevo.contrasena);
+					// preparedStatement.setString(6, UsuarioNuevo.fechaNacimiento);
+					// preparedStatement.setString(7, UsuarioNuevo.fechaRegistro);
 					// preparedStatement.setString(8, UsuarioNuevo.Tipo);
 
 					preparedStatement.executeUpdate();
@@ -341,14 +339,15 @@ public class Reto4Main extends JFrame {
 		JPanel panelPerfil = new JPanel();
 		panelPerfil.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelPerfil, "Perfil");
+		panelPerfil.setLayout(null);
 
 		fechaNacimientoCalendar = new JDateChooser();
 		fechaNacimientoCalendar.setBounds(412, 248, 175, 20);
 		panelRegistro.add(fechaNacimientoCalendar);
 
 		dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		String dateString = "2024-04-01";
-		String maxString = "2024-04-25";
+		String dateString = "1905-01-01";
+		String maxString = "2019-12-31";
 		try {
 			fechaNacimientoCalendar.setMaxSelectableDate(dateFormat.parse(maxString));
 			fechaNacimientoCalendar.setMinSelectableDate(dateFormat.parse(dateString));
@@ -357,6 +356,11 @@ public class Reto4Main extends JFrame {
 		}
 
 		// ****************************************************************MENÚ
+		JPanel panelMenu = new JPanel();
+		panelMenu.setBackground(new Color(255, 255, 255));
+		layeredPane.add(panelMenu, "Menu");
+		panelMenu.setLayout(null);
+
 		metodos.botonPerfil(layeredPane, panelMenu, user);
 		nombrePanel = "Login";
 		metodos.botonAtras(layeredPane, nombrePanel, panelMenu);
@@ -407,6 +411,11 @@ public class Reto4Main extends JFrame {
 		metodos.botonPerfil(layeredPane, panelDescubrirMusica, user);
 		nombrePanel = "Menu";
 		metodos.botonAtras(layeredPane, nombrePanel, panelDescubrirMusica);
+		
+		JLabel lblListaDeArtistas = new JLabel("Lista de artistas");
+		lblListaDeArtistas.setHorizontalAlignment(SwingConstants.CENTER);
+		lblListaDeArtistas.setBounds(328, 61, 217, 14);
+		panelDescubrirMusica.add(lblListaDeArtistas);
 
 		JPanel panelDescubirPodcasts = new JPanel();
 		panelDescubirPodcasts.setBackground(new Color(255, 255, 255));
@@ -432,6 +441,7 @@ public class Reto4Main extends JFrame {
 		metodos.botonPerfil(layeredPane, panelArtista, user);
 		nombrePanel = "MisPlaylists";
 		metodos.botonAtras(layeredPane, nombrePanel, panelArtista);
+		panelArtista.setLayout(null);
 
 		JPanel panelAlbum = new JPanel();
 		layeredPane.add(panelAlbum, "Album");
@@ -439,6 +449,7 @@ public class Reto4Main extends JFrame {
 		metodos.botonPerfil(layeredPane, panelAlbum, user);
 		nombrePanel = "Artista";
 		metodos.botonAtras(layeredPane, nombrePanel, panelAlbum);
+		panelAlbum.setLayout(null);
 
 		JPanel panelReproduccion = new JPanel();
 		layeredPane.add(panelReproduccion, "Reproduccion");
@@ -446,5 +457,6 @@ public class Reto4Main extends JFrame {
 		metodos.botonPerfil(layeredPane, panelReproduccion, user);
 		nombrePanel = "Album";
 		metodos.botonAtras(layeredPane, nombrePanel, panelReproduccion);
+		panelReproduccion.setLayout(null);
 	}
 }

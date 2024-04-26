@@ -60,7 +60,6 @@ public class Metodos {
 
 	public void botonPerfil(JLayeredPane layeredPane, JPanel variablePanel, String user) {
 		JButton btnPerfil = new JButton(user);
-		System.out.println(user);
 
 		btnPerfil.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
