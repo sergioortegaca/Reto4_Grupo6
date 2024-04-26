@@ -1,4 +1,5 @@
 package Main;
+
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,6 +42,18 @@ public class Metodos {
 		variablePanel.add(btnAtras);
 	}
 
+	public void botonPerfil(JLayeredPane layeredPane, JPanel variablePanel, String user) {
+		JButton btnPerfil = new JButton(user);
+
+		btnPerfil.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cambiarDePanel(layeredPane, "Perfil");
+			}
+		});
+		btnPerfil.setBounds(735, 39, 89, 23);
+		variablePanel.add(btnPerfil);
+	}
+
 	public String bienvenidaMenu() {
 		String msgBienvenida = "";
 
@@ -55,19 +68,6 @@ public class Metodos {
 			msgBienvenida = "¡Buenas tardes!";
 
 		return msgBienvenida;
-
-	}
-
-	public void botonPerfil(JLayeredPane layeredPane, JPanel variablePanel, String user) {
-		JButton btnPerfil = new JButton(user);
-
-		btnPerfil.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				cambiarDePanel(layeredPane, "Perfil");
-			}
-		});
-		btnPerfil.setBounds(735, 39, 89, 23);
-		variablePanel.add(btnPerfil);
 
 	}
 }

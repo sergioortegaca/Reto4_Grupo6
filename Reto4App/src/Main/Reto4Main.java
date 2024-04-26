@@ -61,15 +61,12 @@ public class Reto4Main extends JFrame {
 	public Reto4Main() {
 		JTextField txtUsuario;
 		JPasswordField pswContrasena;
-		JTextField txtNombre;
-		JTextField txtApellidos;
-		JTextField txtUsuarioRegistro;
+		JTextField txtNombre, txtApellidos, txtUsuarioRegistro;
 		JPasswordField pswCrearContrasena;
-		String nombrePanel = "";
-		String timeStamp;
+		String nombrePanel = "", timeStamp, linkBD = "jdbc:mysql://localhost:33060/reto4_grupo6", userBD = "mañana",
+				passBD = "elorrieta";
 		Metodos metodos = new Metodos();
-		String linkBD = "jdbc:mysql://localhost:33060/reto4_grupo6", userBD = "mañana", passBD = "elorrieta";
-		
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(230, 130, 900, 500);
 		contentPane = new JPanel();
@@ -117,7 +114,7 @@ public class Reto4Main extends JFrame {
 		lblBienvenido.setFont(new Font("Tahoma", Font.BOLD, 50));
 		lblBienvenido.setBounds(254, 130, 365, 131);
 		panelBienvenida.add(lblBienvenido);
-		
+
 		JLabel lblRhythmicity = new JLabel("Rhythmicity");
 		lblRhythmicity.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRhythmicity.setFont(new Font("Tahoma", Font.BOLD, 50));
@@ -263,8 +260,6 @@ public class Reto4Main extends JFrame {
 		panelRegistro.add(lblNacimiento);
 
 		JButton btnCrearUsuario = new JButton("Crear Usuario");
-		btnCrearUsuario.setBackground(Color.LIGHT_GRAY);
-		btnCrearUsuario.setFont(new Font("Book Antiqua", Font.BOLD, 13));
 		btnCrearUsuario.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// OBJETOS
@@ -292,7 +287,7 @@ public class Reto4Main extends JFrame {
 					String sql = "INSERT INTO cliente (Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
 					PreparedStatement preparedStatement = conexion.prepareStatement(sql);
 
-					//preparedStatement.setString(2, UsuarioNuevo.nombre);
+					// preparedStatement.setString(2, UsuarioNuevo.nombre);
 					// preparedStatement.setString(3, UsuarioNuevo.apellido);
 					// preparedStatement.setString(4, UsuarioNuevo.usuario);
 					// preparedStatement.setString(5, UsuarioNuevo.contrasena);
@@ -333,7 +328,7 @@ public class Reto4Main extends JFrame {
 
 			}
 		});
-		btnCrearUsuario.setBounds(287, 296, 122, 23);
+		btnCrearUsuario.setBounds(376, 296, 122, 23);
 		panelRegistro.add(btnCrearUsuario);
 
 		JPanel panelPerfil = new JPanel();
@@ -346,8 +341,11 @@ public class Reto4Main extends JFrame {
 		panelRegistro.add(fechaNacimientoCalendar);
 
 		dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar rightNow = Calendar.getInstance();
+		int year = rightNow.get(Calendar.YEAR);
+		year = year - 7;
 		String dateString = "1905-01-01";
-		String maxString = "2019-12-31";
+		String maxString = year + "-12-31";
 		try {
 			fechaNacimientoCalendar.setMaxSelectableDate(dateFormat.parse(maxString));
 			fechaNacimientoCalendar.setMinSelectableDate(dateFormat.parse(dateString));
@@ -388,14 +386,14 @@ public class Reto4Main extends JFrame {
 		panelMenu.add(btnDescubrirPodcasts);
 
 		// ****************************************************************MIS PLAYLISTS
-		JButton btnNewButton_4 = new JButton("Mis PlayLists");
-		btnNewButton_4.addActionListener(new ActionListener() {
+		JButton btnMisPlayLists = new JButton("Mis PlayLists");
+		btnMisPlayLists.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				metodos.cambiarDePanel(layeredPane, "MisPlaylists");
 			}
 		});
-		btnNewButton_4.setBounds(304, 265, 265, 23);
-		panelMenu.add(btnNewButton_4);
+		btnMisPlayLists.setBounds(304, 265, 265, 23);
+		panelMenu.add(btnMisPlayLists);
 
 		JLabel lblMenu = new JLabel(metodos.bienvenidaMenu());
 		lblMenu.setHorizontalAlignment(SwingConstants.CENTER);
@@ -411,7 +409,7 @@ public class Reto4Main extends JFrame {
 		metodos.botonPerfil(layeredPane, panelDescubrirMusica, user);
 		nombrePanel = "Menu";
 		metodos.botonAtras(layeredPane, nombrePanel, panelDescubrirMusica);
-		
+
 		JLabel lblListaDeArtistas = new JLabel("Lista de artistas");
 		lblListaDeArtistas.setHorizontalAlignment(SwingConstants.CENTER);
 		lblListaDeArtistas.setBounds(328, 61, 217, 14);
