@@ -294,13 +294,13 @@ public class Reto4Main extends JFrame {
 					String sql = "INSERT INTO cliente (Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
 					PreparedStatement preparedStatement = conexion.prepareStatement(sql);
 
-				//	preparedStatement.setString(2, UsuarioNuevo.nombre);
+					//preparedStatement.setString(2, UsuarioNuevo.nombre);
 					//preparedStatement.setString(3, UsuarioNuevo.apellido);
 					//preparedStatement.setString(4, UsuarioNuevo.usuario);
 					//preparedStatement.setString(5, UsuarioNuevo.contrasena);
 					//preparedStatement.setString(6, UsuarioNuevo.fechaNacimiento);
 					//preparedStatement.setString(7, UsuarioNuevo.fechaRegistro);
-					// preparedStatement.setString(8, UsuarioNuevo.Tipo);
+					//preparedStatement.setString(8, UsuarioNuevo.Tipo);
 
 					preparedStatement.executeUpdate();
 					preparedStatement.close();
