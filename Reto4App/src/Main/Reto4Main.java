@@ -30,6 +30,10 @@ import java.awt.Color;
 import com.toedter.calendar.JDateChooser;
 
 import Objetos.UsuarioFree;
+import javax.swing.JTextArea;
+import java.awt.SystemColor;
+import javax.swing.JList;
+import javax.swing.AbstractListModel;
 
 public class Reto4Main extends JFrame {
 	JDateChooser fechaNacimientoCalendar;

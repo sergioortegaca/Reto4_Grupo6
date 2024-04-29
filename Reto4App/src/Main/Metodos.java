@@ -38,7 +38,7 @@ public class Metodos {
 				cambiarDePanel(layeredPane, nombrePanel);
 			}
 		});
-		btnAtras.setBounds(55, 39, 89, 23);
+		btnAtras.setBounds(55, 28, 89, 23);
 		variablePanel.add(btnAtras);
 	}
 
@@ -50,7 +50,7 @@ public class Metodos {
 				cambiarDePanel(layeredPane, "Perfil");
 			}
 		});
-		btnPerfil.setBounds(735, 39, 89, 23);
+		btnPerfil.setBounds(735, 28, 89, 23);
 		variablePanel.add(btnPerfil);
 	}
 
