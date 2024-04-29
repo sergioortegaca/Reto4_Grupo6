@@ -30,6 +30,8 @@ import java.awt.Color;
 import com.toedter.calendar.JDateChooser;
 
 import Objetos.UsuarioFree;
+import javax.swing.JTextArea;
+import java.awt.SystemColor;
 
 public class Reto4Main extends JFrame {
 	JDateChooser fechaNacimientoCalendar;
@@ -434,6 +436,36 @@ public class Reto4Main extends JFrame {
 		metodos.botonPerfil(layeredPane, panelMisPlaylists, user);
 		nombrePanel = "Menu";
 		metodos.botonAtras(layeredPane, nombrePanel, panelMisPlaylists);
+
+		JTextArea textArea = new JTextArea();
+		textArea.setEditable(false);
+		textArea.setBackground(SystemColor.control);
+		textArea.setBounds(10, 76, 550, 364);
+		panelMisPlaylists.add(textArea);
+
+		JButton btnNewButton = new JButton("Nueva PlayList");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnNewButton.setBounds(639, 76, 170, 35);
+		panelMisPlaylists.add(btnNewButton);
+
+		JButton btnNuevaPlaylist = new JButton("Eliminar");
+		btnNuevaPlaylist.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnNuevaPlaylist.setBounds(639, 146, 170, 35);
+		panelMisPlaylists.add(btnNuevaPlaylist);
+
+		JButton btnImportar = new JButton("Importar");
+		btnImportar.setBounds(639, 286, 170, 35);
+		panelMisPlaylists.add(btnImportar);
+
+		JButton btnExportar = new JButton("Exportar");
+		btnExportar.setBounds(639, 216, 170, 35);
+		panelMisPlaylists.add(btnExportar);
 
 		JPanel panelArtista = new JPanel();
 		layeredPane.add(panelArtista, "Artista");
