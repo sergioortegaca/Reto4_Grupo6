@@ -5,7 +5,11 @@ VALUES
 ('Jordi Wild', 'C:\Users\in1dm3\Pictures\example.jpg');
 INSERT IGNORE INTO Musico(NombreArtistico, Imagen, Caracteristica)
 VALUES
-('Cruz Cafune', 'C:\Users\in1dm3\Pictures\example.jpg', 'Solista');
+('Cruz Cafune', 'C:\Users\in1dm3\Pictures\example.jpg', 'Solista'),
+('El Cigala', 'C:\Users\in1dm3\Pictures\example.jpg', 'Solista'),
+('Bengo', 'C:\Users\in1dm3\Pictures\example.jpg', 'Solista');
+
+
 INSERT IGNORE INTO Album(Titulo, Ano, Genero, Imagen, IDMusico)
 VALUES
 ('Moonlight922', '2020-01-10', 'Trap/RnB', 'C:\Users\in1dm3\Pictures\example.jpg', 1);
@@ -22,7 +26,7 @@ VALUES
 INSERT IGNORE INTO Cliente(Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo)
 VALUES
 ('Ibai', 'Zaballa', 'Furaik', '123456789abc', '2003-01-01', '2024-04-18', 'Premium'),
-('admin', 'admin', 'admin', 'admin', '2000-01-01', '2000-01-01', 'Premium');
+('admin', 'admin', 'a', 'a', '2000-01-01', '2000-01-01', 'Premium');
 INSERT IGNORE INTO Premium(FechaCaducidad)
 VALUES
 ('2025-05-18');
