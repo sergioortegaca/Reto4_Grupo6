@@ -30,8 +30,6 @@ import com.toedter.calendar.JDateChooser;
 import Objetos.UsuarioFree;
 import javax.swing.JTextArea;
 import java.awt.SystemColor;
-import javax.swing.JList;
-import javax.swing.AbstractListModel;
 
 public class Reto4Main extends JFrame {
 	JDateChooser fechaNacimientoCalendar;
@@ -65,8 +63,19 @@ public class Reto4Main extends JFrame {
 		JPasswordField pswContrasena;
 		JTextField txtNombre, txtApellidos, txtUsuarioRegistro;
 		JPasswordField pswCrearContrasena;
-		String nombrePanel = "", timeStamp, linkBD = "jdbc:mysql://localhost:33060/reto4_grupo6", userBD = "mañana",
-				passBD = "elorrieta";
+
+		// Variables de conexión con la BBDD
+		String DRIVER = "com.mysql.cj.jdbc.Driver";
+		String driverBBDD = "jdbc:mysql";
+		String servidorBBDD = "rhythmicity.duckdns.org";
+		String puertoBBDD = "3306";
+		String nombreBBDD = "reto4_grupo6";
+		String usuarioBBDD = "grupo6";
+		String contrasenaBBDD = "julioespiaeritreo";
+		String LinkBD = driverBBDD + "://" + servidorBBDD + ":" + puertoBBDD + "/" + nombreBBDD
+				+ "?enabledTLSProtocols=TLSv1.2";
+
+		String nombrePanel = "", timeStamp;
 		Metodos metodos = new Metodos();
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -165,7 +174,13 @@ public class Reto4Main extends JFrame {
 				String pass = new String(pswContrasena.getPassword());
 
 				try {
-					Connection connection = (Connection) DriverManager.getConnection(linkBD, userBD, passBD);
+					try {
+						Class.forName(DRIVER);
+					} catch (ClassNotFoundException e1) {
+						e1.printStackTrace();
+					} // Cargamos el Driver para mysql y Abrimos la conexión a BBDD
+					Connection connection = (Connection) DriverManager.getConnection(LinkBD, usuarioBBDD,
+							contrasenaBBDD);
 
 					PreparedStatement st = (PreparedStatement) connection.prepareStatement(sentencia);
 
@@ -284,7 +299,7 @@ public class Reto4Main extends JFrame {
 				// Código para añadir datos de los clientes a la base de datos
 
 				try {
-					Connection conexion = DriverManager.getConnection(linkBD, userBD, passBD);
+					Connection conexion = DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
 
 					String sql = "INSERT INTO cliente (Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
 					PreparedStatement preparedStatement = conexion.prepareStatement(sql);
