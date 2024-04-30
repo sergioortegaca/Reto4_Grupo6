@@ -41,6 +41,24 @@ public class Metodos {
 		cardLayout.show(layeredPane, nombrePanel);
 	}
 
+	/**
+	 * Descripción: metodo para crear el botón de volver al panel anterior. El botón
+	 * se creara en el panel que pasamos como parametro.
+	 *
+	 * @param layeredPane   JLayeredPane. Es un panel padre dentro del que están
+	 *                      otro paneles entre los que permitiré visualizar uno y
+	 *                      otro.
+	 *
+	 * @param nombrePanel   String. Es el panel al que nos llevara el botón que se
+	 *                      va a crear.
+	 *
+	 * @param variablePanel JPanel. Es el panel en el que se crea el botón.
+	 *
+	 * @return No devuelve ningún valor.
+	 *
+	 * @author in1dm3
+	 */
+
 	public void botonAtras(JLayeredPane layeredPane, String nombrePanel, JPanel variablePanel) {
 		JButton btnAtras = new JButton("Atrás");
 		btnAtras.addActionListener(new ActionListener() {
@@ -51,6 +69,24 @@ public class Metodos {
 		btnAtras.setBounds(55, 28, 89, 23);
 		variablePanel.add(btnAtras);
 	}
+
+	/**
+	 * Descripción: metodo para crear el botón de ir al perfil de usuario. El botón
+	 * se creara en el panel que pasamos como parametro
+	 *
+	 * @param layeredPane   JLayeredPane. Es un panel padre dentro del que están
+	 *                      otro paneles entre los que permitiré visualizar uno y
+	 *                      otro.
+	 *
+	 * @param variablePanel JPanel. Es el panel en el que se crea el botón.
+	 *
+	 * @param user          String. Es el nombre de usuario con el que el usuario ha
+	 *                      iniciado sesión.
+	 *
+	 * @return No devuelve ningún valor.
+	 *
+	 * @author in1dm3
+	 */
 
 	public void botonPerfil(JLayeredPane layeredPane, JPanel variablePanel, String user) {
 		JButton btnPerfil = new JButton(user);
@@ -63,6 +99,16 @@ public class Metodos {
 		btnPerfil.setBounds(735, 28, 89, 23);
 		variablePanel.add(btnPerfil);
 	}
+
+	/**
+	 * Descripción: Configura el mensaje de bienvenida del panel menú en función de
+	 * la hora del ordenador.
+	 *
+	 * @return Devuelve un String que será el mensaje que se muestra en el panel
+	 *         menú.
+	 *
+	 * @author in1dm3
+	 */
 
 	public String bienvenidaMenu() {
 		String msgBienvenida = "";
