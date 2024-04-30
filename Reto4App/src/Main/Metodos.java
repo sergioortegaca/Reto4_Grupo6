@@ -3,10 +3,20 @@ package Main;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+
+import Objetos.Musico;
+import Objetos.Podcaster;
 
 public class Metodos {
 
@@ -70,4 +80,82 @@ public class Metodos {
 		return msgBienvenida;
 
 	}
+
+	public ArrayList<Musico> artistasBD(String DRIVER, String LinkBD, String usuarioBBDD, String contrasenaBBDD) {
+
+		String sentencia = "SELECT * FROM Musico;";
+
+		try {
+			try {
+				Class.forName(DRIVER);
+
+			} catch (ClassNotFoundException e1) {
+
+				e1.printStackTrace();
+			} // Cargamos el Driver para mysql y Abrimos la conexión a BBDD
+			Connection connection = (Connection) DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
+			PreparedStatement st = (PreparedStatement) connection.prepareStatement(sentencia);
+			ResultSet rs = st.executeQuery();
+
+			ArrayList<Musico> artistas = new ArrayList<Musico>();
+			while (rs.next()) {
+				Musico artista = new Musico();
+				artista.setArtistaID(rs.getInt("IDMusico"));
+				artista.setNombreArtistico(rs.getString("NombreArtistico"));
+				artistas.add(artista);
+			}
+
+			rs.close();
+			st.close();
+			connection.close();
+			return artistas;
+
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+	}
+
+	public ArrayList<Podcaster> artistas2BD(String DRIVER, String LinkBD, String usuarioBBDD, String contrasenaBBDD) {
+
+		String sentencia = "SELECT * FROM Podcaster;";
+
+		try {
+			try {
+				Class.forName(DRIVER);
+
+			} catch (ClassNotFoundException e1) {
+
+				e1.printStackTrace();
+			} // Cargamos el Driver para mysql y Abrimos la conexión a BBDD
+			Connection connection = (Connection) DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
+			PreparedStatement st = (PreparedStatement) connection.prepareStatement(sentencia);
+			ResultSet rs = st.executeQuery();
+
+			ArrayList<Podcaster> artistas = new ArrayList<Podcaster>();
+			while (rs.next()) {
+				Podcaster artista = new Podcaster();
+				artista.setArtistaID(rs.getInt("IDPodcaster"));
+				artista.setNombreArtistico(rs.getString("NombreArtistico"));
+				artistas.add(artista);
+
+				rs.close();
+				st.close();
+				connection.close();
+				return artistas;
+			}
+
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+	}
+
+	public JLabel createLabel(String text, int x, int y, int width, int height, JPanel panel) {
+		JLabel label = new JLabel(text);
+		label.setBounds(x, y, width, height);
+		panel.add(label);
+		return label;
+	}
+
 }
