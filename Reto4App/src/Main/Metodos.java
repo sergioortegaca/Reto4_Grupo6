@@ -15,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
+import Objetos.Album;
 import Objetos.Musico;
 import Objetos.Podcaster;
 
@@ -155,6 +156,44 @@ public class Metodos {
 			st.close();
 			connection.close();
 			return artistas;
+
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+	}
+
+	public ArrayList<Album> albumesBD(String DRIVER, String LinkBD, String usuarioBBDD, String contrasenaBBDD) {
+
+		String sentencia = "SELECT DISTINCT IDAlbum, Album.Titulo, Album.Ano, Album.Genero, Album.Imagen FROM Album;";
+
+		try {
+			try {
+				Class.forName(DRIVER);
+
+			} catch (ClassNotFoundException e1) {
+
+				e1.printStackTrace();
+			} // Cargamos el Driver para mysql y Abrimos la conexión a BBDD
+			Connection connection = (Connection) DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
+			PreparedStatement st = (PreparedStatement) connection.prepareStatement(sentencia);
+			ResultSet rs = st.executeQuery();
+
+			ArrayList<Album> albumes = new ArrayList<Album>();
+			while (rs.next()) {
+				Album album = new Album();
+				album.setAlbumID(rs.getInt("IDAlbum"));
+				album.setTituloAlbum(rs.getString("Titulo"));
+				album.setAnoAlbum(rs.getDate("Ano"));
+				album.setGeneroAlbum(rs.getString("Genero"));
+				album.setImagenAlbum(rs.getString("Imagen"));
+				albumes.add(album);
+			}
+
+			rs.close();
+			st.close();
+			connection.close();
+			return albumes;
 
 		} catch (SQLException sqlException) {
 			sqlException.printStackTrace();

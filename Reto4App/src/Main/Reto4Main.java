@@ -35,6 +35,8 @@ import javax.swing.DefaultListModel;
 import Objetos.*;
 import java.awt.event.MouseAdapter;
 import javax.swing.border.EtchedBorder;
+import javax.swing.JTextArea;
+import javax.swing.AbstractListModel;
 
 public class Reto4Main extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -104,6 +106,7 @@ public class Reto4Main extends JFrame {
 		// REGISTRO
 		crearPanelRegistro();
 
+		crearPanelesMain();
 	}
 
 	private void crearPanelesMain() {
@@ -227,7 +230,7 @@ public class Reto4Main extends JFrame {
 					ResultSet rs = st.executeQuery();
 					if (rs.next()) {
 						JOptionPane.showMessageDialog(null, textOk);
-						crearPanelesMain();
+						// ACTIVAR ESTE METODO CUANDO NO SE NECESITE EL DESIGNER crearPanelesMain();
 						metodos.cambiarDePanel(layeredPane, "Menu");
 
 					} else {
@@ -481,9 +484,12 @@ public class Reto4Main extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				int index = list.getSelectedIndex();
 				String artistaSeleccionado = modeloLista.getElementAt(index);
-				String sentenciaArtista = "SELECT DISTINCT Album.Titulo, Album.Ano, Album.Genero " + "FROM Album "
+
+				int cont = 0;
+				cont++;
+				String sentenciaArtista = "SELECT DISTINCT Album.Titulo, Album.Ano, Album.Genero  FROM Album "
 						+ "JOIN Musico ON Album.IDMusico = Musico.IDMusico " + "WHERE Musico.NombreArtistico = '"
-						+ artistaSeleccionado + "';";
+						+ artistaSeleccionado + "' && Album.IDAlbum='" + cont + "';";
 
 				try {
 					try {
@@ -528,13 +534,59 @@ public class Reto4Main extends JFrame {
 	}
 
 	private void crearPanelArtista() {
-
+// Decirle a gabri o a laura que me lo haga
 		panelArtista = new JPanel();
 		layeredPane.add(panelArtista, "Artista");
 		panelArtista.setBackground(new Color(255, 255, 255));
 		metodos.botonPerfil(layeredPane, panelArtista, user);
 		metodos.botonAtras(layeredPane, "DescubrirMusica", panelArtista);
 		panelArtista.setLayout(null);
+
+		JList<String> listaAlbumes = new JList<String>();
+		listaAlbumes.setModel(new AbstractListModel() {
+			String[] albumesLista = new String[] { albumTit + " - " + albumAno + " - " + albumGen };
+
+			public int getSize() {
+				return albumesLista.length;
+			}
+
+			public Object getElementAt(int index) {
+				return albumesLista[index];
+			}
+		});
+		listaAlbumes.setBackground(SystemColor.menu);
+		listaAlbumes.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		listaAlbumes.setBounds(33, 66, 385, 361);
+
+		/*
+		 * DefaultListModel<String> albumesModelList = new DefaultListModel<>();
+		 * 
+		 * ArrayList<Album> albumes = metodos.albumesBD(DRIVER, LinkBD, usuarioBBDD,
+		 * contrasenaBBDD);
+		 * 
+		 * if (albumes != null) {
+		 * 
+		 * for (Album album : albumes) {
+		 * albumesModelList.addElement(album.getTituloAlbum()); }
+		 * 
+		 * } else {
+		 * albumesModelList.addElement("No se han encontrado artistas disponibles"); }
+		 * listaAlbumes.setModel(albumesModelList); listaAlbumes.setBounds(246, 120,
+		 * 382, 295); listaAlbumes.addMouseListener(new MouseAdapter() {
+		 * 
+		 * public void mouseClicked(MouseEvent e) { int index2 =
+		 * listaAlbumes.getSelectedIndex(); String podcasterSeleccionado =
+		 * albumesModelList.getElementAt(index2);
+		 * 
+		 * } });
+		 */
+		panelArtista.add(listaAlbumes);
+
+		JTextArea textArea = new JTextArea("amai");
+		textArea.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		textArea.setBackground(SystemColor.menu);
+		textArea.setBounds(529, 68, 298, 126);
+		panelArtista.add(textArea);
 
 	}
 
@@ -656,5 +708,4 @@ public class Reto4Main extends JFrame {
 		panelMisPlaylists.add(list_1);
 
 	}
-
 }
