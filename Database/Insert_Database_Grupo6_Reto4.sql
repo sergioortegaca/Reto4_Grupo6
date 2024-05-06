@@ -9,20 +9,22 @@ VALUES
 ('El Cigala', 'C:\Users\in1dm3\Pictures\example.jpg', 'Solista'),
 ('Bengo', 'C:\Users\in1dm3\Pictures\example.jpg', 'Solista');
 
-
 INSERT IGNORE INTO Album(Titulo, Ano, Genero, Imagen, IDMusico)
 VALUES
-('Moonlight922', '2020-01-10', 'Trap/RnB', 'C:\Users\in1dm3\Pictures\example.jpg', 1);
+('Moonlight922', '2020-01-10', 'Trap/RnB', 'C:\Users\in1dm3\Pictures\example.jpg', 1),
+('Maracucho Bueno Muere Chiquito', '2018-03-16', 'Rap', 'C:\Users\in1dm3\Pictures\example.jpg', 1);
 INSERT IGNORE INTO Audio(Nombre, Duracion, Imagen, Tipo)
 VALUES
 ('En Bajo Perfil', '00:04:13', 'C:\Users\in1dm3\Pictures\example.jpg', 'Cancion'),
-('Los Dineros', '01:14:13', 'C:\Users\in1dm3\Pictures\example.jpg', 'Podcast');
+('Los Dineros', '01:14:13', 'C:\Users\in1dm3\Pictures\example.jpg', 'Podcast'),
+('De Ayer para Hoy', '00:04:43', 'C:\Users\in1dm3\Pictures\example.jpg', 'Cancion');
 INSERT IGNORE INTO Podcast(Colaboradores, IDPodcaster)
 VALUES
 ('Papa Giorgio', 1);
 INSERT IGNORE INTO Cancion(IDAudio, IDAlbum)
 VALUES
-(1, 1);
+(1, 1),
+(3, 2);
 INSERT IGNORE INTO Cliente(Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo)
 VALUES
 ('Ibai', 'Zaballa', 'Furaik', '123456789abc', '2003-01-01', '2024-04-18', 'Premium'),
