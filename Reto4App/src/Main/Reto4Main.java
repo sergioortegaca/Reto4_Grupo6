@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -29,22 +30,24 @@ import javax.swing.SwingConstants;
 import javax.swing.JLabel;
 import java.awt.Color;
 import com.toedter.calendar.JDateChooser;
-import Objetos.UsuarioFree;
+
 import java.awt.SystemColor;
 import javax.swing.JList;
 import javax.swing.DefaultListModel;
 import Objetos.*;
 import java.awt.event.MouseAdapter;
 import javax.swing.border.EtchedBorder;
-import javax.swing.JComboBox;
+import javax.swing.JTextArea;
+import javax.swing.AbstractListModel;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JTable;
 
 public class Reto4Main extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	Metodos metodos = new Metodos();
+
 	String opcionMenu, opcionGestionar, opcionEstadisticas;
+
 	JPanel contentPane, panelBienvenida, panelLogin, panelRegistro, panelPerfil, panelMenuAdmin, panelMenuGestionar,
 			panelEstadisticas, panelEditar, panelDescubrirMusica, panelArtista, panelAlbum, panelReproduccion,
 			panelDescubrirPodcasts, panelMisPlaylists, panelMenu;
@@ -65,8 +68,8 @@ public class Reto4Main extends JFrame {
 
 	// Conexión final BBDD
 	String LinkBD = driverBBDD + "://" + servidorBBDD + ":" + puertoBBDD + "/" + nombreBBDD;
-	private JTable table;
-	private JTable table_1;
+
+	String artistaSeleccionado = "", albumSeleccionado = "";
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -111,6 +114,7 @@ public class Reto4Main extends JFrame {
 		// REGISTRO
 		crearPanelRegistro();
 
+		// crearPanelesMain();
 	}
 
 	private void crearPanelesMain() {
@@ -124,7 +128,7 @@ public class Reto4Main extends JFrame {
 		crearPanelDescubrirMusica();
 
 		// ALBUM
-		crearPanelAlbum();
+		// crearPanelAlbum();
 
 		// REPRODUCCIÓN
 		crearPanelReproduccion();
@@ -138,6 +142,7 @@ public class Reto4Main extends JFrame {
 	}
 
 	private void crearPanelBienvenida() {
+
 		panelBienvenida = new JPanel();
 		panelBienvenida.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelBienvenida, "Bienvenida");
@@ -178,7 +183,6 @@ public class Reto4Main extends JFrame {
 
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void crearPanelLogin() {
 		panelLogin = new JPanel();
 		panelLogin.setBackground(new Color(255, 255, 255));
@@ -388,6 +392,7 @@ public class Reto4Main extends JFrame {
 		});
 		btnCrearUsuario.setBounds(376, 296, 122, 23);
 		panelRegistro.add(btnCrearUsuario);
+
 	}
 
 	private void crearPanelPerfil() {
@@ -418,13 +423,15 @@ public class Reto4Main extends JFrame {
 	}
 
 	private void crearPanelMenu() {
+
 		panelMenu = new JPanel();
 		panelMenu.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelMenu, "Menu");
 		panelMenu.setLayout(null);
 
 		metodos.botonPerfil(layeredPane, panelMenu, user);
-		metodos.botonAtras(layeredPane, "Login", panelMenu);
+		nombrePanel = "Login";
+		metodos.botonAtras(layeredPane, nombrePanel, panelMenu);
 
 		JLabel lblMenu = new JLabel(metodos.bienvenidaMenu());
 		lblMenu.setHorizontalAlignment(SwingConstants.CENTER);
@@ -433,7 +440,6 @@ public class Reto4Main extends JFrame {
 		panelMenu.add(lblMenu);
 
 		// DESCUBRIR MÚSICA
-
 		JButton btnDescubrirMusica = new JButton("Descubrir música");
 		btnDescubrirMusica.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -444,7 +450,6 @@ public class Reto4Main extends JFrame {
 		panelMenu.add(btnDescubrirMusica);
 
 		// DESCUBRIR PODCASTS
-
 		JButton btnDescubrirPodcasts = new JButton("Descubrir podcasts");
 		btnDescubrirPodcasts.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -467,6 +472,7 @@ public class Reto4Main extends JFrame {
 	}
 
 	private void crearPanelDescubrirMusica() {
+
 		panelDescubrirMusica = new JPanel();
 		panelDescubrirMusica.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelDescubrirMusica, "DescubrirMusica");
@@ -501,45 +507,11 @@ public class Reto4Main extends JFrame {
 		list.setBounds(246, 120, 382, 295);
 		list.addMouseListener(new MouseAdapter() {
 			@Override
+
+			// AL HACER CLICK EN EL ARTISTA SE EJECUTA
 			public void mouseClicked(MouseEvent e) {
 				int index = list.getSelectedIndex();
-				String artistaSeleccionado = modeloLista.getElementAt(index);
-				String sentenciaArtista = "SELECT DISTINCT Album.Titulo, Album.Ano, Album.Genero " + "FROM Album "
-						+ "JOIN Musico ON Album.IDMusico = Musico.IDMusico " + "WHERE Musico.NombreArtistico = '"
-						+ artistaSeleccionado + "';";
-
-				try {
-					try {
-						Class.forName(DRIVER);
-					} catch (ClassNotFoundException e1) {
-						e1.printStackTrace();
-					}
-					// Cargamos el Driver para mysql y Abrimos la conexión a BBDD
-
-					Connection connection = (Connection) DriverManager.getConnection(LinkBD, usuarioBBDD,
-							contrasenaBBDD);
-
-					PreparedStatement st = (PreparedStatement) connection.prepareStatement(sentenciaArtista);
-
-					ResultSet rs = st.executeQuery();
-
-					while (rs.next()) {
-						albumTit += rs.getString("Album.Titulo");
-						albumAno += rs.getString("Album.Ano");
-						albumGen += rs.getString("Album.Genero");
-						// String albumCan = rs.getString("Album.Titulo");
-
-					}
-
-					rs.close();
-					st.close();
-					connection.close();
-
-				} catch (SQLException sqlException) {
-					sqlException.printStackTrace();
-					System.out.println("error");
-				}
-
+				artistaSeleccionado = modeloLista.getElementAt(index);
 				crearPanelArtista();
 				metodos.cambiarDePanel(layeredPane, "Artista");
 
@@ -554,10 +526,52 @@ public class Reto4Main extends JFrame {
 
 		panelArtista = new JPanel();
 		layeredPane.add(panelArtista, "Artista");
-		panelArtista.setBackground(new Color(255, 255, 255));
+		panelArtista.setBackground(Color.WHITE);
+		panelArtista.setLayout(null);
+
+		// Botones
 		metodos.botonPerfil(layeredPane, panelArtista, user);
 		metodos.botonAtras(layeredPane, "DescubrirMusica", panelArtista);
-		panelArtista.setLayout(null);
+
+		// Lista de álbumes
+		JList<String> listaAlbumes = new JList<>();
+		listaAlbumes.setBackground(SystemColor.menu);
+		listaAlbumes.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		listaAlbumes.setBounds(55, 68, 382, 295);
+
+		DefaultListModel<String> albumesModelList = new DefaultListModel<>();
+
+		ArrayList<Album> albumes = metodos.albumesBD(DRIVER, LinkBD, usuarioBBDD, contrasenaBBDD, artistaSeleccionado);
+
+		if (albumes != null) {
+			for (Album album : albumes) {
+				albumesModelList.addElement(album.getTituloAlbum());
+			}
+		} else {
+			albumesModelList.addElement("No se han encontrado artistas disponibles");
+		}
+		listaAlbumes.setModel(albumesModelList);
+		panelArtista.add(listaAlbumes);
+
+		listaAlbumes.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int indexAlbum = listaAlbumes.getSelectedIndex();
+				if (indexAlbum != -1) {
+					albumSeleccionado = albumesModelList.getElementAt(indexAlbum);
+					crearPanelAlbum();
+					metodos.cambiarDePanel(layeredPane, "Album");
+
+				}
+			}
+		});
+
+		// TextArea
+		JTextArea textArea = new JTextArea("amai");
+		textArea.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		textArea.setBackground(SystemColor.menu);
+		textArea.setBounds(529, 68, 298, 126);
+		panelArtista.add(textArea);
 
 	}
 
@@ -565,10 +579,45 @@ public class Reto4Main extends JFrame {
 		panelAlbum = new JPanel();
 		layeredPane.add(panelAlbum, "Album");
 		panelAlbum.setBackground(new Color(255, 255, 255));
+		panelAlbum.setLayout(null);
 
 		metodos.botonPerfil(layeredPane, panelAlbum, user);
 		metodos.botonAtras(layeredPane, "Artista", panelAlbum);
-		panelAlbum.setLayout(null);
+
+		// Lista de álbumes
+		JList<String> listaCanciones = new JList<>();
+		listaCanciones.setBackground(SystemColor.menu);
+		listaCanciones.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		listaCanciones.setBounds(55, 68, 382, 295);
+
+		DefaultListModel<String> cancionesModelList = new DefaultListModel<>();
+
+		ArrayList<Cancion> canciones = metodos.cancionesBD(DRIVER, LinkBD, usuarioBBDD, contrasenaBBDD,
+				albumSeleccionado);
+
+		if (canciones != null) {
+			for (Cancion cancion : canciones) {
+
+				cancionesModelList.addElement(cancion.getNombre());
+			}
+		} else {
+			cancionesModelList.addElement("No se han encontrado artistas disponibles");
+		}
+		listaCanciones.setModel(cancionesModelList);
+		panelAlbum.add(listaCanciones);
+
+		listaCanciones.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int indexCancion = listaCanciones.getSelectedIndex();
+				if (indexCancion != -1) {
+					String cancionSeleccionada = cancionesModelList.getElementAt(indexCancion);
+					System.out.println(cancionSeleccionada);
+					metodos.cambiarDePanel(layeredPane, "Reproduccion");
+
+				}
+			}
+		});
 
 	}
 
@@ -923,4 +972,5 @@ public class Reto4Main extends JFrame {
 
 		metodos.botonAtras(layeredPane, "MenuGestionar", panelEstadisticas);
 	}
+
 }

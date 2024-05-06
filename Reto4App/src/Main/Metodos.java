@@ -15,6 +15,8 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
+import Objetos.Album;
+import Objetos.Cancion;
 import Objetos.Musico;
 import Objetos.Podcaster;
 
@@ -129,7 +131,7 @@ public class Metodos {
 
 	public ArrayList<Musico> artistasBD(String DRIVER, String LinkBD, String usuarioBBDD, String contrasenaBBDD) {
 
-		String sentencia = "SELECT * FROM Musico;";
+		String sentencia = "SELECT DISTINCT * FROM Musico;";
 
 		try {
 			try {
@@ -162,9 +164,44 @@ public class Metodos {
 		return null;
 	}
 
+	public ArrayList<Album> albumesBD(String DRIVER, String LinkBD, String usuarioBBDD, String contrasenaBBDD,
+			String artistaSeleccionado) {
+
+		String sentencia = "SELECT DISTINCT Album.IDAlbum, Album.Titulo, Album.Ano, Album.Genero, Album.Genero, Album.Imagen FROM Album "
+				+ "JOIN Musico ON Album.IDMusico = Musico.IDMusico " + "WHERE Musico.NombreArtistico = '"
+				+ artistaSeleccionado + "';";
+
+		try {
+			Class.forName(DRIVER);
+			Connection connection = DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
+			PreparedStatement st = connection.prepareStatement(sentencia);
+			ResultSet rs = st.executeQuery();
+
+			ArrayList<Album> albumes = new ArrayList<>();
+			while (rs.next()) {
+				Album album = new Album();
+				album.setAlbumID(rs.getInt("IDAlbum"));
+				album.setTituloAlbum(rs.getString("Titulo"));
+				album.setAnoAlbum(rs.getDate("Ano"));
+				album.setGeneroAlbum(rs.getString("Genero"));
+				album.setImagenAlbum(rs.getString("Imagen"));
+				albumes.add(album);
+			}
+
+			rs.close();
+			st.close();
+			connection.close();
+			return albumes;
+
+		} catch (SQLException | ClassNotFoundException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+	}
+
 	public ArrayList<Podcaster> artistas2BD(String DRIVER, String LinkBD, String usuarioBBDD, String contrasenaBBDD) {
 
-		String sentencia = "SELECT * FROM Podcaster;";
+		String sentencia = "SELECT DISTINCT * FROM Podcaster;";
 
 		try {
 			try {
@@ -192,6 +229,41 @@ public class Metodos {
 			}
 
 		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+	}
+
+	public ArrayList<Cancion> cancionesBD(String DRIVER, String LinkBD, String usuarioBBDD, String contrasenaBBDD,
+			String albumSeleccionado) {
+
+		
+		String sentencia = " SELECT Audio.Nombre " + " FROM Audio "
+				+ " JOIN Cancion ON Audio.IDAudio = Cancion.IDAudio "
+				+ " JOIN Album ON Cancion.IDAlbum = Album.IDAlbum " + " WHERE Album.Titulo = '" + albumSeleccionado
+				+ "';";
+
+		try {
+			Class.forName(DRIVER);
+			Connection connection = DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
+			PreparedStatement st = connection.prepareStatement(sentencia);
+			ResultSet rs = st.executeQuery();
+
+			ArrayList<Cancion> canciones = new ArrayList<>();
+
+			while (rs.next()) {
+				Cancion cancion = new Cancion();
+				cancion.setNombre(rs.getString("Nombre"));
+				canciones.add(cancion);
+
+			}
+
+			rs.close();
+			st.close();
+			connection.close();
+			return canciones;
+
+		} catch (SQLException | ClassNotFoundException sqlException) {
 			sqlException.printStackTrace();
 		}
 		return null;
