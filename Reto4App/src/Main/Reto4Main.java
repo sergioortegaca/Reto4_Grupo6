@@ -418,19 +418,19 @@ public class Reto4Main extends JFrame {
 	}
 
 	private void crearPanelMenu() {
-		panelMenuAdmin = new JPanel();
-		panelMenuAdmin.setBackground(new Color(255, 255, 255));
-		layeredPane.add(panelMenuAdmin, "Menu");
-		panelMenuAdmin.setLayout(null);
+		panelMenu = new JPanel();
+		panelMenu.setBackground(new Color(255, 255, 255));
+		layeredPane.add(panelMenu, "Menu");
+		panelMenu.setLayout(null);
 
-		metodos.botonPerfil(layeredPane, panelMenuAdmin, user);
-		metodos.botonAtras(layeredPane, "Login", panelMenuAdmin);
+		metodos.botonPerfil(layeredPane, panelMenu, user);
+		metodos.botonAtras(layeredPane, "Login", panelMenu);
 
 		JLabel lblMenu = new JLabel(metodos.bienvenidaMenu());
 		lblMenu.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMenu.setFont(new Font("Tahoma", Font.BOLD, 40));
 		lblMenu.setBounds(262, 59, 349, 83);
-		panelMenuAdmin.add(lblMenu);
+		panelMenu.add(lblMenu);
 
 		// DESCUBRIR MÚSICA
 
@@ -441,7 +441,7 @@ public class Reto4Main extends JFrame {
 			}
 		});
 		btnDescubrirMusica.setBounds(304, 171, 265, 23);
-		panelMenuAdmin.add(btnDescubrirMusica);
+		panelMenu.add(btnDescubrirMusica);
 
 		// DESCUBRIR PODCASTS
 
@@ -452,7 +452,7 @@ public class Reto4Main extends JFrame {
 			}
 		});
 		btnDescubrirPodcasts.setBounds(304, 219, 265, 23);
-		panelMenuAdmin.add(btnDescubrirPodcasts);
+		panelMenu.add(btnDescubrirPodcasts);
 
 		// MIS PLAYLISTS
 		JButton btnMisPlayLists = new JButton("Mis PlayLists");
@@ -462,7 +462,7 @@ public class Reto4Main extends JFrame {
 			}
 		});
 		btnMisPlayLists.setBounds(304, 265, 265, 23);
-		panelMenuAdmin.add(btnMisPlayLists);
+		panelMenu.add(btnMisPlayLists);
 
 	}
 
