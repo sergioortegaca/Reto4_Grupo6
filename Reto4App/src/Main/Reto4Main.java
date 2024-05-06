@@ -14,8 +14,10 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -37,14 +39,18 @@ import java.awt.event.MouseAdapter;
 import javax.swing.border.EtchedBorder;
 import javax.swing.JTextArea;
 import javax.swing.AbstractListModel;
+import javax.swing.DefaultComboBoxModel;
 
 public class Reto4Main extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	Metodos metodos = new Metodos();
 
-	JPanel contentPane, panelBienvenida, panelLogin, panelRegistro, panelPerfil, panelMenu, panelDescubrirMusica,
-			panelArtista, panelAlbum, panelReproduccion, panelDescubrirPodcasts, panelMisPlaylists;
+	String opcionMenu, opcionGestionar, opcionEstadisticas;
+
+	JPanel contentPane, panelBienvenida, panelLogin, panelRegistro, panelPerfil, panelMenuAdmin, panelMenuGestionar,
+			panelEstadisticas, panelEditar, panelDescubrirMusica, panelArtista, panelAlbum, panelReproduccion,
+			panelDescubrirPodcasts, panelMisPlaylists, panelMenu;
 
 	JLayeredPane layeredPane;
 
@@ -190,63 +196,76 @@ public class Reto4Main extends JFrame {
 		panelLogin.add(lblInicioDeSesion);
 
 		JLabel lblUsuarioLogin = new JLabel("Usuario:");
-		lblUsuarioLogin.setBounds(321, 172, 176, 14);
+		lblUsuarioLogin.setBounds(292, 195, 109, 14);
 		panelLogin.add(lblUsuarioLogin);
 
 		JLabel lblContrasenaLogin = new JLabel("Contraseña:");
-		lblContrasenaLogin.setBounds(297, 227, 176, 14);
+		lblContrasenaLogin.setBounds(292, 235, 109, 14);
 		panelLogin.add(lblContrasenaLogin);
 
+		JComboBox comboBox = new JComboBox();
+		comboBox.setModel(new DefaultComboBoxModel(new String[] { "Cliente", "Administrador" }));
+		comboBox.setBounds(399, 146, 148, 22);
+		panelLogin.add(comboBox);
+
 		txtUsuario = new JTextField();
-		txtUsuario.setBounds(399, 170, 148, 20);
+		txtUsuario.setBounds(399, 192, 148, 20);
 		panelLogin.add(txtUsuario);
 
-		txtUsuario.setColumns(10);
 		pswContrasena = new JPasswordField();
-		pswContrasena.setBounds(399, 225, 148, 20);
+		pswContrasena.setBounds(399, 232, 148, 20);
 		panelLogin.add(pswContrasena);
 
 		JButton btnEntrar = new JButton("Entrar");
 		btnEntrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-				String sentencia = "Select Usuario, Contrasena from Cliente where Usuario=? and Contrasena=?";
+				char[] contrasenaAdmin = { '1', '2', '3' };
 				String textOk = "Has iniciado sesión correctamente";
 				String textNot = "Creedenciales incorrectas";
 				user = txtUsuario.getText();
-				String pass = new String(pswContrasena.getPassword());
 
-				try {
-					try {
-
-						Class.forName(DRIVER);
-
-					} catch (ClassNotFoundException e1) {
-						e1.printStackTrace();
-					} // Cargamos el Driver para mysql y Abrimos la conexión a BBDD
-					Connection connection = (Connection) DriverManager.getConnection(LinkBD, usuarioBBDD,
-							contrasenaBBDD);
-					PreparedStatement st = (PreparedStatement) connection.prepareStatement(sentencia);
-					st.setString(1, user);
-					st.setString(2, pass);
-					ResultSet rs = st.executeQuery();
-					if (rs.next()) {
+				if (comboBox.getSelectedItem().toString().equals("Administrador")) {
+					if (txtUsuario.getText().equals("admin")
+							&& Arrays.equals(pswContrasena.getPassword(), contrasenaAdmin)) {
 						JOptionPane.showMessageDialog(null, textOk);
-						// ACTIVAR ESTE METODO CUANDO NO SE NECESITE EL DESIGNER
-						crearPanelesMain();
-						metodos.cambiarDePanel(layeredPane, "Menu");
-
+						crearPanelMenuAdmin();
+						metodos.cambiarDePanel(layeredPane, "MenuAdmin");
 					} else {
-
 						JOptionPane.showMessageDialog(null, textNot);
 					}
 					txtUsuario.setText("");
 					pswContrasena.setText("");
-					rs.close();
-					st.close();
-					connection.close();
-				} catch (SQLException sqlException) {
-					sqlException.printStackTrace();
+				} else if (comboBox.getSelectedItem().toString().equals("Cliente")) {
+					String sentencia = "Select Usuario, Contrasena from Cliente where Usuario=? and Contrasena=?";
+					String pass = new String(pswContrasena.getPassword());
+
+					try {
+						try {
+							Class.forName(DRIVER);
+						} catch (ClassNotFoundException e1) {
+							e1.printStackTrace();
+						}
+						Connection connection = (Connection) DriverManager.getConnection(LinkBD, usuarioBBDD,
+								contrasenaBBDD);
+						PreparedStatement st = (PreparedStatement) connection.prepareStatement(sentencia);
+						st.setString(1, user);
+						st.setString(2, pass);
+						ResultSet rs = st.executeQuery();
+						if (rs.next()) {
+							JOptionPane.showMessageDialog(null, textOk);
+							crearPanelesMain();
+							metodos.cambiarDePanel(layeredPane, "Menu");
+						} else {
+							JOptionPane.showMessageDialog(null, textNot);
+						}
+						txtUsuario.setText("");
+						pswContrasena.setText("");
+						rs.close();
+						st.close();
+						connection.close();
+					} catch (SQLException sqlException) {
+						sqlException.printStackTrace();
+					}
 				}
 			}
 		});
@@ -263,6 +282,10 @@ public class Reto4Main extends JFrame {
 		});
 		btnCrear.setBounds(255, 283, 159, 23);
 		panelLogin.add(btnCrear);
+
+		JLabel lblTipoInicio = new JLabel("Tipo de usuario:");
+		lblTipoInicio.setBounds(292, 150, 109, 14);
+		panelLogin.add(lblTipoInicio);
 	}
 
 	private void crearPanelRegistro() {
@@ -705,4 +728,249 @@ public class Reto4Main extends JFrame {
 		panelMisPlaylists.add(list_1);
 
 	}
+
+	private void crearPanelMenuAdmin() {
+		panelMenuAdmin = new JPanel();
+		panelMenuAdmin.setLayout(null);
+		panelMenuAdmin.setBackground(Color.WHITE);
+		layeredPane.add(panelMenuAdmin, "MenuAdmin");
+
+		metodos.botonAtras(layeredPane, "Login", panelMenuAdmin);
+
+		JLabel lblMenuAdmin = new JLabel("Menú de gestión");
+		lblMenuAdmin.setHorizontalAlignment(SwingConstants.CENTER);
+		lblMenuAdmin.setFont(new Font("Tahoma", Font.BOLD, 40));
+		lblMenuAdmin.setBounds(262, 59, 349, 83);
+		panelMenuAdmin.add(lblMenuAdmin);
+
+		JButton btnGestionarMusica = new JButton("Gestionar música");
+		btnGestionarMusica.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				opcionMenu = "musica";
+				crearPanelGestionar(opcionMenu);
+				metodos.cambiarDePanel(layeredPane, "MenuGestionar");
+			}
+		});
+		btnGestionarMusica.setBounds(304, 171, 265, 23);
+		panelMenuAdmin.add(btnGestionarMusica);
+
+		JButton btnGestionarPodcasts = new JButton("Gestionar podcasts");
+		btnGestionarPodcasts.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				opcionMenu = "podcasts";
+				crearPanelGestionar(opcionMenu);
+				metodos.cambiarDePanel(layeredPane, "MenuGestionar");
+			}
+		});
+		btnGestionarPodcasts.setBounds(304, 219, 265, 23);
+		panelMenuAdmin.add(btnGestionarPodcasts);
+
+		JButton btnEstadisticas = new JButton("Estadísticas");
+		btnEstadisticas.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				opcionMenu = "estadisticas";
+				crearPanelGestionar(opcionMenu);
+				metodos.cambiarDePanel(layeredPane, "MenuGestionar");
+			}
+		});
+		btnEstadisticas.setBounds(304, 267, 265, 23);
+		panelMenuAdmin.add(btnEstadisticas);
+	}
+
+	private void crearPanelGestionar(String opcionMenu) {
+		panelMenuGestionar = new JPanel();
+		panelMenuGestionar.setLayout(null);
+		panelMenuGestionar.setBackground(Color.WHITE);
+		layeredPane.add(panelMenuGestionar, "MenuGestionar");
+
+		metodos.botonAtras(layeredPane, "MenuAdmin", panelMenuGestionar);
+
+		JLabel lblGestionarMusica = new JLabel("¿Qué desea gestionar?");
+		lblGestionarMusica.setHorizontalAlignment(SwingConstants.CENTER);
+		lblGestionarMusica.setFont(new Font("Tahoma", Font.BOLD, 40));
+		lblGestionarMusica.setBounds(153, 59, 567, 83);
+		panelMenuGestionar.add(lblGestionarMusica);
+
+		JButton btnGestionar1 = new JButton();
+		btnGestionar1.setBounds(304, 171, 265, 23);
+		panelMenuGestionar.add(btnGestionar1);
+
+		JButton btnGestionar2 = new JButton();
+		btnGestionar2.setBounds(304, 219, 265, 23);
+		panelMenuGestionar.add(btnGestionar2);
+
+		JButton btnGestionar3 = new JButton();
+		btnGestionar3.setBounds(304, 267, 265, 23);
+		panelMenuGestionar.add(btnGestionar3);
+
+		JButton btnGestionar4 = new JButton();
+		btnGestionar4.setBounds(304, 315, 265, 23);
+		panelMenuGestionar.add(btnGestionar4);
+
+		switch (opcionMenu) {
+		case "musica":
+			btnGestionar1.setText("Gestionar Artistas");
+			btnGestionar1.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					opcionGestionar = "artistas";
+					crearPanelEditar(opcionGestionar);
+					metodos.cambiarDePanel(layeredPane, "Editar");
+				}
+			});
+
+			btnGestionar2.setText("Gestionar Albumes");
+			btnGestionar2.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					opcionGestionar = "albumes";
+					crearPanelEditar(opcionGestionar);
+					metodos.cambiarDePanel(layeredPane, "Editar");
+				}
+			});
+
+			btnGestionar3.setText("Gestionar Canciones");
+			btnGestionar3.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					opcionGestionar = "canciones";
+					crearPanelEditar(opcionGestionar);
+					metodos.cambiarDePanel(layeredPane, "Editar");
+				}
+			});
+
+			btnGestionar4.setVisible(false);
+
+			break;
+		case "podcasts":
+			btnGestionar1.setText("Gestionar Podcasters");
+			btnGestionar1.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					opcionGestionar = "podcasters";
+					crearPanelEditar(opcionGestionar);
+					metodos.cambiarDePanel(layeredPane, "Editar");
+				}
+			});
+
+			btnGestionar2.setText("Gestionar Podcasts");
+			btnGestionar2.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					opcionGestionar = "podcasts";
+					crearPanelEditar(opcionGestionar);
+					metodos.cambiarDePanel(layeredPane, "Editar");
+				}
+			});
+
+			btnGestionar3.setVisible(false);
+
+			btnGestionar4.setVisible(false);
+
+			break;
+		case "estadisticas":
+			lblGestionarMusica.setText("Estadísticas");
+
+			btnGestionar1.setText("Canciones Más Gustadas");
+			btnGestionar2.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					opcionEstadisticas = "cancionesMasGustadas";
+					crearPanelEstadisticas(opcionEstadisticas);
+					metodos.cambiarDePanel(layeredPane, "Estadisticas");
+				}
+			});
+
+			btnGestionar2.setText("Podcast Más Gustados");
+			btnGestionar2.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					opcionEstadisticas = "podcastMasGustados";
+					crearPanelEstadisticas(opcionEstadisticas);
+					metodos.cambiarDePanel(layeredPane, "Estadisticas");
+				}
+			});
+
+			btnGestionar3.setText("Más Escuchados");
+			btnGestionar3.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					opcionEstadisticas = "masEscuchados";
+					crearPanelEstadisticas(opcionEstadisticas);
+					metodos.cambiarDePanel(layeredPane, "Estadisticas");
+				}
+			});
+
+			btnGestionar4.setText("Top PlayLists");
+			btnGestionar4.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					opcionEstadisticas = "topPlaylist";
+					crearPanelEstadisticas(opcionEstadisticas);
+					metodos.cambiarDePanel(layeredPane, "Estadisticas");
+				}
+			});
+
+			break;
+		}
+	}
+
+	private void crearPanelEditar(String opcionGestionar) {
+		panelEditar = new JPanel();
+		panelEditar.setLayout(null);
+		panelEditar.setBackground(Color.WHITE);
+		layeredPane.add(panelEditar, "Editar");
+
+		metodos.botonAtras(layeredPane, "MenuGestionar", panelEditar);
+
+		JButton btnModificar = new JButton("Modificar");
+		btnModificar.setBounds(304, 171, 265, 23);
+		panelEditar.add(btnModificar);
+
+		JButton btnAnadir = new JButton("Añadir");
+		btnAnadir.setBounds(304, 219, 265, 23);
+		panelEditar.add(btnAnadir);
+
+		JButton btnEliminar = new JButton("Eliminar");
+		btnEliminar.setBounds(304, 267, 265, 23);
+		panelEditar.add(btnEliminar);
+
+		switch (opcionMenu) {
+		case "musica":
+			btnModificar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					opcionEstadisticas = "topPlaylist";
+					crearPanelEstadisticas(opcionEstadisticas);
+					metodos.cambiarDePanel(layeredPane, "Estadisticas");
+				}
+			});
+
+			btnAnadir.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					opcionEstadisticas = "topPlaylist";
+					crearPanelEstadisticas(opcionEstadisticas);
+					metodos.cambiarDePanel(layeredPane, "Estadisticas");
+				}
+			});
+
+			btnEliminar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				}
+			});
+
+			break;
+		case "podcasts":
+
+			break;
+		case "a":
+
+			break;
+		case "b":
+			break;
+		case "v":
+
+			break;
+		}
+	}
+
+	private void crearPanelEstadisticas(String opcionEstadisticas) {
+		panelEstadisticas = new JPanel();
+		panelEstadisticas.setLayout(null);
+		panelEstadisticas.setBackground(Color.WHITE);
+		layeredPane.add(panelEstadisticas, "Estadisticas");
+
+		metodos.botonAtras(layeredPane, "MenuGestionar", panelEstadisticas);
+	}
+
 }
