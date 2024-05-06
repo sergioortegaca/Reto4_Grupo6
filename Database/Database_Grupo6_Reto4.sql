@@ -14,10 +14,9 @@ CREATE TABLE IF NOT EXISTS Musico (
     Caracteristica ENUM('Solista', 'Grupo')
 );
 
-
 CREATE TABLE IF NOT EXISTS Album (
     IDAlbum INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    Titulo VARCHAR(30) NOT NULL,
+    Titulo VARCHAR(30) NOT NULL UNIQUE,
     Ano DATE NOT NULL,
     Genero VARCHAR(30) NOT NULL,
     Imagen VARCHAR(99),
