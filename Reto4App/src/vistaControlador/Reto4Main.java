@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -61,7 +62,7 @@ public class Reto4Main extends JFrame {
 
 	JDateChooser fechaNacimientoCalendar;
 	SimpleDateFormat dateFormat;
-	String user = "", nombrePanel = "", timeStamp;
+	String user = "", timeStamp;
 	String albumTit = "", albumAno = "", albumGen = "";
 
 	// Variables de conexión con la BBDD
@@ -78,8 +79,18 @@ public class Reto4Main extends JFrame {
 			misPlayLists = "misPlayLists", estadisticas = "estadisticas", editar = "editar",
 			menuGestionar = "menugestionar", modificarYAnadir = "modificarYAnadir";
 
+	// VARIABLES PARA LOS SWITCH DE LOS PANELES DE ADMIN
+	final String swMusica = "swMusica", swPodcasts1 = "swPodcasts1", swEstadisticas = "swEstadisticas",
+			swArtistas = "swArtistas", swAlbumes = "swAlbumes", swCanciones = "swCanciones",
+			swPodcasters = "swPodcasters", swPodcasts2 = "swPodcasts2",
+			swCancionesMasGustadas = "swCancionesMasGustadas", swPodcastMasGustados = "swPodcastMasGustados",
+			swMasEscuchados = "swMasEscuchados", swTopPlaylist = "swTopPlaylist";
+
+	// VARIABLES BOTONES DE CAMBIAR DE CANCIÓN
 	int atras = 0, numCancion = 0;
-	String albumSeleccionado = "", podcasterSeleccionado = "";
+	Album albumSeleccionado;
+	String podcasterSeleccionado = "";
+	String rutaAlbumSeleccionada;
 	Cancion cancionSeleccionada;
 	Musico artistaSeleccionado;
 
@@ -126,6 +137,7 @@ public class Reto4Main extends JFrame {
 		// REGISTRO
 		crearPanelRegistro();
 
+		// Está la creación de paneles main ahí para poder acceder desde el designer.
 		crearPanelesMain();
 	}
 
@@ -500,6 +512,8 @@ public class Reto4Main extends JFrame {
 		panelDescubrirMusica.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelDescubrirMusica, descubrirMusica);
 		panelDescubrirMusica.setLayout(null);
+
+		// Botones
 		metodos.botonPerfil(layeredPane, panelDescubrirMusica, user);
 		metodos.botonAtras(layeredPane, menu, panelDescubrirMusica);
 
@@ -558,7 +572,8 @@ public class Reto4Main extends JFrame {
 		metodos.botonAtras(layeredPane, descubrirMusica, panelArtista);
 
 		// Imagen
-		Image imagenArtista = new ImageIcon(artistaSeleccionado.getImagenArtista()).getImage();
+		Image imagenArtista = new ImageIcon(
+				Paths.get("").toAbsolutePath().toString() + artistaSeleccionado.getImagenArtista()).getImage();
 		ImageIcon imagenArtistaEscalada = new ImageIcon(imagenArtista.getScaledInstance(255, 235, Image.SCALE_SMOOTH));
 
 		JLabel lblImagen = new JLabel(imagenArtistaEscalada);
@@ -592,7 +607,8 @@ public class Reto4Main extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				int indexAlbum = listaAlbumes.getSelectedIndex();
 				if (indexAlbum != -1) {
-					albumSeleccionado = albumesModelList.getElementAt(indexAlbum);
+					albumSeleccionado = albumes.get(indexAlbum);
+					// rutaAlbumSeleccionada= albumesModelList.getElementAt(indexAlbum);
 					crearPanelAlbum();
 					metodos.cambiarDePanel(layeredPane, albumPanel);
 
@@ -618,6 +634,16 @@ public class Reto4Main extends JFrame {
 		metodos.botonPerfil(layeredPane, panelAlbum, user);
 		metodos.botonAtras(layeredPane, artistaPanel, panelAlbum);
 
+		// Imagen
+		Image imagen = new ImageIcon(Paths.get("").toAbsolutePath().toString() + albumSeleccionado.getImagenAlbum())
+				.getImage();
+		ImageIcon imagenEscalada = new ImageIcon(imagen.getScaledInstance(200, 190, Image.SCALE_SMOOTH));
+
+		JLabel lblImagen = new JLabel(imagenEscalada);
+		lblImagen.setBounds(569, 229, 217, 186);
+		lblImagen.setIcon(imagenEscalada);
+		panelAlbum.add(lblImagen);
+
 		// Lista de álbumes
 		JList<String> listaCanciones = new JList<>();
 		listaCanciones.setBackground(SystemColor.menu);
@@ -627,7 +653,7 @@ public class Reto4Main extends JFrame {
 		DefaultListModel<String> cancionesModelList = new DefaultListModel<>();
 
 		ArrayList<Cancion> canciones = metodos.cancionesBD(DRIVER, LinkBD, usuarioBBDD, contrasenaBBDD,
-				albumSeleccionado);
+				albumSeleccionado.getTituloAlbum());
 
 		if (canciones != null) {
 			for (Cancion multimedia : canciones) {
@@ -665,8 +691,9 @@ public class Reto4Main extends JFrame {
 		// metodos.botonAtras(layeredPane, "Album", panelReproduccion);
 		panelReproduccion.setLayout(null);
 
-		Image imagen = new ImageIcon(cancionSeleccionada.getImagenMultimedia()).getImage();
-		ImageIcon imagenEscalada = new ImageIcon(imagen.getScaledInstance(250, 235, Image.SCALE_SMOOTH));
+		Image imagen = new ImageIcon(
+				Paths.get("").toAbsolutePath().toString() + cancionSeleccionada.getImagenMultimedia()).getImage();
+		ImageIcon imagenEscalada = new ImageIcon(imagen.getScaledInstance(255, 235, Image.SCALE_SMOOTH));
 
 		JLabel lblImagen = new JLabel(imagenEscalada);
 		lblImagen.setBounds(292, 30, 287, 250);
@@ -861,39 +888,34 @@ public class Reto4Main extends JFrame {
 		panelMenuAdmin.setLayout(null);
 		panelMenuAdmin.setBackground(Color.WHITE);
 		layeredPane.add(panelMenuAdmin, menuAdmin);
-
 		metodos.botonAtras(layeredPane, login, panelMenuAdmin);
-
 		JLabel lblMenuAdmin = new JLabel("Menú de gestión");
 		lblMenuAdmin.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMenuAdmin.setFont(new Font("Tahoma", Font.BOLD, 40));
 		lblMenuAdmin.setBounds(262, 59, 349, 83);
 		panelMenuAdmin.add(lblMenuAdmin);
-
 		JButton btnGestionarMusica = new JButton("Gestionar música");
 		btnGestionarMusica.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				crearPanelMenuGestionar("musica");
+				crearPanelMenuGestionar(swMusica);
 				metodos.cambiarDePanel(layeredPane, menuGestionar);
 			}
 		});
 		btnGestionarMusica.setBounds(304, 171, 265, 23);
 		panelMenuAdmin.add(btnGestionarMusica);
-
 		JButton btnGestionarPodcasts = new JButton("Gestionar podcasts");
 		btnGestionarPodcasts.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				crearPanelMenuGestionar("podcasts");
+				crearPanelMenuGestionar(swPodcasts1);
 				metodos.cambiarDePanel(layeredPane, menuGestionar);
 			}
 		});
 		btnGestionarPodcasts.setBounds(304, 219, 265, 23);
 		panelMenuAdmin.add(btnGestionarPodcasts);
-
 		JButton btnEstadisticas = new JButton("Estadísticas");
 		btnEstadisticas.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				crearPanelMenuGestionar("estadisticas");
+				crearPanelMenuGestionar(swEstadisticas);
 				metodos.cambiarDePanel(layeredPane, menuGestionar);
 			}
 		});
@@ -906,117 +928,97 @@ public class Reto4Main extends JFrame {
 		panelMenuGestionar.setLayout(null);
 		panelMenuGestionar.setBackground(Color.WHITE);
 		layeredPane.add(panelMenuGestionar, menuGestionar);
-
 		metodos.botonAtras(layeredPane, menuAdmin, panelMenuGestionar);
-
 		JLabel lblGestionarMusica = new JLabel("¿Qué desea gestionar?");
 		lblGestionarMusica.setHorizontalAlignment(SwingConstants.CENTER);
 		lblGestionarMusica.setFont(new Font("Tahoma", Font.BOLD, 40));
 		lblGestionarMusica.setBounds(153, 59, 567, 83);
 		panelMenuGestionar.add(lblGestionarMusica);
-
 		JButton btnGestionar1 = new JButton();
 		btnGestionar1.setBounds(304, 171, 265, 23);
 		panelMenuGestionar.add(btnGestionar1);
-
 		JButton btnGestionar2 = new JButton();
 		btnGestionar2.setBounds(304, 219, 265, 23);
 		panelMenuGestionar.add(btnGestionar2);
-
 		JButton btnGestionar3 = new JButton();
 		btnGestionar3.setBounds(304, 267, 265, 23);
 		panelMenuGestionar.add(btnGestionar3);
-
 		JButton btnGestionar4 = new JButton();
 		btnGestionar4.setBounds(304, 315, 265, 23);
 		panelMenuGestionar.add(btnGestionar4);
-
 		switch (opcionMenu) {
-		case "musica":
+		case swMusica:
 			btnGestionar1.setText("Gestionar Artistas");
 			btnGestionar1.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					crearPanelMenuEditar("artistas");
+					crearPanelMenuEditar(swArtistas);
 					metodos.cambiarDePanel(layeredPane, editar);
 				}
 			});
-
 			btnGestionar2.setText("Gestionar Albumes");
 			btnGestionar2.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					crearPanelMenuEditar("albumes");
+					crearPanelMenuEditar(swAlbumes);
 					metodos.cambiarDePanel(layeredPane, editar);
 				}
 			});
-
 			btnGestionar3.setText("Gestionar Canciones");
 			btnGestionar3.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					crearPanelMenuEditar("canciones");
+					crearPanelMenuEditar(swCanciones);
 					metodos.cambiarDePanel(layeredPane, editar);
 				}
 			});
-
 			btnGestionar4.setVisible(false);
-
 			break;
-		case "podcasts":
+		case swPodcasts1:
 			btnGestionar1.setText("Gestionar Podcasters");
 			btnGestionar1.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					crearPanelMenuEditar("podcasters");
+					crearPanelMenuEditar(swPodcasters);
 					metodos.cambiarDePanel(layeredPane, editar);
 				}
 			});
-
 			btnGestionar2.setText("Gestionar Podcasts");
 			btnGestionar2.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					crearPanelMenuEditar("podcasts");
+					crearPanelMenuEditar(swPodcasts2);
 					metodos.cambiarDePanel(layeredPane, editar);
 				}
 			});
-
 			btnGestionar3.setVisible(false);
-
 			btnGestionar4.setVisible(false);
-
 			break;
-		case "estadisticas":
+		case swEstadisticas:
 			lblGestionarMusica.setText("Estadísticas");
-
 			btnGestionar1.setText("Canciones Más Gustadas");
 			btnGestionar1.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					crearPanelEstadisticas("cancionesMasGustadas");
+					crearPanelEstadisticas(swCancionesMasGustadas);
 					metodos.cambiarDePanel(layeredPane, estadisticas);
 				}
 			});
-
 			btnGestionar2.setText("Podcast Más Gustados");
 			btnGestionar2.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					crearPanelEstadisticas("podcastMasGustados");
+					crearPanelEstadisticas(swPodcastMasGustados);
 					metodos.cambiarDePanel(layeredPane, estadisticas);
 				}
 			});
-
 			btnGestionar3.setText("Más Escuchados");
 			btnGestionar3.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					crearPanelEstadisticas("masEscuchados");
+					crearPanelEstadisticas(swMasEscuchados);
 					metodos.cambiarDePanel(layeredPane, estadisticas);
 				}
 			});
-
 			btnGestionar4.setText("Top PlayLists");
 			btnGestionar4.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					crearPanelEstadisticas("topPlaylist");
+					crearPanelEstadisticas(swTopPlaylist);
 					metodos.cambiarDePanel(layeredPane, estadisticas);
 				}
 			});
-
 			break;
 		}
 	}
@@ -1026,54 +1028,42 @@ public class Reto4Main extends JFrame {
 		panelMenuEditar.setLayout(null);
 		panelMenuEditar.setBackground(Color.WHITE);
 		layeredPane.add(panelMenuEditar, editar);
-
 		metodos.botonAtras(layeredPane, menuGestionar, panelMenuEditar);
-
 		JButton btnModificar = new JButton("Modificar");
 		btnModificar.setBounds(304, 171, 265, 23);
 		panelMenuEditar.add(btnModificar);
-
 		JButton btnAnadir = new JButton("Añadir");
 		btnAnadir.setBounds(304, 219, 265, 23);
 		panelMenuEditar.add(btnAnadir);
-
 		JButton btnEliminar = new JButton("Eliminar");
 		btnEliminar.setBounds(304, 267, 265, 23);
 		panelMenuEditar.add(btnEliminar);
-
 		switch (opcionGestionar) {
-		case "artistas":
+		case swArtistas:
 			btnModificar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					crearPanelModificarYAnadir();
 					metodos.cambiarDePanel(layeredPane, modificarYAnadir);
 				}
 			});
-
 			btnAnadir.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					crearPanelModificarYAnadir();
 					metodos.cambiarDePanel(layeredPane, modificarYAnadir);
 				}
 			});
-
 			btnEliminar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 				}
 			});
-
 			break;
-		case "albumes":
-
+		case swAlbumes:
 			break;
-		case "canciones":
-
+		case swCanciones:
 			break;
-		case "podcasters":
-
+		case swPodcasters:
 			break;
-		case "podcasts":
-
+		case swPodcasts2:
 			break;
 		}
 	}

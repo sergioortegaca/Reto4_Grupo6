@@ -1,6 +1,6 @@
 package modelo;
 
-public class Cancion extends Multimedia {
+public class Cancion extends Audio {
 
 	protected String ArtistasInvitados;
 

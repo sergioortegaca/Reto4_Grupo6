@@ -11,7 +11,7 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-public abstract class Multimedia {
+public abstract class Audio {
 
 	private Clip audio;
 	private boolean paused;
