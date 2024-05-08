@@ -660,6 +660,7 @@ public class Reto4Main extends JFrame {
 		JButton btnReproMenu = new JButton("Menu");
 		btnReproMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				cancionSeleccionada.pause();
 				metodos.cambiarDePanel(layeredPane, "Menu");
 			}
 		});

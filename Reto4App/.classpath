@@ -6,9 +6,9 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="C:/Users/in1dm3/Downloads/jcalendar-1.4/lib/jcalendar-1.4.jar"/>
-	<classpathentry kind="lib" path="C:/Users/in1dm3/Downloads/mysql-connector-j-8.3.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="src/jar/jlayer-1.0.1.jar"/>
+	<classpathentry kind="lib" path="src/jar/jcalendar-1.4.jar"/>
+	<classpathentry kind="lib" path="src/jar/mysql-connector-j-8.3.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
