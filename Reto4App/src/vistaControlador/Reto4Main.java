@@ -66,9 +66,14 @@ public class Reto4Main extends JFrame {
 	String albumTit = "", albumAno = "", albumGen = "";
 
 	// Variables de conexión con la BBDD
-	String DRIVER = "com.mysql.cj.jdbc.Driver", driverBBDD = "jdbc:mysql", servidorBBDD = "localhost",
-			puertoBBDD = "33060", nombreBBDD = "reto4_grupo6", usuarioBBDD = "mañana", contrasenaBBDD = "elorrieta";
-
+	String driverBBDD = "jdbc:mysql";
+	String servidorBBDD = "rhythmicity.duckdns.org";
+	String puertoBBDD = "3306";
+	String nombreBBDD = "reto4_grupo6";
+	String usuarioBBDD = "grupo6";
+	String contrasenaBBDD = "julioespiaeritreo";
+	String DRIVER = "com.mysql.cj.jdbc.Driver";
+	
 	// Conexión final BBDD
 	String LinkBD = driverBBDD + "://" + servidorBBDD + ":" + puertoBBDD + "/" + nombreBBDD;
 
@@ -90,7 +95,6 @@ public class Reto4Main extends JFrame {
 	int atras = 0, numCancion = 0;
 	Album albumSeleccionado;
 	String podcasterSeleccionado = "";
-	String rutaAlbumSeleccionada;
 	Cancion cancionSeleccionada;
 	Musico artistaSeleccionado;
 
@@ -151,8 +155,6 @@ public class Reto4Main extends JFrame {
 
 		// DESCUBRIR MUSICA
 		crearPanelDescubrirMusica();
-
-		// REPRODUCCIÓN
 
 		// DESCUBRIR PODCASTS
 		crearPanelDescubrirPodcasts();
@@ -608,7 +610,6 @@ public class Reto4Main extends JFrame {
 				int indexAlbum = listaAlbumes.getSelectedIndex();
 				if (indexAlbum != -1) {
 					albumSeleccionado = albumes.get(indexAlbum);
-					// rutaAlbumSeleccionada= albumesModelList.getElementAt(indexAlbum);
 					crearPanelAlbum();
 					metodos.cambiarDePanel(layeredPane, albumPanel);
 
@@ -1076,11 +1077,10 @@ public class Reto4Main extends JFrame {
 
 		metodos.botonAtras(layeredPane, editar, panelModificarYAnadir);
 
-		metodos.createLabel("Nombre:", 274, 125, 148, 20, panelModificarYAnadir);
-		metodos.createLabel("Apellidos:", 274, 156, 148, 20, panelModificarYAnadir);
-		metodos.createLabel("Nombre de usuario:", 274, 187, 148, 20, panelModificarYAnadir);
-		metodos.createLabel("Contraseña:", 274, 218, 148, 20, panelModificarYAnadir);
-		metodos.createLabel("Fecha de nacimiento:", 274, 250, 148, 20, panelModificarYAnadir);
+		metodos.createLabel("Nombre Artistico:", 274, 125, 148, 20, panelModificarYAnadir);
+		metodos.createLabel("Imagen:", 274, 156, 148, 20, panelModificarYAnadir);
+		metodos.createLabel("Caracteristica:", 274, 187, 148, 20, panelModificarYAnadir);
+
 	}
 
 	private void crearPanelEstadisticas(String opcionEstadisticas) {
