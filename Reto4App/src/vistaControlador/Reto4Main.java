@@ -2,10 +2,12 @@ package vistaControlador;
 
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -34,6 +36,7 @@ import com.toedter.calendar.JTextFieldDateEditor;
 import java.awt.SystemColor;
 import javax.swing.JList;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import java.awt.event.MouseAdapter;
 import javax.swing.border.EtchedBorder;
 import javax.swing.JTextArea;
@@ -46,27 +49,32 @@ public class Reto4Main extends JFrame {
 	Metodos metodos = new Metodos();
 
 	JPanel contentPane, panelBienvenida, panelLogin, panelRegistro, panelPerfil, panelMenuAdmin, panelMenuGestionar,
-			panelEstadisticas, panelMenuEditar, panelDescubrirMusica, panelArtista, panelAlbum, panelReproduccion,
-			panelDescubrirPodcasts, panelMisPlaylists, panelMenu, panelModificarYAnadir;
+			panelEstadisticas, panelEditar, panelDescubrirMusica, panelArtista, panelAlbum, panelReproduccion,
+			panelDescubrirPodcasts, panelMisPlaylists, panelMenu, panelMenuEditar, panelModificarYAnadir;
 
 	JLayeredPane layeredPane;
 
 	JTextField txtUsuario, txtNombre, txtApellidos, txtUsuarioRegistro;
+
 	JPasswordField pswContrasena, pswCrearContrasena;
 
 	JDateChooser fechaNacimientoCalendar;
 	SimpleDateFormat dateFormat;
-	String user = "";
+
+	String user = "", timeStamp;
 	String albumTit = "", albumAno = "", albumGen = "";
 
 	// Variables de conexión con la BBDD
-	String DRIVER = "com.mysql.cj.jdbc.Driver", driverBBDD = "jdbc:mysql", servidorBBDD = "localhost",
-			puertoBBDD = "33060", nombreBBDD = "reto4_grupo6", usuarioBBDD = "mañana", contrasenaBBDD = "elorrieta";
+	String driverBBDD = "jdbc:mysql";
+	String servidorBBDD = "rhythmicity.duckdns.org";
+	String puertoBBDD = "3306";
+	String nombreBBDD = "reto4_grupo6";
+	String usuarioBBDD = "grupo6";
+	String contrasenaBBDD = "julioespiaeritreo";
+	String DRIVER = "com.mysql.cj.jdbc.Driver";
 
 	// Conexión final BBDD
 	String LinkBD = driverBBDD + "://" + servidorBBDD + ":" + puertoBBDD + "/" + nombreBBDD;
-
-	String artistaSeleccionado = "", albumSeleccionado = "";
 
 	// NOMBRES PANELES
 	String bienvenida = "bienvenida", login = "login", registro = "registro", menu = "menu", perfil = "perfil",
@@ -74,6 +82,20 @@ public class Reto4Main extends JFrame {
 			albumPanel = "album", reproduccion = "reproduccion", descubrirPodcasts = "descubrirPodcasts",
 			misPlayLists = "misPlayLists", estadisticas = "estadisticas", editar = "editar",
 			menuGestionar = "menugestionar", modificarYAnadir = "modificarYAnadir";
+
+	// VARIABLES PARA LOS SWITCH DE LOS PANELES DE ADMIN
+	final String swMusica = "swMusica", swPodcasts1 = "swPodcasts1", swEstadisticas = "swEstadisticas",
+			swArtistas = "swArtistas", swAlbumes = "swAlbumes", swCanciones = "swCanciones",
+			swPodcasters = "swPodcasters", swPodcasts2 = "swPodcasts2",
+			swCancionesMasGustadas = "swCancionesMasGustadas", swPodcastMasGustados = "swPodcastMasGustados",
+			swMasEscuchados = "swMasEscuchados", swTopPlaylist = "swTopPlaylist";
+
+	// VARIABLES BOTONES DE CAMBIAR DE CANCIÓN
+	int atras = 0, numCancion = 0;
+	Album albumSeleccionado;
+	String podcasterSeleccionado = "";
+	Cancion cancionSeleccionada;
+	Musico artistaSeleccionado;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -115,10 +137,12 @@ public class Reto4Main extends JFrame {
 		// REGISTRO
 		crearPanelRegistro();
 
-		// crearPanelesMain();
+		// esto luego se quita
+		crearPanelesMain();
 	}
 
 	private void crearPanelesMain() {
+
 		// PERFIL
 		crearPanelPerfil();
 
@@ -127,12 +151,6 @@ public class Reto4Main extends JFrame {
 
 		// DESCUBRIR MUSICA
 		crearPanelDescubrirMusica();
-
-		// ALBUM
-		// crearPanelAlbum();
-
-		// REPRODUCCIÓN
-		crearPanelReproduccion();
 
 		// DESCUBRIR PODCASTS
 		crearPanelDescubrirPodcasts();
@@ -184,6 +202,7 @@ public class Reto4Main extends JFrame {
 
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void crearPanelLogin() {
 		panelLogin = new JPanel();
 		panelLogin.setBackground(new Color(255, 255, 255));
@@ -254,7 +273,7 @@ public class Reto4Main extends JFrame {
 						ResultSet rs = st.executeQuery();
 						if (rs.next()) {
 							JOptionPane.showMessageDialog(null, textOk);
-							crearPanelesMain();
+							// crearPanelesMain();
 							metodos.cambiarDePanel(layeredPane, menu);
 						} else {
 							JOptionPane.showMessageDialog(null, textNot);
@@ -266,6 +285,7 @@ public class Reto4Main extends JFrame {
 						connection.close();
 					} catch (SQLException sqlException) {
 						sqlException.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Ha ocurrido un error al intentar iniciar sesión");
 					}
 				}
 			}
@@ -416,7 +436,25 @@ public class Reto4Main extends JFrame {
 		layeredPane.add(panelPerfil, perfil);
 		panelPerfil.setLayout(null);
 
-		metodos.botonAtras(layeredPane, menu, panelPerfil);
+		fechaNacimientoCalendar = new JDateChooser();
+		fechaNacimientoCalendar.setBounds(412, 248, 175, 20);
+		panelRegistro.add(fechaNacimientoCalendar);
+		dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+		Calendar rightNow = Calendar.getInstance();
+		int year = rightNow.get(Calendar.YEAR);
+		year = year - 7;
+		String dateString = "1905-01-01";
+		String maxString = year + "-12-31";
+
+		try {
+			fechaNacimientoCalendar.setMaxSelectableDate(dateFormat.parse(maxString));
+			fechaNacimientoCalendar.setMinSelectableDate(dateFormat.parse(dateString));
+
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+
 	}
 
 	private void crearPanelMenu() {
@@ -459,7 +497,7 @@ public class Reto4Main extends JFrame {
 		JButton btnMisPlayLists = new JButton("Mis PlayLists");
 		btnMisPlayLists.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				metodos.cambiarDePanel(layeredPane, "MisPlaylists");
+				metodos.cambiarDePanel(layeredPane, misPlayLists);
 			}
 		});
 		btnMisPlayLists.setBounds(304, 265, 265, 23);
@@ -507,7 +545,8 @@ public class Reto4Main extends JFrame {
 			// AL HACER CLICK EN EL ARTISTA SE EJECUTA
 			public void mouseClicked(MouseEvent e) {
 				int index = list.getSelectedIndex();
-				artistaSeleccionado = modeloLista.getElementAt(index);
+				artistaSeleccionado = artistas.get(index);
+				artistaSeleccionado.getNombreArtistico();
 				crearPanelArtista();
 				metodos.cambiarDePanel(layeredPane, artistaPanel);
 
@@ -519,7 +558,6 @@ public class Reto4Main extends JFrame {
 	}
 
 	private void crearPanelArtista() {
-
 		panelArtista = new JPanel();
 		layeredPane.add(panelArtista, artistaPanel);
 		panelArtista.setBackground(Color.WHITE);
@@ -529,16 +567,25 @@ public class Reto4Main extends JFrame {
 		metodos.botonPerfil(layeredPane, panelArtista, user);
 		metodos.botonAtras(layeredPane, descubrirMusica, panelArtista);
 
+		// Imagen
+		Image imagenArtista = new ImageIcon(
+				Paths.get("").toAbsolutePath().toString() + artistaSeleccionado.getImagenArtista()).getImage();
+		ImageIcon imagenArtistaEscalada = new ImageIcon(imagenArtista.getScaledInstance(255, 235, Image.SCALE_SMOOTH));
+		JLabel lblImagen = new JLabel(imagenArtistaEscalada);
+		lblImagen.setBounds(569, 229, 217, 186);
+		lblImagen.setIcon(imagenArtistaEscalada);
+		panelArtista.add(lblImagen);
+
 		// Lista de álbumes
 		JList<String> listaAlbumes = new JList<>();
 		listaAlbumes.setBackground(SystemColor.menu);
 		listaAlbumes.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		listaAlbumes.setBounds(55, 68, 382, 295);
+		listaAlbumes.setBounds(55, 68, 382, 347);
 
 		DefaultListModel<String> albumesModelList = new DefaultListModel<>();
 
-		ArrayList<Album> albumes = metodos.albumesBD(DRIVER, LinkBD, usuarioBBDD, contrasenaBBDD, artistaSeleccionado);
-
+		ArrayList<Album> albumes = metodos.albumesBD(DRIVER, LinkBD, usuarioBBDD, contrasenaBBDD,
+				artistaSeleccionado.getNombreArtistico());
 		if (albumes != null) {
 			for (Album album : albumes) {
 				albumesModelList.addElement(album.getTituloAlbum());
@@ -548,27 +595,23 @@ public class Reto4Main extends JFrame {
 		}
 		listaAlbumes.setModel(albumesModelList);
 		panelArtista.add(listaAlbumes);
-
 		listaAlbumes.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int indexAlbum = listaAlbumes.getSelectedIndex();
 				if (indexAlbum != -1) {
-					albumSeleccionado = albumesModelList.getElementAt(indexAlbum);
+					albumSeleccionado = albumes.get(indexAlbum);
 					crearPanelAlbum();
 					metodos.cambiarDePanel(layeredPane, albumPanel);
-
 				}
 			}
 		});
-
 		// TextArea
-		JTextArea textArea = new JTextArea("amai");
+		JTextArea textArea = new JTextArea("Genero: " + "\nFecha de publicación: " + "\nDescripción: ");
 		textArea.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		textArea.setBackground(SystemColor.menu);
 		textArea.setBounds(529, 68, 298, 126);
 		panelArtista.add(textArea);
-
 	}
 
 	private void crearPanelAlbum() {
@@ -576,57 +619,133 @@ public class Reto4Main extends JFrame {
 		layeredPane.add(panelAlbum, albumPanel);
 		panelAlbum.setBackground(new Color(255, 255, 255));
 		panelAlbum.setLayout(null);
-
 		metodos.botonPerfil(layeredPane, panelAlbum, user);
 		metodos.botonAtras(layeredPane, artistaPanel, panelAlbum);
-
+		// Imagen
+		Image imagen = new ImageIcon(Paths.get("").toAbsolutePath().toString() + albumSeleccionado.getImagenAlbum())
+				.getImage();
+		ImageIcon imagenEscalada = new ImageIcon(imagen.getScaledInstance(200, 190, Image.SCALE_SMOOTH));
+		JLabel lblImagen = new JLabel(imagenEscalada);
+		lblImagen.setBounds(569, 229, 217, 186);
+		lblImagen.setIcon(imagenEscalada);
+		panelAlbum.add(lblImagen);
 		// Lista de álbumes
 		JList<String> listaCanciones = new JList<>();
 		listaCanciones.setBackground(SystemColor.menu);
 		listaCanciones.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		listaCanciones.setBounds(55, 68, 382, 295);
-
 		DefaultListModel<String> cancionesModelList = new DefaultListModel<>();
-
 		ArrayList<Cancion> canciones = metodos.cancionesBD(DRIVER, LinkBD, usuarioBBDD, contrasenaBBDD,
-				albumSeleccionado);
-
+				albumSeleccionado.getTituloAlbum());
 		if (canciones != null) {
-			for (Cancion cancion : canciones) {
-
-				cancionesModelList.addElement(cancion.getNombre());
+			for (Cancion multimedia : canciones) {
+				cancionesModelList.addElement(multimedia.getNombreMultimedia());
 			}
 		} else {
 			cancionesModelList.addElement("No se han encontrado artistas disponibles");
 		}
 		listaCanciones.setModel(cancionesModelList);
 		panelAlbum.add(listaCanciones);
-
 		listaCanciones.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int indexCancion = listaCanciones.getSelectedIndex();
 				if (indexCancion != -1) {
-					// CMABIAR A ID
-					String cancionSeleccionada = cancionesModelList.getElementAt(indexCancion);
-					System.out.println(cancionSeleccionada);
-					metodos.cambiarDePanel(layeredPane, "Reproduccion");
-
+					cancionSeleccionada = canciones.get(indexCancion);
+					crearPanelReproduccion();
+					metodos.cambiarDePanel(layeredPane, reproduccion);
 				}
 			}
 		});
-
 	}
 
 	private void crearPanelReproduccion() {
 		panelReproduccion = new JPanel();
 		layeredPane.add(panelReproduccion, reproduccion);
 		panelReproduccion.setBackground(new Color(255, 255, 255));
-
 		metodos.botonPerfil(layeredPane, panelReproduccion, user);
-		metodos.botonAtras(layeredPane, albumPanel, panelReproduccion);
+		// metodos.botonAtras(layeredPane, "Album", panelReproduccion);
 		panelReproduccion.setLayout(null);
-
+		Image imagen = new ImageIcon(
+				Paths.get("").toAbsolutePath().toString() + cancionSeleccionada.getImagenMultimedia()).getImage();
+		ImageIcon imagenEscalada = new ImageIcon(imagen.getScaledInstance(255, 235, Image.SCALE_SMOOTH));
+		JLabel lblImagen = new JLabel(imagenEscalada);
+		lblImagen.setBounds(292, 30, 287, 250);
+		lblImagen.setIcon(imagenEscalada);
+		panelReproduccion.add(lblImagen);
+		numCancion = cancionSeleccionada.getAudioID();
+		cancionSeleccionada.loadClip("/audio/" + numCancion + ".wav");
+		JButton btnReproMenu = new JButton("Menu");
+		btnReproMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cancionSeleccionada.pause();
+				metodos.cambiarDePanel(layeredPane, menu);
+			}
+		});
+		btnReproMenu.setBounds(192, 299, 89, 28);
+		panelReproduccion.add(btnReproMenu);
+		JButton btnReproAnterior = new JButton("<");
+		btnReproAnterior.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (atras == 0) {
+					cancionSeleccionada.resume();
+					atras++;
+				} else if (atras == 1) {
+					cancionSeleccionada.pause();
+					numCancion--;
+					cancionSeleccionada.loadClip("/audio/" + numCancion + ".wav");
+					atras = 0;
+					cancionSeleccionada.play();
+				}
+			}
+		});
+		btnReproAnterior.setBounds(292, 299, 89, 28);
+		panelReproduccion.add(btnReproAnterior);
+		JButton btnReproPlay = new JButton("Play");
+		btnReproPlay.setBounds(392, 299, 89, 28);
+		btnReproPlay.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cancionSeleccionada.play();
+				// btnReproPlay.setEnabled(false);
+				btnReproPlay.setVisible(false);
+				JButton btnReproPause = new JButton("Pause");
+				btnReproPause.setBounds(392, 299, 89, 28);
+				btnReproPause.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						cancionSeleccionada.pause();
+						// btnReproPause.setEnabled(false);
+						btnReproPause.setVisible(false);
+						// btnReproPlay.setEnabled(true);
+						btnReproPlay.setVisible(true);
+					}
+				});
+				panelReproduccion.add(btnReproPause);
+			}
+		});
+		panelReproduccion.add(btnReproPlay);
+		JButton btnReproAdelante = new JButton(">");
+		btnReproAdelante.setBounds(492, 299, 89, 28);
+		btnReproAdelante.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cancionSeleccionada.pause();
+				numCancion++;
+				cancionSeleccionada.loadClip("/audio/" + numCancion + ".wav");
+				cancionSeleccionada.play();
+			}
+		});
+		panelReproduccion.add(btnReproAdelante);
+		JButton btnReproFavorito = new JButton("Favoritos");
+		btnReproFavorito.setBounds(592, 299, 89, 28);
+		panelReproduccion.add(btnReproFavorito);
+		JButton btnAtras = new JButton("Atrás");
+		btnAtras.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				metodos.cambiarDePanel(layeredPane, albumPanel);
+				cancionSeleccionada.pause();
+			}
+		});
+		btnAtras.setBounds(55, 28, 89, 23);
+		panelReproduccion.add(btnAtras);
 	}
 
 	private void crearPanelDescubrirPodcasts() {
@@ -668,7 +787,7 @@ public class Reto4Main extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int index2 = list2.getSelectedIndex();
-				String podcasterSeleccionado = modeloLista2.getElementAt(index2);
+				podcasterSeleccionado = modeloLista2.getElementAt(index2);
 
 			}
 		});
@@ -743,7 +862,7 @@ public class Reto4Main extends JFrame {
 		JButton btnGestionarMusica = new JButton("Gestionar música");
 		btnGestionarMusica.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				crearPanelMenuGestionar("musica");
+				crearPanelMenuGestionar(swMusica);
 				metodos.cambiarDePanel(layeredPane, menuGestionar);
 			}
 		});
@@ -753,7 +872,7 @@ public class Reto4Main extends JFrame {
 		JButton btnGestionarPodcasts = new JButton("Gestionar podcasts");
 		btnGestionarPodcasts.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				crearPanelMenuGestionar("podcasts");
+				crearPanelMenuGestionar(swPodcasts1);
 				metodos.cambiarDePanel(layeredPane, menuGestionar);
 			}
 		});
@@ -763,7 +882,7 @@ public class Reto4Main extends JFrame {
 		JButton btnEstadisticas = new JButton("Estadísticas");
 		btnEstadisticas.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				crearPanelMenuGestionar("estadisticas");
+				crearPanelMenuGestionar(swEstadisticas);
 				metodos.cambiarDePanel(layeredPane, menuGestionar);
 			}
 		});
@@ -802,11 +921,11 @@ public class Reto4Main extends JFrame {
 		panelMenuGestionar.add(btnGestionar4);
 
 		switch (opcionMenu) {
-		case "musica":
+		case swMusica:
 			btnGestionar1.setText("Gestionar Artistas");
 			btnGestionar1.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					crearPanelMenuEditar("artistas");
+					crearPanelMenuEditar(swArtistas);
 					metodos.cambiarDePanel(layeredPane, editar);
 				}
 			});
@@ -814,7 +933,7 @@ public class Reto4Main extends JFrame {
 			btnGestionar2.setText("Gestionar Albumes");
 			btnGestionar2.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					crearPanelMenuEditar("albumes");
+					crearPanelMenuEditar(swAlbumes);
 					metodos.cambiarDePanel(layeredPane, editar);
 				}
 			});
@@ -822,7 +941,7 @@ public class Reto4Main extends JFrame {
 			btnGestionar3.setText("Gestionar Canciones");
 			btnGestionar3.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					crearPanelMenuEditar("canciones");
+					crearPanelMenuEditar(swCanciones);
 					metodos.cambiarDePanel(layeredPane, editar);
 				}
 			});
@@ -830,11 +949,11 @@ public class Reto4Main extends JFrame {
 			btnGestionar4.setVisible(false);
 
 			break;
-		case "podcasts":
+		case swPodcasts1:
 			btnGestionar1.setText("Gestionar Podcasters");
 			btnGestionar1.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					crearPanelMenuEditar("podcasters");
+					crearPanelMenuEditar(swPodcasters);
 					metodos.cambiarDePanel(layeredPane, editar);
 				}
 			});
@@ -842,7 +961,7 @@ public class Reto4Main extends JFrame {
 			btnGestionar2.setText("Gestionar Podcasts");
 			btnGestionar2.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					crearPanelMenuEditar("podcasts");
+					crearPanelMenuEditar(swPodcasts2);
 					metodos.cambiarDePanel(layeredPane, editar);
 				}
 			});
@@ -852,13 +971,13 @@ public class Reto4Main extends JFrame {
 			btnGestionar4.setVisible(false);
 
 			break;
-		case "estadisticas":
+		case swEstadisticas:
 			lblGestionarMusica.setText("Estadísticas");
 
 			btnGestionar1.setText("Canciones Más Gustadas");
 			btnGestionar1.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					crearPanelEstadisticas("cancionesMasGustadas");
+					crearPanelEstadisticas(swCancionesMasGustadas);
 					metodos.cambiarDePanel(layeredPane, estadisticas);
 				}
 			});
@@ -866,7 +985,7 @@ public class Reto4Main extends JFrame {
 			btnGestionar2.setText("Podcast Más Gustados");
 			btnGestionar2.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					crearPanelEstadisticas("podcastMasGustados");
+					crearPanelEstadisticas(swPodcastMasGustados);
 					metodos.cambiarDePanel(layeredPane, estadisticas);
 				}
 			});
@@ -874,7 +993,7 @@ public class Reto4Main extends JFrame {
 			btnGestionar3.setText("Más Escuchados");
 			btnGestionar3.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					crearPanelEstadisticas("masEscuchados");
+					crearPanelEstadisticas(swMasEscuchados);
 					metodos.cambiarDePanel(layeredPane, estadisticas);
 				}
 			});
@@ -882,7 +1001,7 @@ public class Reto4Main extends JFrame {
 			btnGestionar4.setText("Top PlayLists");
 			btnGestionar4.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					crearPanelEstadisticas("topPlaylist");
+					crearPanelEstadisticas(swTopPlaylist);
 					metodos.cambiarDePanel(layeredPane, estadisticas);
 				}
 			});
@@ -912,7 +1031,7 @@ public class Reto4Main extends JFrame {
 		panelMenuEditar.add(btnEliminar);
 
 		switch (opcionGestionar) {
-		case "artistas":
+		case swArtistas:
 			btnModificar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					crearPanelModificarYAnadir();
@@ -933,16 +1052,16 @@ public class Reto4Main extends JFrame {
 			});
 
 			break;
-		case "albumes":
+		case swAlbumes:
 
 			break;
-		case "canciones":
+		case swCanciones:
 
 			break;
-		case "podcasters":
+		case swPodcasters:
 
 			break;
-		case "podcasts":
+		case swPodcasts2:
 
 			break;
 		}
@@ -956,11 +1075,10 @@ public class Reto4Main extends JFrame {
 
 		metodos.botonAtras(layeredPane, editar, panelModificarYAnadir);
 
-		metodos.createLabel("Nombre:", 274, 125, 148, 20, panelModificarYAnadir);
-		metodos.createLabel("Apellidos:", 274, 156, 148, 20, panelModificarYAnadir);
-		metodos.createLabel("Nombre de usuario:", 274, 187, 148, 20, panelModificarYAnadir);
-		metodos.createLabel("Contraseña:", 274, 218, 148, 20, panelModificarYAnadir);
-		metodos.createLabel("Fecha de nacimiento:", 274, 250, 148, 20, panelModificarYAnadir);
+		metodos.createLabel("Nombre Artistico:", 274, 125, 148, 20, panelModificarYAnadir);
+		metodos.createLabel("Imagen:", 274, 156, 148, 20, panelModificarYAnadir);
+		metodos.createLabel("Caracteristica:", 274, 187, 148, 20, panelModificarYAnadir);
+
 	}
 
 	private void crearPanelEstadisticas(String opcionEstadisticas) {
@@ -971,5 +1089,4 @@ public class Reto4Main extends JFrame {
 
 		metodos.botonAtras(layeredPane, menuGestionar, panelEstadisticas);
 	}
-
 }

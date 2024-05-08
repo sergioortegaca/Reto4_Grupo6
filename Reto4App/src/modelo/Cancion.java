@@ -1,17 +1,8 @@
 package modelo;
 
-public class Cancion extends Multimedia {
+public class Cancion extends Audio {
 
-	protected String Nombre;
 	protected String ArtistasInvitados;
-
-	public String getNombre() {
-		return Nombre;
-	}
-
-	public void setNombre(String Nombre) {
-		this.Nombre = Nombre;
-	}
 
 	public String getArtistasInvitados() {
 		return ArtistasInvitados;
@@ -20,5 +11,6 @@ public class Cancion extends Multimedia {
 	public void setArtistasInvitados(String artistasInvitados) {
 		ArtistasInvitados = artistasInvitados;
 	}
+
 
 }

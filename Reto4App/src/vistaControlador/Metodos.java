@@ -150,6 +150,7 @@ public class Metodos {
 				Musico artista = new Musico();
 				artista.setArtistaID(rs.getInt("IDMusico"));
 				artista.setNombreArtistico(rs.getString("NombreArtistico"));
+				artista.setImagenArtista(rs.getString("Imagen"));
 				artistas.add(artista);
 			}
 
@@ -237,8 +238,7 @@ public class Metodos {
 	public ArrayList<Cancion> cancionesBD(String DRIVER, String LinkBD, String usuarioBBDD, String contrasenaBBDD,
 			String albumSeleccionado) {
 
-		
-		String sentencia = " SELECT Audio.Nombre " + " FROM Audio "
+		String sentencia = " SELECT Audio.Nombre, Audio.IDAudio, Audio.Duracion, Audio.Imagen " + " FROM Audio "
 				+ " JOIN Cancion ON Audio.IDAudio = Cancion.IDAudio "
 				+ " JOIN Album ON Cancion.IDAlbum = Album.IDAlbum " + " WHERE Album.Titulo = '" + albumSeleccionado
 				+ "';";
@@ -252,9 +252,14 @@ public class Metodos {
 			ArrayList<Cancion> canciones = new ArrayList<>();
 
 			while (rs.next()) {
-				Cancion cancion = new Cancion();
-				cancion.setNombre(rs.getString("Nombre"));
-				canciones.add(cancion);
+				Cancion multimedia = new Cancion();
+				multimedia.setNombreMultimedia(rs.getString("Nombre"));
+				multimedia.setAudioID(rs.getInt("IDAudio"));
+				multimedia.setDuracion(rs.getTime("Duracion"));
+				// multimedia.settipoMultimedia(rs.getString("Tipo"));
+				multimedia.setImagenMultimedia(rs.getString("Imagen"));
+
+				canciones.add(multimedia);
 
 			}
 

@@ -1,4 +1,4 @@
 package modelo;
 
-public class Podcast extends Multimedia {
+public class Podcast extends Audio {
 }
