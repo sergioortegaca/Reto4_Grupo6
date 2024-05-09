@@ -33,14 +33,11 @@ import javax.swing.JLabel;
 import java.awt.Color;
 import com.toedter.calendar.JDateChooser;
 import com.toedter.calendar.JTextFieldDateEditor;
-
 import modelo.*;
-
 import java.awt.SystemColor;
 import javax.swing.JList;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
-
 import java.awt.event.MouseAdapter;
 import javax.swing.border.EtchedBorder;
 import javax.swing.JTextArea;
@@ -58,10 +55,12 @@ public class Reto4Main extends JFrame {
 	JLayeredPane layeredPane;
 
 	JTextField txtUsuario, txtNombre, txtApellidos, txtUsuarioRegistro;
+
 	JPasswordField pswContrasena, pswCrearContrasena;
 
 	JDateChooser fechaNacimientoCalendar;
 	SimpleDateFormat dateFormat;
+
 	String user = "", timeStamp;
 	String albumTit = "", albumAno = "", albumGen = "";
 
@@ -73,7 +72,7 @@ public class Reto4Main extends JFrame {
 	String usuarioBBDD = "grupo6";
 	String contrasenaBBDD = "julioespiaeritreo";
 	String DRIVER = "com.mysql.cj.jdbc.Driver";
-	
+
 	// Conexión final BBDD
 	String LinkBD = driverBBDD + "://" + servidorBBDD + ":" + puertoBBDD + "/" + nombreBBDD;
 
@@ -123,12 +122,9 @@ public class Reto4Main extends JFrame {
 		contentPane.add(layeredPane, "LayeredPane");
 		layeredPane.setLayout(new CardLayout(0, 0));
 
-		// COGER LA HORA ACTUAL PARA EL REGISTRO:
-		timeStamp = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
-
 		// BIENVENIDA
 		crearPanelBienvenida();
-
+		
 		// INICIO DE SESIÓN
 		/**
 		 * Dentro del metodo creador del incio de sesión se encuentra otro metodo el
@@ -142,7 +138,7 @@ public class Reto4Main extends JFrame {
 		crearPanelRegistro();
 
 		// Está la creación de paneles main ahí para poder acceder desde el designer.
-		crearPanelesMain();
+		// crearPanelesMain();
 	}
 
 	private void crearPanelesMain() {
@@ -277,7 +273,7 @@ public class Reto4Main extends JFrame {
 						ResultSet rs = st.executeQuery();
 						if (rs.next()) {
 							JOptionPane.showMessageDialog(null, textOk);
-							// crearPanelesMain();
+							crearPanelesMain();
 							metodos.cambiarDePanel(layeredPane, menu);
 						} else {
 							JOptionPane.showMessageDialog(null, textNot);
@@ -382,6 +378,8 @@ public class Reto4Main extends JFrame {
 				// COGER LA HORA ACTUAL PARA EL REGISTRO:
 				String timeStamp = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
 
+				// System.out.println(dateFormat.format(fechaNacimientoCalendar.getDate()));
+
 				UsuarioFree UsuarioNuevo = new UsuarioFree();
 				UsuarioNuevo.setNombre(txtNombre.getText());
 				UsuarioNuevo.setApellido(txtApellidos.getText());
@@ -396,7 +394,7 @@ public class Reto4Main extends JFrame {
 						&& UsuarioNuevo.getContrasena().length() <= 30 && UsuarioNuevo.getContrasena().length() >= 1) {
 					try {
 						Connection conexion = DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
-						String sql = "INSERT INTO cliente (Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
+						String sql = "INSERT IGNORE INTO Cliente (Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
 						PreparedStatement preparedStatement = conexion.prepareStatement(sql);
 
 						preparedStatement.setString(1, UsuarioNuevo.getNombre());
@@ -409,6 +407,9 @@ public class Reto4Main extends JFrame {
 						preparedStatement.executeUpdate();
 						preparedStatement.close();
 						conexion.close();
+
+						JOptionPane.showMessageDialog(null, "El usuario se ha creado correctamente");
+						metodos.cambiarDePanel(layeredPane, login);
 					} catch (SQLException ex) {
 						System.out.println("SQLException: " + ex.getMessage());
 						System.out.println("SQLState: " + ex.getSQLState());
@@ -416,8 +417,7 @@ public class Reto4Main extends JFrame {
 						JOptionPane.showMessageDialog(null,
 								"Ha ocurrido un  error al registrar el ususario en la base de datos");
 					}
-					JOptionPane.showMessageDialog(null, "El usuario se ha creado correctamente");
-					metodos.cambiarDePanel(layeredPane, login);
+
 				} else {
 					JOptionPane.showMessageDialog(null,
 							"Los campos no pueden estar vacíos y deben tener menos de 30 caracteres");
@@ -618,11 +618,16 @@ public class Reto4Main extends JFrame {
 		});
 
 		// TextArea
-		JTextArea textArea = new JTextArea("Genero: " + "\nFecha de publicación: " + "\nDescripción: ");
-		textArea.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		textArea.setBackground(SystemColor.menu);
-		textArea.setBounds(529, 68, 298, 126);
-		panelArtista.add(textArea);
+		JTextArea textAreaInfoArtista = new JTextArea("Tipo: " + artistaSeleccionado.getCaracteristica()
+				+ "\nEn activo desde: " + artistaSeleccionado.getAnoActivo() + "\nDescripción: "
+				+ artistaSeleccionado.getDescripcionArtista());
+		textAreaInfoArtista.setLineWrap(true);
+		textAreaInfoArtista.setWrapStyleWord(true);
+		textAreaInfoArtista.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		textAreaInfoArtista.setBackground(SystemColor.menu);
+		textAreaInfoArtista.setBounds(529, 68, 298, 126);
+		textAreaInfoArtista.setEditable(false);
+		panelArtista.add(textAreaInfoArtista);
 
 	}
 
@@ -649,7 +654,7 @@ public class Reto4Main extends JFrame {
 		JList<String> listaCanciones = new JList<>();
 		listaCanciones.setBackground(SystemColor.menu);
 		listaCanciones.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		listaCanciones.setBounds(55, 68, 382, 295);
+		listaCanciones.setBounds(55, 68, 382, 347);
 
 		DefaultListModel<String> cancionesModelList = new DefaultListModel<>();
 
@@ -680,6 +685,18 @@ public class Reto4Main extends JFrame {
 				}
 			}
 		});
+	//	int DuracionTotal;
+
+		// TextArea
+		JTextArea textAreaInfoAlbum = new JTextArea("Título: " + albumSeleccionado.getTituloAlbum() + "\nGenero: "
+				+ albumSeleccionado.getGeneroAlbum() + "\nFecha de publicación: " + albumSeleccionado.getAnoAlbum());
+		textAreaInfoAlbum.setLineWrap(true);
+		textAreaInfoAlbum.setWrapStyleWord(true);
+		textAreaInfoAlbum.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		textAreaInfoAlbum.setBackground(SystemColor.menu);
+		textAreaInfoAlbum.setBounds(529, 68, 298, 126);
+		textAreaInfoAlbum.setEditable(false);
+		panelAlbum.add(textAreaInfoAlbum);
 
 	}
 
@@ -784,6 +801,10 @@ public class Reto4Main extends JFrame {
 		});
 		btnAtras.setBounds(55, 28, 89, 23);
 		panelReproduccion.add(btnAtras);
+		
+		JTextArea textArea = new JTextArea("Información de la canción:");
+		textArea.setBounds(192, 348, 489, 92);
+		panelReproduccion.add(textArea);
 
 	}
 

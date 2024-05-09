@@ -151,6 +151,9 @@ public class Metodos {
 				artista.setArtistaID(rs.getInt("IDMusico"));
 				artista.setNombreArtistico(rs.getString("NombreArtistico"));
 				artista.setImagenArtista(rs.getString("Imagen"));
+				artista.setDescripcionArtista(rs.getString("Descripcion"));
+				artista.setCaracteristica(rs.getString("Caracteristica").toString());
+				artista.setAnoActivo(rs.getInt("AnoActivo"));
 				artistas.add(artista);
 			}
 
