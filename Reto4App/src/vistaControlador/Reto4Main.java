@@ -61,6 +61,8 @@ public class Reto4Main extends JFrame {
 	JDateChooser fechaNacimientoCalendar;
 	SimpleDateFormat dateFormat;
 
+	JTextArea textAreaInfoCancion = new JTextArea("");
+
 	String user = "", timeStamp;
 	String albumTit = "", albumAno = "", albumGen = "";
 
@@ -124,7 +126,7 @@ public class Reto4Main extends JFrame {
 
 		// BIENVENIDA
 		crearPanelBienvenida();
-		
+
 		// INICIO DE SESIÓN
 		/**
 		 * Dentro del metodo creador del incio de sesión se encuentra otro metodo el
@@ -532,10 +534,6 @@ public class Reto4Main extends JFrame {
 		ArrayList<Musico> artistas = metodos.artistasBD(DRIVER, LinkBD, usuarioBBDD, contrasenaBBDD);
 
 		if (artistas != null) {
-			/*
-			 * for(int i =0; i<artistas.size();i++) {
-			 * modeloLista.addElement(artistas.get(i).getNombreArtistico()); }
-			 */
 			for (Musico musico : artistas) {
 				modeloLista.addElement(musico.getNombreArtistico());
 			}
@@ -559,7 +557,6 @@ public class Reto4Main extends JFrame {
 		});
 
 		panelDescubrirMusica.add(list);
-
 	}
 
 	private void crearPanelArtista() {
@@ -665,7 +662,6 @@ public class Reto4Main extends JFrame {
 			for (Cancion multimedia : canciones) {
 
 				cancionesModelList.addElement(multimedia.getNombreMultimedia());
-
 			}
 		} else {
 			cancionesModelList.addElement("No se han encontrado artistas disponibles");
@@ -680,12 +676,13 @@ public class Reto4Main extends JFrame {
 				if (indexCancion != -1) {
 					cancionSeleccionada = canciones.get(indexCancion);
 					crearPanelReproduccion();
+					estaSonando();
 					metodos.cambiarDePanel(layeredPane, reproduccion);
 
 				}
 			}
 		});
-	//	int DuracionTotal;
+		// int DuracionTotal;
 
 		// TextArea
 		JTextArea textAreaInfoAlbum = new JTextArea("Título: " + albumSeleccionado.getTituloAlbum() + "\nGenero: "
@@ -739,6 +736,7 @@ public class Reto4Main extends JFrame {
 					cancionSeleccionada.resume();
 					atras++;
 				} else if (atras == 1) {
+					estaSonando();
 					cancionSeleccionada.pause();
 					numCancion--;
 					cancionSeleccionada.loadClip("/audio/" + numCancion + ".wav");
@@ -783,6 +781,7 @@ public class Reto4Main extends JFrame {
 				numCancion++;
 				cancionSeleccionada.loadClip("/audio/" + numCancion + ".wav");
 				cancionSeleccionada.play();
+				estaSonando();
 			}
 		});
 
@@ -801,11 +800,22 @@ public class Reto4Main extends JFrame {
 		});
 		btnAtras.setBounds(55, 28, 89, 23);
 		panelReproduccion.add(btnAtras);
-		
-		JTextArea textArea = new JTextArea("Información de la canción:");
-		textArea.setBounds(192, 348, 489, 92);
-		panelReproduccion.add(textArea);
 
+	}
+
+	private void estaSonando() {
+
+		textAreaInfoCancion.setText("Está sonando " + cancionSeleccionada.getNombreMultimedia() + "\nDel disco "
+				+ albumSeleccionado.getTituloAlbum() + "\nDe " + artistaSeleccionado.getNombreArtistico());
+		textAreaInfoCancion.setLineWrap(true);
+		textAreaInfoCancion.setWrapStyleWord(true);
+		textAreaInfoCancion.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		textAreaInfoCancion.setFont(new Font("Tahoma", Font.BOLD, 11));
+		textAreaInfoCancion.setBackground(SystemColor.menu);
+		textAreaInfoCancion.setBounds(192, 348, 489, 92);
+		textAreaInfoCancion.setEditable(false);
+		panelReproduccion.add(textAreaInfoCancion);
+		panelReproduccion.updateUI();
 	}
 
 	private void crearPanelDescubrirPodcasts() {
@@ -829,12 +839,6 @@ public class Reto4Main extends JFrame {
 		ArrayList<Podcaster> artistas2 = metodos.artistas2BD(DRIVER, LinkBD, usuarioBBDD, contrasenaBBDD);
 
 		if (artistas2 != null) {
-
-			/*
-			 * for(int i =0; i<artistas2.size();i++) {
-			 * modeloLista.addElement(artistas.get(i).getNombreArtistico()); }
-			 */
-
 			for (Podcaster podcaster : artistas2) {
 				modeloLista2.addElement(podcaster.getNombreArtistico());
 			}
@@ -911,11 +915,13 @@ public class Reto4Main extends JFrame {
 		panelMenuAdmin.setBackground(Color.WHITE);
 		layeredPane.add(panelMenuAdmin, menuAdmin);
 		metodos.botonAtras(layeredPane, login, panelMenuAdmin);
+
 		JLabel lblMenuAdmin = new JLabel("Menú de gestión");
 		lblMenuAdmin.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMenuAdmin.setFont(new Font("Tahoma", Font.BOLD, 40));
 		lblMenuAdmin.setBounds(262, 59, 349, 83);
 		panelMenuAdmin.add(lblMenuAdmin);
+
 		JButton btnGestionarMusica = new JButton("Gestionar música");
 		btnGestionarMusica.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
