@@ -13,12 +13,14 @@ import java.util.Calendar;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import modelo.Album;
 import modelo.Cancion;
 import modelo.Musico;
 import modelo.Podcaster;
+import modelo.Usuario;
 
 public class Metodos {
 
@@ -241,10 +243,11 @@ public class Metodos {
 	public ArrayList<Cancion> cancionesBD(String DRIVER, String LinkBD, String usuarioBBDD, String contrasenaBBDD,
 			String albumSeleccionado) {
 
-		String sentencia = " SELECT Audio.Nombre, Audio.IDAudio, Audio.Duracion, Audio.Imagen " + " FROM Audio "
-				+ " JOIN Cancion ON Audio.IDAudio = Cancion.IDAudio "
-				+ " JOIN Album ON Cancion.IDAlbum = Album.IDAlbum " + " WHERE Album.Titulo = '" + albumSeleccionado
-				+ "';";
+		String sentencia = "SELECT Audio.Nombre, Audio.IDAudio, Audio.Duracion, Audio.Imagen,"
+				+ "       COUNT(Reproducciones.IDAudio) AS total_reproducciones " + "FROM Audio "
+				+ "JOIN Cancion ON Audio.IDAudio = Cancion.IDAudio " + "JOIN Album ON Cancion.IDAlbum = Album.IDAlbum "
+				+ "LEFT JOIN Reproducciones ON Audio.IDAudio = Reproducciones.IDAudio " + "WHERE Album.Titulo = '"
+				+ albumSeleccionado + "' GROUP BY Audio.Nombre, Audio.IDAudio, Audio.Duracion, Audio.Imagen;";
 
 		try {
 			Class.forName(DRIVER);
@@ -259,9 +262,8 @@ public class Metodos {
 				multimedia.setNombreMultimedia(rs.getString("Nombre"));
 				multimedia.setAudioID(rs.getInt("IDAudio"));
 				multimedia.setDuracion(rs.getTime("Duracion"));
-				// multimedia.settipoMultimedia(rs.getString("Tipo"));
+				multimedia.setReproducciones(rs.getInt("total_reproducciones"));
 				multimedia.setImagenMultimedia(rs.getString("Imagen"));
-
 				canciones.add(multimedia);
 
 			}
@@ -277,9 +279,36 @@ public class Metodos {
 		return null;
 	}
 
-	public JLabel createLabel(String text, int x, int y, int width, int height, JPanel panel) {
-		JLabel label = new JLabel(text);
-		label.setBounds(x, y, width, height);
+	public void reproduccionesBBDD(String DRIVER, String LinkBD, String usuarioBBDD, String contrasenaBBDD) {
+
+
+		String sentencia = "INSERT IGNORE INTO Reproducciones (IDCliente, IDAudio, FechaReproduccion) VALUES (?, ?, ?)";
+		
+		try {
+			Connection conexion = DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
+			
+			PreparedStatement preparedStatement = conexion.prepareStatement(sentencia);
+
+		/*	preparedStatement.setString(1, UsuarioNuevo.getNombre());
+			preparedStatement.setString(2, UsuarioNuevo.getApellido());
+			preparedStatement.setString(3, UsuarioNuevo.getUsuario());*/
+			preparedStatement.executeUpdate();
+			preparedStatement.close();
+			conexion.close();
+		
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+			JOptionPane.showMessageDialog(null,
+					"Ha ocurrido un  error al registrar las estadísticas.");
+		}
+
+	}
+
+	public JLabel crearLabel(String texto, int x, int y, int anchura, int altura, JPanel panel) {
+		JLabel label = new JLabel(texto);
+		label.setBounds(x, y, anchura, altura);
 		panel.add(label);
 		return label;
 	}
