@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Time;
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -21,13 +20,25 @@ public abstract class Audio {
 	protected String nombreMultimedia;
 	protected Time duracion;
 	protected String imagenMultimedia;
+	protected String tipoMultimedia;
+	protected int reproducciones;
 
-	protected enum tipoMultimedia {
-		cancion, podcast
+	
+	
+	public String getTipoMultimedia() {
+		return tipoMultimedia;
 	}
 
-	public void setTipoMultimedia(tipoMultimedia type) {
-		// tipoMultimedia = type.toString();
+	public void setTipoMultimedia(String tipoMultimedia) {
+		this.tipoMultimedia = tipoMultimedia;
+	}
+
+	public int getReproducciones() {
+		return reproducciones;
+	}
+
+	public void setReproducciones(int reproducciones) {
+		this.reproducciones = reproducciones;
 	}
 
 	public int getAudioID() {
@@ -83,6 +94,7 @@ public abstract class Audio {
 		if (audio != null) {
 			audio.start();
 		}
+		
 	}
 
 	public void pause() {

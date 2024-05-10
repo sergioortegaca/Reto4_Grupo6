@@ -4,6 +4,9 @@ public abstract class Artista {
 	protected int artistaID;
 	protected String nombreArtistico;
 	protected String imagenArtista;
+	protected String descripcionArtista;
+	protected String caracteristica;
+	protected int anoActivo;
 
 	public int getArtistaID() {
 		return artistaID;
@@ -29,4 +32,27 @@ public abstract class Artista {
 		this.imagenArtista = imagenArtista;
 	}
 
+	public String getDescripcionArtista() {
+		return descripcionArtista;
+	}
+
+	public void setDescripcionArtista(String descripcionArtista) {
+		this.descripcionArtista = descripcionArtista;
+	}
+
+	public String getCaracteristica() {
+		return caracteristica;
+	}
+
+	public void setCaracteristica(String caracteristica) {
+		this.caracteristica = caracteristica;
+	}
+
+	public int getAnoActivo() {
+		return anoActivo;
+	}
+
+	public void setAnoActivo(int anoActivo) {
+		this.anoActivo = anoActivo;
+	}
 }
