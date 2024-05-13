@@ -289,7 +289,7 @@ public class BDConexiones {
 			cerrarConexionBD(pS, conexion);
 
 		} catch (SQLException ex) {
-			JOptionPane.showMessageDialog(null, "Ha ocurrido un  error al registrar las estadísticas.");
+			JOptionPane.showMessageDialog(null, "Ha ocurrido un error al registrar las estadísticas.");
 		}
 
 	}

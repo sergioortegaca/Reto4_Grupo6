@@ -8,14 +8,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.nio.file.Paths;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -38,6 +35,8 @@ import java.awt.event.MouseAdapter;
 import javax.swing.border.EtchedBorder;
 import javax.swing.JTextArea;
 import modelo.*;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
 public class Reto4Main extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -113,23 +112,7 @@ public class Reto4Main extends JFrame {
 		contentPane.add(layeredPane, "LayeredPane");
 		layeredPane.setLayout(new CardLayout(0, 0));
 
-		// BIENVENIDA
 		crearPanelBienvenida();
-
-		// INICIO DE SESIÓN
-		/**
-		 * Dentro del metodo creador del incio de sesión se encuentra otro metodo el
-		 * cual crea los demás paneles de la aplicación para que así los botones como el
-		 * botón del perfil muestre el nombre de usuario de la persona que esté usando
-		 * el programa.
-		 */
-		crearPanelLogin();
-
-		// REGISTRO
-		crearPanelRegistro();
-
-		// Está la creación de paneles main ahí para poder acceder desde el designer.
-		// crearPanelesMain();
 	}
 
 	public void crearPanelesMain() {
@@ -158,6 +141,13 @@ public class Reto4Main extends JFrame {
 		layeredPane.add(panelBienvenida, bienvenida);
 		panelBienvenida.addMouseListener((MouseListener) new MouseListener() {
 			public void mouseClicked(MouseEvent e) {
+				/**
+				 * Dentro del metodo creador del incio de sesión se encuentra otro metodo el
+				 * cual crea los demás paneles de la aplicación para que así los botones como el
+				 * botón del perfil muestre el nombre de usuario de la persona que esté usando
+				 * el programa.
+				 */
+				crearPanelLogin();
 				metodos.cambiarDePanel(layeredPane, login);
 			}
 
@@ -186,7 +176,6 @@ public class Reto4Main extends JFrame {
 		lblRhythmicity.setFont(new Font("Tahoma", Font.BOLD, 50));
 		lblRhythmicity.setBounds(236, 180, 402, 160);
 		panelBienvenida.add(lblRhythmicity);
-
 	}
 
 	private void crearPanelLogin() {
@@ -243,6 +232,7 @@ public class Reto4Main extends JFrame {
 		JButton btnCrear = new JButton("Crear nuevo usuario");
 		btnCrear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				crearPanelRegistro();
 				metodos.cambiarDePanel(layeredPane, registro);
 			}
 		});
@@ -300,12 +290,12 @@ public class Reto4Main extends JFrame {
 
 		Calendar rightNow = Calendar.getInstance();
 		int year = rightNow.get(Calendar.YEAR) - 12;
-		String dateString = "1905-01-01";
+		String minString = "1905-01-01";
 		String maxString = year + "-12-31";
 
 		try {
 			fechaNacimientoCalendar.setMaxSelectableDate(dateFormat.parse(maxString));
-			fechaNacimientoCalendar.setMinSelectableDate(dateFormat.parse(dateString));
+			fechaNacimientoCalendar.setMinSelectableDate(dateFormat.parse(minString));
 			fechaNacimientoCalendar.setDate(dateFormat.parse(maxString));
 		} catch (ParseException e1) {
 			e1.printStackTrace();
@@ -905,7 +895,7 @@ public class Reto4Main extends JFrame {
 
 		switch (opcionMenu) {
 		case swMusica:
-			btnGestionar1.setText("Gestionar Artistas");
+			btnGestionar1.setText("Gestionar musicos");
 			btnGestionar1.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					crearPanelMenuEditar(swArtistas);
@@ -913,7 +903,7 @@ public class Reto4Main extends JFrame {
 				}
 			});
 
-			btnGestionar2.setText("Gestionar Albumes");
+			btnGestionar2.setText("Gestionar albumes");
 			btnGestionar2.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					crearPanelMenuEditar(swAlbumes);
@@ -921,7 +911,7 @@ public class Reto4Main extends JFrame {
 				}
 			});
 
-			btnGestionar3.setText("Gestionar Canciones");
+			btnGestionar3.setText("Gestionar canciones");
 			btnGestionar3.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					crearPanelMenuEditar(swCanciones);
@@ -1011,8 +1001,6 @@ public class Reto4Main extends JFrame {
 		btnModificar.setBounds(304, 171, 265, 23);
 		btnModificar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				crearPanelJlistAdmin(opcionGestionar);
-				metodos.cambiarDePanel(layeredPane, jlistAdmin);
 			}
 		});
 		panelMenuEditar.add(btnModificar);
@@ -1038,6 +1026,7 @@ public class Reto4Main extends JFrame {
 		panelMenuEditar.add(btnEliminar);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void crearPanelFormularioAdmin(String opcionGestionar) {
 		panelFormularioAdmin = new JPanel();
 		panelFormularioAdmin.setLayout(null);
@@ -1054,28 +1043,55 @@ public class Reto4Main extends JFrame {
 
 		JTextField txtFormulario1 = new JTextField();
 		txtFormulario1.setColumns(10);
-		txtFormulario1.setBounds(412, 150, 175, 20);
+		txtFormulario1.setBounds(450, 150, 175, 20);
 		panelFormularioAdmin.add(txtFormulario1);
 
 		JTextField txtFormulario2 = new JTextField();
 		txtFormulario2.setColumns(10);
-		txtFormulario2.setBounds(412, 181, 175, 20);
+		txtFormulario2.setBounds(450, 181, 175, 20);
 		panelFormularioAdmin.add(txtFormulario2);
 
 		JTextField txtFormulario3 = new JTextField();
 		txtFormulario3.setColumns(10);
-		txtFormulario3.setBounds(412, 212, 175, 20);
+		txtFormulario3.setBounds(450, 212, 175, 20);
 		panelFormularioAdmin.add(txtFormulario3);
 
 		JTextField txtFormulario4 = new JTextField();
 		txtFormulario4.setColumns(10);
-		txtFormulario4.setBounds(412, 243, 175, 20);
+		txtFormulario4.setBounds(450, 243, 175, 20);
 		panelFormularioAdmin.add(txtFormulario4);
 
 		JTextField txtFormulario5 = new JTextField();
 		txtFormulario5.setColumns(10);
-		txtFormulario5.setBounds(412, 274, 175, 20);
+		txtFormulario5.setBounds(450, 274, 175, 20);
 		panelFormularioAdmin.add(txtFormulario5);
+
+		JComboBox comboBoxFormulario = new JComboBox();
+		comboBoxFormulario.setModel(new DefaultComboBoxModel(new String[] { "Solista", "Grupo" }));
+		comboBoxFormulario.setBounds(450, 274, 175, 20);
+		panelFormularioAdmin.add(comboBoxFormulario);
+
+		JDateChooser anoActivoCalendar = new JDateChooser();
+		anoActivoCalendar.setBounds(412, 248, 175, 20);
+		panelFormularioAdmin.add(anoActivoCalendar);
+
+		JTextFieldDateEditor editor = (JTextFieldDateEditor) anoActivoCalendar.getDateEditor();
+		editor.setEditable(false);
+
+		dateFormat = new SimpleDateFormat("yyyy");
+
+		Calendar rightNow = Calendar.getInstance();
+		int year = rightNow.get(Calendar.YEAR);
+		String minString = "1905";
+		String maxString = "" + year;
+
+		try {
+			anoActivoCalendar.setMaxSelectableDate(dateFormat.parse(maxString));
+			anoActivoCalendar.setMinSelectableDate(dateFormat.parse(minString));
+			anoActivoCalendar.setDate(dateFormat.parse(maxString));
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
 
 		JButton btnAnadirFormulario = new JButton("Aceptar");
 		btnAnadirFormulario.setBounds(387, 350, 100, 23);
@@ -1083,14 +1099,37 @@ public class Reto4Main extends JFrame {
 
 		switch (opcionGestionar) {
 		case swArtistas:
-			metodos.crearLabel("Nombre Artistico:", 274, 150, 148, 20, panelFormularioAdmin);
-			metodos.crearLabel("Imagen:", 274, 181, 148, 20, panelFormularioAdmin);
-			metodos.crearLabel("Caracteristica:", 274, 212, 148, 20, panelFormularioAdmin);
-			metodos.crearLabel("Descripción:", 274, 243, 148, 20, panelFormularioAdmin);
+			metodos.crearLabel("Nombre Artistico:", 260, 150, 148, 20, panelFormularioAdmin);
+			metodos.crearLabel("Imagen:", 260, 181, 148, 20, panelFormularioAdmin);
+			metodos.crearLabel("Caracteristica:", 260, 212, 148, 20, panelFormularioAdmin);
+			metodos.crearLabel("Descripción:", 260, 243, 148, 20, panelFormularioAdmin);
+			metodos.crearLabel("Año desde el que lleva activo:", 260, 274, 200, 20, panelFormularioAdmin);
 			txtFormulario5.setVisible(false);
 
 			btnAnadirFormulario.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+					int anoActivo = 0;
+
+					try {
+						anoActivo = Integer.parseInt(txtFormulario4.getText());
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(null, "El año debe ser un número");
+						txtFormulario3.setText("");
+					}
+
+					Musico MusicoNuevo = new Musico();
+					MusicoNuevo.setNombreArtistico(txtFormulario1.getText());
+					MusicoNuevo.setImagenArtista(txtFormulario2.getText());
+					MusicoNuevo.setCaracteristica(comboBoxFormulario.getSelectedItem().toString());
+					MusicoNuevo.setDescripcionArtista(txtFormulario3.getText());
+					MusicoNuevo.setAnoActivo(anoActivo);
+
+					String sentenciaSQL = "INSERT IGNORE INTO Musico (NombreArtistico, Imagen, Caracteristica, Descripcion, AnoActivo) VALUES ("
+							+ "'" + MusicoNuevo.getNombreArtistico() + "'" + ", " + "'" + MusicoNuevo.getImagenArtista()
+							+ "'" + ", " + "'" + MusicoNuevo.getCaracteristica() + "'" + ", " + "'"
+							+ MusicoNuevo.getDescripcionArtista() + "'" + ", " + "'" + MusicoNuevo.getAnoActivo() + "'";
+					conexionesBD.conexionInsertYDelete(sentenciaSQL);
 				}
 			});
 			break;
@@ -1162,6 +1201,7 @@ public class Reto4Main extends JFrame {
 					String sentenciaSQL = "DELETE FROM Musico WHERE Musico.IDMusico = '"
 							+ artistaSeleccionado.getArtistaID() + "';";
 					conexionesBD.conexionInsertYDelete(sentenciaSQL);
+					metodos.cambiarDePanel(layeredPane, editar);
 				}
 			});
 			panelJlistAdmin.add(listaMusicoAdmin);
@@ -1195,6 +1235,7 @@ public class Reto4Main extends JFrame {
 						String sentenciaSQL = "DELETE FROM Album WHERE Album.IDAlbum = '"
 								+ albumSeleccionado.getAlbumID() + "';";
 						conexionesBD.conexionInsertYDelete(sentenciaSQL);
+						metodos.cambiarDePanel(layeredPane, editar);
 					}
 				}
 			});
@@ -1227,11 +1268,10 @@ public class Reto4Main extends JFrame {
 					if (indexCancion != -1) {
 						cancionSeleccionada = cancionesArrayList.get(indexCancion);
 						cancionSeleccionada.getAudioID();
-						// String sentenciaSQL = "DELETE FROM Album WHERE Album.IDAlbum = '"
-						// + cancionSeleccionada.getAudioID() + "';";
-						// DELETE t1, t2 FROM table1 t1 INNER JOIN table2 t2 ON t1.id = t2.id WHERE
-						// t1.id = 1;
-						// conexionesBD.conexionInsertYDelete(sentenciaSQL);
+						String sentenciaSQL = "DELETE FROM Audio WHERE Audio.IDAudio = '"
+								+ cancionSeleccionada.getAudioID() + "';";
+						conexionesBD.conexionInsertYDelete(sentenciaSQL);
+						metodos.cambiarDePanel(layeredPane, editar);
 					}
 				}
 			});
