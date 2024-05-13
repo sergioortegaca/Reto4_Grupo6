@@ -16,6 +16,7 @@ import modelo.Album;
 import modelo.Cancion;
 import modelo.Musico;
 
+
 public class Metodos {
 
 	/**
@@ -129,9 +130,9 @@ public class Metodos {
 		return label;
 	}
 
-	public void estaSonando(Cancion cancionSeleccionada, Album albumSeleccionado, Musico artistaSeleccionado, JPanel panelReproduccion) {
+	public void estaSonando(JTextArea textAreaInfoCancion, Cancion cancionSeleccionada, Album albumSeleccionado, Musico artistaSeleccionado, JPanel panelReproduccion) {
 
-		JTextArea textAreaInfoCancion = new JTextArea("");
+		
 		textAreaInfoCancion.setText("Está sonando " + cancionSeleccionada.getNombreMultimedia() + "\nDel disco "
 				+ albumSeleccionado.getTituloAlbum() + "\nDe " + artistaSeleccionado.getNombreArtistico());
 		textAreaInfoCancion.setLineWrap(true);

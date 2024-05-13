@@ -13,6 +13,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 public abstract class Audio {
 
 	private Clip audio;
+	@SuppressWarnings("unused")
 	private boolean paused;
 	private long clipTimePosition;
 
@@ -93,6 +94,7 @@ public abstract class Audio {
 	public void play() {
 		if (audio != null) {
 			audio.start();
+			
 		}
 		
 	}

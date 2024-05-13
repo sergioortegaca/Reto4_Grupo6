@@ -14,8 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -62,6 +60,8 @@ public class Reto4Main extends JFrame {
 	String user = "";
 	String albumTit = "", albumAno = "", albumGen = "";
 
+	int reproduccionCont;
+
 	// COGER EL DIA ACTUAL PARA EL REGISTRO:
 	String timeStamp = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
 
@@ -87,6 +87,7 @@ public class Reto4Main extends JFrame {
 	Cancion cancionSeleccionada2;
 	Musico artistaSeleccionado;
 	UsuarioFree UsuarioNuevo, Usuario;
+	JTextArea textAreaInfoCancion = new JTextArea("");
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -116,20 +117,6 @@ public class Reto4Main extends JFrame {
 		// BIENVENIDA
 		crearPanelBienvenida();
 
-		// INICIO DE SESIÓN
-		/**
-		 * Dentro del metodo creador del incio de sesión se encuentra otro metodo el
-		 * cual crea los demás paneles de la aplicación para que así los botones como el
-		 * botón del perfil muestre el nombre de usuario de la persona que esté usando
-		 * el programa.
-		 */
-		crearPanelLogin();
-
-		// REGISTRO
-		crearPanelRegistro();
-
-		// Está la creación de paneles main ahí para poder acceder desde el designer.
-		// crearPanelesMain();
 	}
 
 	public void crearPanelesMain() {
@@ -158,6 +145,14 @@ public class Reto4Main extends JFrame {
 		layeredPane.add(panelBienvenida, bienvenida);
 		panelBienvenida.addMouseListener((MouseListener) new MouseListener() {
 			public void mouseClicked(MouseEvent e) {
+				// INICIO DE SESIÓN
+				/**
+				 * Dentro del metodo creador del incio de sesión se encuentra otro metodo el
+				 * cual crea los demás paneles de la aplicación para que así los botones como el
+				 * botón del perfil muestre el nombre de usuario de la persona que esté usando
+				 * el programa.
+				 */
+				crearPanelLogin();
 				metodos.cambiarDePanel(layeredPane, login);
 			}
 
@@ -243,6 +238,7 @@ public class Reto4Main extends JFrame {
 		JButton btnCrear = new JButton("Crear nuevo usuario");
 		btnCrear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				crearPanelRegistro();
 				metodos.cambiarDePanel(layeredPane, registro);
 			}
 		});
@@ -634,7 +630,7 @@ public class Reto4Main extends JFrame {
 		panelReproduccion = new JPanel();
 		layeredPane.add(panelReproduccion, reproduccion);
 		panelReproduccion.setBackground(new Color(255, 255, 255));
-		metodos.estaSonando(cancionSeleccionada, albumSeleccionado, artistaSeleccionado, panelReproduccion);
+		metodos.estaSonando(textAreaInfoCancion, cancionSeleccionada, albumSeleccionado, artistaSeleccionado, panelReproduccion);
 		metodos.botonPerfil(layeredPane, panelReproduccion, user);
 		panelReproduccion.setLayout(null);
 
@@ -648,7 +644,6 @@ public class Reto4Main extends JFrame {
 		panelReproduccion.add(lblImagen);
 
 		numCancion = cancionSeleccionada.getAudioID();
-
 		cancionSeleccionada.loadClip("/audio/" + numCancion + ".wav");
 
 		JButton btnReproMenu = new JButton("Menu");
@@ -660,6 +655,24 @@ public class Reto4Main extends JFrame {
 		});
 		btnReproMenu.setBounds(192, 299, 89, 28);
 		panelReproduccion.add(btnReproMenu);
+
+		JButton btnReproPlay = new JButton("Play");
+		btnReproPlay.setBounds(392, 299, 89, 28);
+		btnReproPlay.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (btnReproPlay.getText() == "Play") {
+					cancionSeleccionada.play();
+					btnReproPlay.setText("Pause");
+
+				} else {
+					cancionSeleccionada.pause();
+					btnReproPlay.setText("Play");
+
+				}
+			}
+		});
+
+		panelReproduccion.add(btnReproPlay);
 
 		JButton btnReproAnterior = new JButton("<");
 		btnReproAnterior.addActionListener(new ActionListener() {
@@ -674,35 +687,16 @@ public class Reto4Main extends JFrame {
 					cancionSeleccionada.setAudioID(numCancion);
 					atras = 0;
 					cancionSeleccionada.play();
-					// cancionSeleccionada = BDConexiones.nuevaCancion(cancionSeleccionada);
-					metodos.estaSonando(cancionSeleccionada, albumSeleccionado, artistaSeleccionado, panelReproduccion);
+					btnReproPlay.setText("Pause");
+					
+					cancionSeleccionada = conexionesBD.nuevaCancion(Usuario.getClienteID(),cancionSeleccionada.getAudioID(),timeStamp);
+					metodos.estaSonando(textAreaInfoCancion, cancionSeleccionada, albumSeleccionado, artistaSeleccionado, panelReproduccion);
 				}
 
 			}
 		});
 		btnReproAnterior.setBounds(292, 299, 89, 28);
 		panelReproduccion.add(btnReproAnterior);
-
-		JButton btnReproPlay = new JButton("Play");
-		btnReproPlay.setBounds(392, 299, 89, 28);
-		btnReproPlay.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				cancionSeleccionada.play();
-				btnReproPlay.setVisible(false);
-
-				JButton btnReproPause = new JButton("Pause");
-				btnReproPause.setBounds(392, 299, 89, 28);
-				btnReproPause.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						cancionSeleccionada.pause();
-						btnReproPause.setVisible(false);
-						btnReproPlay.setVisible(true);
-					}
-				});
-				panelReproduccion.add(btnReproPause);
-			}
-		});
-		panelReproduccion.add(btnReproPlay);
 
 		JButton btnReproAdelante = new JButton(">");
 		btnReproAdelante.setBounds(492, 299, 89, 28);
@@ -713,8 +707,10 @@ public class Reto4Main extends JFrame {
 				cancionSeleccionada.loadClip("/audio/" + numCancion + ".wav");
 				cancionSeleccionada.setAudioID(numCancion);
 				cancionSeleccionada.play();
-
-				metodos.estaSonando(cancionSeleccionada, albumSeleccionado, artistaSeleccionado, panelReproduccion);
+				btnReproPlay.setText("Pause");
+				
+				cancionSeleccionada = conexionesBD.nuevaCancion(Usuario.getClienteID(),cancionSeleccionada.getAudioID(),timeStamp);
+				metodos.estaSonando(textAreaInfoCancion, cancionSeleccionada, albumSeleccionado, artistaSeleccionado, panelReproduccion);
 
 			}
 		});

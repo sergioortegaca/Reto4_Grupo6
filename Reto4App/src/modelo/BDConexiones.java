@@ -46,7 +46,7 @@ public class BDConexiones {
 			sqlException.printStackTrace();
 		}
 	}
-	
+
 	public void conexionInsertYDelete(String sentenciaSQL) {
 		try {
 			Connection conexion = conexionBD();
@@ -59,7 +59,18 @@ public class BDConexiones {
 			JOptionPane.showMessageDialog(null, "Ha ocurrido un error");
 		}
 	}
-
+	
+	public void conexionInsertYDeleteCancion(String sentenciaSQL) {
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = conexion.prepareStatement(sentenciaSQL);
+			pS.executeUpdate();
+			cerrarConexionBD(pS, conexion);
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Ha ocurrido un error");
+		}
+	}
 
 	public void conexionLogin(String textOk, String user, String pass, String menu, JLayeredPane layeredPane,
 			UsuarioFree Usuario) {
@@ -215,7 +226,7 @@ public class BDConexiones {
 		}
 		return null;
 	}
-	
+
 	public ArrayList<Album> conexionAlbumAdmin() {
 
 		String sentenciaSQL = "SELECT IDAlbum, Titulo FROM Album;";
@@ -272,30 +283,46 @@ public class BDConexiones {
 		return null;
 	}
 
-	public void reproduccionesBBDD() {
+	public Cancion nuevaCancion(int IDCliente, int IDAudio, String timeStamp) {
 
-		String sentenciaSQL = "INSERT IGNORE INTO Reproducciones (IDCliente, IDAudio, FechaReproduccion) VALUES (?, ?, ?)";
+		/**
+		 * Inserción en la BBDD para grabar las estadísticas.
+		 */
+
+		conexionInsertYDeleteCancion("INSERT IGNORE INTO Reproducciones (IDCliente, IDAudio, FechaReproduccion) VALUES ('"+IDCliente+"', '"
+				+ IDAudio + "', '" + timeStamp + "')");
+
+		/**
+		 * Grabación de las estadísticas se cambia de canción.
+		 */
+
+		String sentenciaSQL = "SELECT * FROM Audio WHERE IDAudio='" + IDAudio + "';";
 
 		try {
+
+			Cancion multimedia = new Cancion();
+
 			Connection conexion = conexionBD();
 			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery();
 
-			/*
-			 * preparedStatement.setString(1, UsuarioNuevo.getNombre());
-			 * preparedStatement.setString(2, UsuarioNuevo.getApellido());
-			 * preparedStatement.setString(3, UsuarioNuevo.getUsuario());
-			 */
-			pS.executeUpdate();
+			while (rS.next()) {
+
+				multimedia.setNombreMultimedia(rS.getString("Nombre"));
+				multimedia.setAudioID(rS.getInt("IDAudio"));
+				multimedia.setDuracion(rS.getTime("Duracion"));
+				multimedia.setImagenMultimedia(rS.getString("Imagen"));
+				// cancionesArrayList.add(multimedia);
+
+			}
+
+			rS.close();
 			cerrarConexionBD(pS, conexion);
+			return multimedia;
 
-		} catch (SQLException ex) {
-			JOptionPane.showMessageDialog(null, "Ha ocurrido un  error al registrar las estadísticas.");
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
 		}
-
-	}
-
-	public static Cancion nuevaCancion(Cancion cancionSeleccionada) {
-		
 		return null;
 
 	}
