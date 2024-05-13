@@ -12,7 +12,6 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.EtchedBorder;
-
 import modelo.Album;
 import modelo.Cancion;
 import modelo.Musico;

@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.nio.file.Paths;
-import java.nio.file.spi.FileSystemProvider;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -157,24 +157,19 @@ public class Reto4Main extends JFrame {
 		panelBienvenida.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelBienvenida, bienvenida);
 		panelBienvenida.addMouseListener((MouseListener) new MouseListener() {
-			@Override
 			public void mouseClicked(MouseEvent e) {
 				metodos.cambiarDePanel(layeredPane, login);
 			}
 
-			@Override
 			public void mousePressed(MouseEvent e) {
 			}
 
-			@Override
 			public void mouseReleased(MouseEvent e) {
 			}
 
-			@Override
 			public void mouseEntered(MouseEvent e) {
 			}
 
-			@Override
 			public void mouseExited(MouseEvent e) {
 			}
 		});
@@ -332,7 +327,14 @@ public class Reto4Main extends JFrame {
 						&& UsuarioNuevo.getApellido().length() <= 30 && UsuarioNuevo.getApellido().length() >= 1
 						&& UsuarioNuevo.getUsuario().length() <= 30 && UsuarioNuevo.getUsuario().length() >= 1
 						&& UsuarioNuevo.getContrasena().length() <= 30 && UsuarioNuevo.getContrasena().length() >= 1) {
-					conexionesBD.conexionRegistro(UsuarioNuevo, login, layeredPane);
+
+					String sentenciaSQL = "INSERT IGNORE INTO Cliente (Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo) VALUES ("
+							+ "'" + UsuarioNuevo.getNombre() + "'" + ", " + "'" + UsuarioNuevo.getApellido() + "'"
+							+ ", " + "'" + UsuarioNuevo.getUsuario() + "'" + ", " + "'" + UsuarioNuevo.getContrasena()
+							+ "'" + ", " + "'" + UsuarioNuevo.getFechaNacimiento() + "'" + ", " + "'"
+							+ UsuarioNuevo.getFechaRegistro() + "'" + ", 'Free')";
+					conexionesBD.conexionInsertYDelete(sentenciaSQL);
+
 				} else {
 					JOptionPane.showMessageDialog(null,
 							"Los campos no pueden estar vacíos y deben tener menos de 30 caracteres");
@@ -457,29 +459,31 @@ public class Reto4Main extends JFrame {
 		lblListaDeArtistas.setBounds(328, 61, 217, 14);
 		panelDescubrirMusica.add(lblListaDeArtistas);
 
-		JList<String> list = new JList<String>();
-		list.setBackground(SystemColor.menu);
-		list.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		JList<String> listaMusico = new JList<String>();
+		listaMusico.setBackground(SystemColor.menu);
+		listaMusico.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		DefaultListModel<String> modeloLista = new DefaultListModel<>();
 
 		ArrayList<Musico> musicoArrayList = conexionesBD.conexionMusico();
 
 		if (musicoArrayList != null) {
 			for (Musico musico : musicoArrayList) {
+
 				modeloLista.addElement(
 						musico.getNombreArtistico() + " (" + musico.getReproducciones() + " reproducciones)");
+
 			}
 		} else {
 			modeloLista.addElement("No se han encontrado artistas disponibles");
 		}
-		list.setModel(modeloLista);
-		list.setBounds(246, 120, 382, 295);
-		list.addMouseListener(new MouseAdapter() {
-			@Override
-
+		listaMusico.setModel(modeloLista);
+		listaMusico.setBounds(246, 120, 382, 295);
+		listaMusico.addMouseListener(new MouseAdapter() {
 			// AL HACER CLICK EN EL ARTISTA SE EJECUTA
 			public void mouseClicked(MouseEvent e) {
-				int index = list.getSelectedIndex();
+
+				int index = listaMusico.getSelectedIndex();
+
 				artistaSeleccionado = musicoArrayList.get(index);
 				artistaSeleccionado.getNombreArtistico();
 				crearPanelArtista();
@@ -488,7 +492,7 @@ public class Reto4Main extends JFrame {
 			}
 		});
 
-		panelDescubrirMusica.add(list);
+		panelDescubrirMusica.add(listaMusico);
 
 	}
 
@@ -528,13 +532,12 @@ public class Reto4Main extends JFrame {
 				albumesModelList.addElement(album.getTituloAlbum());
 			}
 		} else {
-			albumesModelList.addElement("No se han encontrado artistas disponibles");
+			albumesModelList.addElement("No se han encontrado albumes disponibles");
 		}
 		listaAlbumes.setModel(albumesModelList);
 		panelArtista.add(listaAlbumes);
 
 		listaAlbumes.addMouseListener(new MouseAdapter() {
-			@Override
 			public void mouseClicked(MouseEvent e) {
 				int indexAlbum = listaAlbumes.getSelectedIndex();
 				if (indexAlbum != -1) {
@@ -591,31 +594,31 @@ public class Reto4Main extends JFrame {
 
 		if (cancionesArrayList != null) {
 			for (Cancion multimedia : cancionesArrayList) {
-
 				cancionesModelList.addElement(multimedia.getNombreMultimedia());
 			}
 		} else {
-			cancionesModelList.addElement("No se han encontrado artistas disponibles");
+			cancionesModelList.addElement("No se han encontrado canciones disponibles");
 		}
 		listaCanciones.setModel(cancionesModelList);
 		panelAlbum.add(listaCanciones);
 
 		listaCanciones.addMouseListener(new MouseAdapter() {
-			@Override
+
 			public void mouseClicked(MouseEvent e) {
 				int indexCancion = listaCanciones.getSelectedIndex();
 				if (indexCancion != -1) {
 					cancionSeleccionada = cancionesArrayList.get(indexCancion);
-					//System.out.println(indexCancion);
+
 					crearPanelReproduccion();
-					metodos.cambiarDePanel(layeredPane, reproduccion);	
+					metodos.cambiarDePanel(layeredPane, reproduccion);
 
 				}
 			}
 		});
+		// int DuracionTotal;
 
 		// TextArea
-		JTextArea textAreaInfoAlbum = new JTextArea("Título: " + albumSeleccionado.getTituloAlbum() + "\nGénero: "
+		JTextArea textAreaInfoAlbum = new JTextArea("Título: " + albumSeleccionado.getTituloAlbum() + "\nGenero: "
 				+ albumSeleccionado.getGeneroAlbum() + "\nFecha de publicación: " + albumSeleccionado.getAnoAlbum());
 		textAreaInfoAlbum.setLineWrap(true);
 		textAreaInfoAlbum.setWrapStyleWord(true);
@@ -671,7 +674,7 @@ public class Reto4Main extends JFrame {
 					cancionSeleccionada.setAudioID(numCancion);
 					atras = 0;
 					cancionSeleccionada.play();
-				//	cancionSeleccionada = BDConexiones.nuevaCancion(cancionSeleccionada);
+					// cancionSeleccionada = BDConexiones.nuevaCancion(cancionSeleccionada);
 					metodos.estaSonando(cancionSeleccionada, albumSeleccionado, artistaSeleccionado, panelReproduccion);
 				}
 
@@ -710,6 +713,7 @@ public class Reto4Main extends JFrame {
 				cancionSeleccionada.loadClip("/audio/" + numCancion + ".wav");
 				cancionSeleccionada.setAudioID(numCancion);
 				cancionSeleccionada.play();
+
 				metodos.estaSonando(cancionSeleccionada, albumSeleccionado, artistaSeleccionado, panelReproduccion);
 
 			}
@@ -763,7 +767,7 @@ public class Reto4Main extends JFrame {
 		listaPodcaster.setModel(modeloLista2);
 		listaPodcaster.setBounds(246, 120, 382, 295);
 		listaPodcaster.addMouseListener(new MouseAdapter() {
-			@Override
+
 			public void mouseClicked(MouseEvent e) {
 				int index2 = listaPodcaster.getSelectedIndex();
 				podcasterSeleccionado = modeloLista2.getElementAt(index2);
@@ -926,8 +930,8 @@ public class Reto4Main extends JFrame {
 			});
 
 			btnGestionar4.setVisible(false);
-
 			break;
+
 		case swPodcasts1:
 			btnGestionar1.setText("Gestionar Podcasters");
 			btnGestionar1.addActionListener(new ActionListener() {
@@ -948,8 +952,8 @@ public class Reto4Main extends JFrame {
 			btnGestionar3.setVisible(false);
 
 			btnGestionar4.setVisible(false);
-
 			break;
+
 		case swEstadisticas:
 			lblGestionarMusica.setText("Estadísticas");
 
@@ -984,8 +988,8 @@ public class Reto4Main extends JFrame {
 					metodos.cambiarDePanel(layeredPane, estadisticas);
 				}
 			});
-
 			break;
+
 		}
 	}
 
@@ -1007,7 +1011,7 @@ public class Reto4Main extends JFrame {
 		btnModificar.setBounds(304, 171, 265, 23);
 		btnModificar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				crearPanelFormularioAdmin(opcionGestionar);
+				crearPanelJlistAdmin(opcionGestionar);
 				metodos.cambiarDePanel(layeredPane, jlistAdmin);
 			}
 		});
@@ -1089,16 +1093,16 @@ public class Reto4Main extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 				}
 			});
-
 			break;
+
 		case swAlbumes:
 			metodos.crearLabel("Título:", 260, 150, 148, 20, panelFormularioAdmin);
 			metodos.crearLabel("Año:", 260, 181, 148, 20, panelFormularioAdmin);
 			metodos.crearLabel("Genero:", 260, 212, 148, 20, panelFormularioAdmin);
 			metodos.crearLabel("Imagen:", 260, 243, 148, 20, panelFormularioAdmin);
 			metodos.crearLabel("Músico al que pertenece:", 260, 274, 148, 20, panelFormularioAdmin);
-
 			break;
+
 		case swCanciones:
 			metodos.crearLabel("Nombre:", 260, 150, 148, 20, panelFormularioAdmin);
 			metodos.crearLabel("Duración:", 260, 181, 148, 20, panelFormularioAdmin);
@@ -1125,19 +1129,119 @@ public class Reto4Main extends JFrame {
 
 		metodos.botonAtras(layeredPane, editar, panelJlistAdmin);
 
+		JLabel lblJlistAdmin = new JLabel("¿Qué desea eliminar?");
+		lblJlistAdmin.setHorizontalAlignment(SwingConstants.CENTER);
+		lblJlistAdmin.setFont(new Font("Tahoma", Font.BOLD, 35));
+		lblJlistAdmin.setBounds(140, 40, 600, 83);
+		panelJlistAdmin.add(lblJlistAdmin);
+
 		switch (opcionGestionar) {
 		case swArtistas:
+			JList<String> listaMusicoAdmin = new JList<String>();
+			listaMusicoAdmin.setBackground(SystemColor.menu);
+			listaMusicoAdmin.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+			DefaultListModel<String> modeloLista = new DefaultListModel<>();
 
+			ArrayList<Musico> musicoArrayList = conexionesBD.conexionMusico();
+
+			if (musicoArrayList != null) {
+				for (Musico musico : musicoArrayList) {
+					modeloLista.addElement(musico.getNombreArtistico());
+				}
+			} else {
+				modeloLista.addElement("No se han encontrado artistas disponibles");
+			}
+			listaMusicoAdmin.setModel(modeloLista);
+			listaMusicoAdmin.setBounds(246, 120, 382, 295);
+			listaMusicoAdmin.addMouseListener(new MouseAdapter() {
+				// AL HACER CLICK EN EL ARTISTA SE EJECUTA
+				public void mouseClicked(MouseEvent e) {
+					int index = listaMusicoAdmin.getSelectedIndex();
+					artistaSeleccionado = musicoArrayList.get(index);
+					artistaSeleccionado.getNombreArtistico();
+					String sentenciaSQL = "DELETE FROM Musico WHERE Musico.IDMusico = '"
+							+ artistaSeleccionado.getArtistaID() + "';";
+					conexionesBD.conexionInsertYDelete(sentenciaSQL);
+				}
+			});
+			panelJlistAdmin.add(listaMusicoAdmin);
 			break;
+
 		case swAlbumes:
+			JList<String> listaAlbumesAdmin = new JList<>();
+			listaAlbumesAdmin.setBackground(SystemColor.menu);
+			listaAlbumesAdmin.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+			listaAlbumesAdmin.setBounds(246, 120, 382, 295);
 
+			DefaultListModel<String> albumesModelList = new DefaultListModel<>();
+
+			ArrayList<Album> albumesArrayList = conexionesBD.conexionAlbumAdmin();
+
+			if (albumesArrayList != null) {
+				for (Album album : albumesArrayList) {
+					albumesModelList.addElement(album.getTituloAlbum());
+				}
+			} else {
+				albumesModelList.addElement("No se han encontrado albumes disponibles");
+			}
+			listaAlbumesAdmin.setModel(albumesModelList);
+
+			listaAlbumesAdmin.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(MouseEvent e) {
+					int indexAlbum = listaAlbumesAdmin.getSelectedIndex();
+					if (indexAlbum != -1) {
+						albumSeleccionado = albumesArrayList.get(indexAlbum);
+						albumSeleccionado.getAlbumID();
+						String sentenciaSQL = "DELETE FROM Album WHERE Album.IDAlbum = '"
+								+ albumSeleccionado.getAlbumID() + "';";
+						conexionesBD.conexionInsertYDelete(sentenciaSQL);
+					}
+				}
+			});
+			panelJlistAdmin.add(listaAlbumesAdmin);
 			break;
+
 		case swCanciones:
+			JList<String> listaCancionesAdmin = new JList<>();
+			listaCancionesAdmin.setBackground(SystemColor.menu);
+			listaCancionesAdmin.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+			listaCancionesAdmin.setBounds(246, 120, 382, 295);
 
+			DefaultListModel<String> cancionesModelList = new DefaultListModel<>();
+
+			ArrayList<Cancion> cancionesArrayList = conexionesBD.conexionCancionAdmin();
+
+			if (cancionesArrayList != null) {
+				for (Cancion multimedia : cancionesArrayList) {
+					cancionesModelList.addElement(multimedia.getNombreMultimedia());
+				}
+			} else {
+				cancionesModelList.addElement("No se han encontrado canciones disponibles");
+			}
+			listaCancionesAdmin.setModel(cancionesModelList);
+
+			listaCancionesAdmin.addMouseListener(new MouseAdapter() {
+
+				public void mouseClicked(MouseEvent e) {
+					int indexCancion = listaCancionesAdmin.getSelectedIndex();
+					if (indexCancion != -1) {
+						cancionSeleccionada = cancionesArrayList.get(indexCancion);
+						cancionSeleccionada.getAudioID();
+						// String sentenciaSQL = "DELETE FROM Album WHERE Album.IDAlbum = '"
+						// + cancionSeleccionada.getAudioID() + "';";
+						// DELETE t1, t2 FROM table1 t1 INNER JOIN table2 t2 ON t1.id = t2.id WHERE
+						// t1.id = 1;
+						// conexionesBD.conexionInsertYDelete(sentenciaSQL);
+					}
+				}
+			});
+			panelJlistAdmin.add(listaCancionesAdmin);
 			break;
+
 		case swPodcasters:
 
 			break;
+
 		case swPodcasts2:
 
 			break;

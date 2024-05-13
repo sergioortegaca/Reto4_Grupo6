@@ -7,7 +7,6 @@ public abstract class Artista {
 	protected String descripcionArtista;
 	protected String caracteristica;
 	protected int anoActivo;
-	
 	protected int reproducciones;
 
 	public int getReproducciones() {
