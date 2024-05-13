@@ -13,256 +13,269 @@ import vistaControlador.*;
 
 public class BDConexiones {
 
-    Metodos metodos = new Metodos();
+	Metodos metodos = new Metodos();
 
-    // Variables de conexión con la BBDD
-    final String driverBBDD = "jdbc:mysql";
-    final String servidorBBDD = "rhythmicity.duckdns.org";
-    final String puertoBBDD = "3306";
-    final String nombreBBDD = "reto4_grupo6";
-    final String usuarioBBDD = "grupo6";
-    final String contrasenaBBDD = "julioespiaeritreo";
-    final String DRIVER = "com.mysql.cj.jdbc.Driver";
-    final String LinkBD = driverBBDD + "://" + servidorBBDD + ":" + puertoBBDD + "/" + nombreBBDD;
+	// Variables de conexión con la BBDD
+	final String driverBBDD = "jdbc:mysql";
+	final String servidorBBDD = "rhythmicity.duckdns.org";
+	final String puertoBBDD = "3306";
+	final String nombreBBDD = "reto4_grupo6";
+	final String usuarioBBDD = "grupo6";
+	final String contrasenaBBDD = "julioespiaeritreo";
+	final String DRIVER = "com.mysql.cj.jdbc.Driver";
+	final String LinkBD = driverBBDD + "://" + servidorBBDD + ":" + puertoBBDD + "/" + nombreBBDD;
 
-    public Connection conexionBD() {
-   	 try {
-   		 Class.forName(DRIVER);
-   		 Connection conexion = DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
-   		 return conexion;
-   	 } catch (ClassNotFoundException e) {
-   		 e.printStackTrace();
-   	 } catch (SQLException sqlException) {
-   		 sqlException.printStackTrace();
-   	 }
-   	 return null;
-    }
+	public Connection conexionBD() {
+		try {
+			Class.forName(DRIVER);
+			Connection conexion = DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
+			return conexion;
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+	}
 
-    public void cerrarConexionBD(PreparedStatement pS, Connection conexion) {
-   	 try {
-   		 pS.close();
-   		 conexion.close();
-   	 } catch (SQLException sqlException) {
-   		 sqlException.printStackTrace();
-   	 }
-    }
+	public void cerrarConexionBD(PreparedStatement pS, Connection conexion) {
+		try {
+			pS.close();
+			conexion.close();
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+	}
 
-    public void conexionLogin(String textOk, String user, String pass, String menu, JLayeredPane layeredPane,
-   		 UsuarioFree Usuario) {
-   	 try {
-   		 String sentenciaSQL = "Select Usuario, Contrasena, IDCliente from Cliente where Usuario=? and Contrasena=?";
-   		 Connection conexion = conexionBD();
-   		 PreparedStatement pS = conexion.prepareStatement(sentenciaSQL);
-   		 pS.setString(1, user);
-   		 pS.setString(2, pass);
-   		 ResultSet rS = pS.executeQuery();
-   		 if (rS.next()) {
-   			 Usuario.setUsuario(user);
-   			 Usuario.setClienteID(rS.getInt("IDCliente"));
-   			 JOptionPane.showMessageDialog(null, textOk);
-   			 metodos.cambiarDePanel(layeredPane, menu);
-   		 } else {
-   			 JOptionPane.showMessageDialog(null, "Creedenciales incorrectas");
-   		 }
-   		 rS.close();
-   		 cerrarConexionBD(pS, conexion);
-   	 } catch (SQLException sqlException) {
-   		 sqlException.printStackTrace();
-   		 System.out.println("SQLException: " + sqlException.getMessage());
-   		 System.out.println("SQLState: " + sqlException.getSQLState());
-   		 System.out.println("VendorError: " + sqlException.getErrorCode());
-   		 JOptionPane.showMessageDialog(null, "Ha ocurrido un error al intentar iniciar sesión");
-   	 }
-    }
+	public void conexionLogin(String textOk, String user, String pass, String menu, JLayeredPane layeredPane,
+			UsuarioFree Usuario) {
+		String sentenciaSQL = "Select Usuario, Contrasena, IDCliente from Cliente where Usuario=? and Contrasena=?";
 
-    public void conexionRegistro(UsuarioFree UsuarioNuevo, String login, JLayeredPane layeredPane) {
-   	 try {
-   		 String sentenciaSQL = "INSERT IGNORE INTO Cliente (Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
-   		 Connection conexion = conexionBD();
-   		 PreparedStatement pS = conexion.prepareStatement(sentenciaSQL);
-   		 pS.setString(1, UsuarioNuevo.getNombre());
-   		 pS.setString(2, UsuarioNuevo.getApellido());
-   		 pS.setString(3, UsuarioNuevo.getUsuario());
-   		 pS.setString(4, UsuarioNuevo.getContrasena());
-   		 pS.setString(5, UsuarioNuevo.getFechaNacimiento());
-   		 pS.setString(6, UsuarioNuevo.getFechaRegistro());
-   		 pS.setString(7, "Free");
-   		 pS.executeUpdate();
-   		 JOptionPane.showMessageDialog(null, "El usuario se ha creado correctamente");
-   		 cerrarConexionBD(pS, conexion);
-   		 metodos.cambiarDePanel(layeredPane, login);
-   	 } catch (SQLException ex) {
-   		 System.out.println("SQLException: " + ex.getMessage());
-   		 System.out.println("SQLState: " + ex.getSQLState());
-   		 System.out.println("VendorError: " + ex.getErrorCode());
-   		 JOptionPane.showMessageDialog(null, "Ha ocurrido un  error al registrar el ususario en la base de datos");
-   	 }
-    }
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = conexion.prepareStatement(sentenciaSQL);
+			pS.setString(1, user);
+			pS.setString(2, pass);
+			ResultSet rS = pS.executeQuery();
+			if (rS.next()) {
+				Usuario.setUsuario(user);
+				Usuario.setClienteID(rS.getInt("IDCliente"));
+				JOptionPane.showMessageDialog(null, textOk);
+				metodos.cambiarDePanel(layeredPane, menu);
+			} else {
+				JOptionPane.showMessageDialog(null, "Creedenciales incorrectas");
+			}
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Ha ocurrido un error al intentar iniciar sesión");
+		}
+	}
 
-    public ArrayList<Musico> conexionMusico() {
+	public void conexionRegistro(UsuarioFree UsuarioNuevo, String login, JLayeredPane layeredPane) {
+		String sentenciaSQL = "INSERT IGNORE INTO Cliente (Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-   	 String sentencia = "SELECT DISTINCT * FROM Musico;";
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = conexion.prepareStatement(sentenciaSQL);
+			pS.setString(1, UsuarioNuevo.getNombre());
+			pS.setString(2, UsuarioNuevo.getApellido());
+			pS.setString(3, UsuarioNuevo.getUsuario());
+			pS.setString(4, UsuarioNuevo.getContrasena());
+			pS.setString(5, UsuarioNuevo.getFechaNacimiento());
+			pS.setString(6, UsuarioNuevo.getFechaRegistro());
+			pS.setString(7, "Free");
+			pS.executeUpdate();
+			JOptionPane.showMessageDialog(null, "El usuario se ha creado correctamente");
+			cerrarConexionBD(pS, conexion);
+			metodos.cambiarDePanel(layeredPane, login);
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Ha ocurrido un  error al registrar el ususario en la base de datos");
+		}
+	}
 
-   	 try {
-   		 try {
-   			 Class.forName(DRIVER);
-   		 } catch (ClassNotFoundException e1) {
-   			 e1.printStackTrace();
-   		 }
-   		 Connection connection = (Connection) DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
-   		 PreparedStatement st = (PreparedStatement) connection.prepareStatement(sentencia);
-   		 ResultSet rs = st.executeQuery();
+	public ArrayList<Musico> conexionMusico() {
 
-   		 ArrayList<Musico> musicoArrayList = new ArrayList<Musico>();
-   		 while (rs.next()) {
-   			 Musico artista = new Musico();
-   			 artista.setArtistaID(rs.getInt("IDMusico"));
-   			 artista.setNombreArtistico(rs.getString("NombreArtistico"));
-   			 artista.setImagenArtista(rs.getString("Imagen"));
-   			 musicoArrayList.add(artista);
-   		 }
+		String sentenciaSQL = "SELECT M.*, " + "COALESCE(R.TotalReproducciones, 0) AS TotalReproducciones "
+				+ "FROM Musico M " + "LEFT JOIN ( SELECT A.IDMusico, COUNT(*) AS TotalReproducciones "
+				+ "FROM Reproducciones R " + "INNER JOIN Cancion C ON R.IDAudio = C.IDAudio "
+				+ "INNER JOIN Album A ON C.IDAlbum = A.IDAlbum GROUP BY A.IDMusico ) R "
+				+ "ON M.IDMusico = R.IDMusico; ";
 
-   		 rs.close();
-   		 st.close();
-   		 connection.close();
-   		 return musicoArrayList;
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery();
 
-   	 } catch (SQLException sqlException) {
-   		 sqlException.printStackTrace();
-   	 }
-   	 return null;
-    }
+			ArrayList<Musico> musicoArrayList = new ArrayList<Musico>();
+			while (rS.next()) {
+				Musico artista = new Musico();
+				artista.setArtistaID(rS.getInt("IDMusico"));
+				artista.setNombreArtistico(rS.getString("NombreArtistico"));
+				artista.setImagenArtista(rS.getString("Imagen"));
+				artista.setDescripcionArtista(rS.getString("Descripcion"));
+				artista.setCaracteristica(rS.getString("Caracteristica").toString());
+				artista.setAnoActivo(rS.getInt("AnoActivo"));
+				artista.setReproducciones(rS.getInt("TotalReproducciones"));
+				musicoArrayList.add(artista);
+			}
 
-    public ArrayList<Album> conexionAlbum(String artistaSeleccionado) {
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+			return musicoArrayList;
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+	}
 
-   	 String sentencia = "SELECT DISTINCT Album.IDAlbum, Album.Titulo, Album.Ano, Album.Genero, Album.Genero, Album.Imagen FROM Album "
-   			 + "JOIN Musico ON Album.IDMusico = Musico.IDMusico " + "WHERE Musico.NombreArtistico = '"
-   			 + artistaSeleccionado + "';";
+	public ArrayList<Album> conexionAlbum(String artistaSeleccionado) {
 
-   	 try {
-   		 Class.forName(DRIVER);
-   		 Connection connection = DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
-   		 PreparedStatement st = connection.prepareStatement(sentencia);
-   		 ResultSet rs = st.executeQuery();
+		String sentenciaSQL = "SELECT DISTINCT Album.IDAlbum, Album.Titulo, Album.Ano, Album.Genero, Album.Genero, Album.Imagen FROM Album "
+				+ "JOIN Musico ON Album.IDMusico = Musico.IDMusico " + "WHERE Musico.NombreArtistico = '"
+				+ artistaSeleccionado + "';";
 
-   		 ArrayList<Album> albumesArrayList = new ArrayList<>();
-   		 while (rs.next()) {
-   			 Album album = new Album();
-   			 album.setAlbumID(rs.getInt("IDAlbum"));
-   			 album.setTituloAlbum(rs.getString("Titulo"));
-   			 album.setAnoAlbum(rs.getDate("Ano"));
-   			 album.setGeneroAlbum(rs.getString("Genero"));
-   			 album.setImagenAlbum(rs.getString("Imagen"));
-   			 albumesArrayList.add(album);
-   		 }
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery();
 
-   		 rs.close();
-   		 st.close();
-   		 connection.close();
-   		 return albumesArrayList;
+			ArrayList<Album> albumesArrayList = new ArrayList<>();
+			while (rS.next()) {
+				Album album = new Album();
+				album.setAlbumID(rS.getInt("IDAlbum"));
+				album.setTituloAlbum(rS.getString("Titulo"));
+				album.setAnoAlbum(rS.getDate("Ano"));
+				album.setGeneroAlbum(rS.getString("Genero"));
+				album.setImagenAlbum(rS.getString("Imagen"));
+				albumesArrayList.add(album);
+			}
 
-   	 } catch (SQLException | ClassNotFoundException sqlException) {
-   		 sqlException.printStackTrace();
-   	 }
-   	 return null;
-    }
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+			return albumesArrayList;
 
-    public ArrayList<Podcaster> conexionPodcaster() {
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+	}
 
-   	 String sentencia = "SELECT DISTINCT * FROM Podcaster;";
+	public ArrayList<Podcaster> conexionPodcaster() {
 
-   	 try {
-   		 try {
-   			 Class.forName(DRIVER);
+		String sentenciaSQL = "SELECT DISTINCT * FROM Podcaster;";
 
-   		 } catch (ClassNotFoundException e1) {
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery();
 
-   			 e1.printStackTrace();
-   		 } // Cargamos el Driver para mysql y Abrimos la conexión a BBDD
-   		 Connection connection = (Connection) DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
-   		 PreparedStatement st = (PreparedStatement) connection.prepareStatement(sentencia);
-   		 ResultSet rs = st.executeQuery();
+			ArrayList<Podcaster> podcasterArrayList = new ArrayList<Podcaster>();
+			while (rS.next()) {
+				Podcaster artista = new Podcaster();
+				artista.setArtistaID(rS.getInt("IDPodcaster"));
+				artista.setNombreArtistico(rS.getString("NombreArtistico"));
+				podcasterArrayList.add(artista);
+			}
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+			return podcasterArrayList;
 
-   		 ArrayList<Podcaster> podcasterArrayList = new ArrayList<Podcaster>();
-   		 while (rs.next()) {
-   			 Podcaster artista = new Podcaster();
-   			 artista.setArtistaID(rs.getInt("IDPodcaster"));
-   			 artista.setNombreArtistico(rs.getString("NombreArtistico"));
-   			 podcasterArrayList.add(artista);
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+	}
 
-   			 rs.close();
-   			 st.close();
-   			 connection.close();
-   			 return podcasterArrayList;
-   		 }
+	public ArrayList<Cancion> conexionCancion(String albumSeleccionado) {
 
-   	 } catch (SQLException sqlException) {
-   		 sqlException.printStackTrace();
-   	 }
-   	 return null;
-    }
+		String sentenciaSQL = "SELECT Audio.Nombre, Audio.IDAudio, Audio.Duracion, Audio.Imagen,"
+				+ "       COUNT(Reproducciones.IDAudio) AS total_reproducciones " + "FROM Audio "
+				+ "JOIN Cancion ON Audio.IDAudio = Cancion.IDAudio " + "JOIN Album ON Cancion.IDAlbum = Album.IDAlbum "
+				+ "LEFT JOIN Reproducciones ON Audio.IDAudio = Reproducciones.IDAudio " + "WHERE Album.Titulo = '"
+				+ albumSeleccionado + "' GROUP BY Audio.Nombre, Audio.IDAudio, Audio.Duracion, Audio.Imagen;";
 
-    public ArrayList<Cancion> conexionCancion(String albumSeleccionado) {
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery();
 
-   	 String sentencia = " SELECT Audio.Nombre, Audio.IDAudio, Audio.Duracion, Audio.Imagen " + " FROM Audio "
-   			 + " JOIN Cancion ON Audio.IDAudio = Cancion.IDAudio "
-   			 + " JOIN Album ON Cancion.IDAlbum = Album.IDAlbum " + " WHERE Album.Titulo = '" + albumSeleccionado
-   			 + "';";
+			ArrayList<Cancion> cancionesArrayList = new ArrayList<>();
 
-   	 try {
-   		 Class.forName(DRIVER);
-   		 Connection connection = DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
-   		 PreparedStatement st = connection.prepareStatement(sentencia);
-   		 ResultSet rs = st.executeQuery();
+			while (rS.next()) {
+				Cancion multimedia = new Cancion();
+				multimedia.setNombreMultimedia(rS.getString("Nombre"));
+				multimedia.setAudioID(rS.getInt("IDAudio"));
+				multimedia.setDuracion(rS.getTime("Duracion"));
+				multimedia.setReproducciones(rS.getInt("total_reproducciones"));
+				multimedia.setImagenMultimedia(rS.getString("Imagen"));
+				cancionesArrayList.add(multimedia);
 
-   		 ArrayList<Cancion> cancionesArrayList = new ArrayList<>();
+			}
 
-   		 while (rs.next()) {
-   			 Cancion multimedia = new Cancion();
-   			 multimedia.setNombreMultimedia(rs.getString("Nombre"));
-   			 multimedia.setAudioID(rs.getInt("IDAudio"));
-   			 multimedia.setDuracion(rs.getTime("Duracion"));
-   			 // multimedia.settipoMultimedia(rs.getString("Tipo"));
-   			 multimedia.setImagenMultimedia(rs.getString("Imagen"));
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+			return cancionesArrayList;
 
-   			 cancionesArrayList.add(multimedia);
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+	}
 
-   		 }
+	public void reproduccionesBBDD() {
 
-   		 rs.close();
-   		 st.close();
-   		 connection.close();
-   		 return cancionesArrayList;
+		String sentenciaSQL = "INSERT IGNORE INTO Reproducciones (IDCliente, IDAudio, FechaReproduccion) VALUES (?, ?, ?)";
 
-   	 } catch (SQLException | ClassNotFoundException sqlException) {
-   		 sqlException.printStackTrace();
-   	 }
-   	 return null;
-    }
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
 
-    /*
-     * public ArrayList<Musico> getBDaRTISTAS(String SQL) {
-     *
-     * String sentencia = SQL; try { try { Class.forName(DRIVER);
-     *
-     * } catch (ClassNotFoundException e1) {
-     *
-     * e1.printStackTrace(); } // Cargamos el Driver para mysql y Abrimos la
-     * conexión a BBDD Connection connection = (Connection)
-     * DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
-     * PreparedStatement st = (PreparedStatement)
-     * connection.prepareStatement(sentencia); ResultSet rs = st.executeQuery();
-     *
-     * artistas = new ArrayList<Musico>(); while (rs.next()) { Musico artista = new
-     * Musico(); artista.setArtistaID(rs.getInt("IDMusico"));
-     * artista.setNombreArtistico(rs.getString("NombreArtistico"));
-     * artista.setImagenArtista(rs.getString("Imagen")); artistas.add(artista); }
-     *
-     * rs.close(); st.close(); connection.close(); return artistas;
-     *
-     * } catch (SQLException sqlException) { sqlException.printStackTrace(); }
-     * return null; }
-     */
+			/*
+			 * preparedStatement.setString(1, UsuarioNuevo.getNombre());
+			 * preparedStatement.setString(2, UsuarioNuevo.getApellido());
+			 * preparedStatement.setString(3, UsuarioNuevo.getUsuario());
+			 */
+			pS.executeUpdate();
+			cerrarConexionBD(pS, conexion);
+
+		} catch (SQLException ex) {
+			JOptionPane.showMessageDialog(null, "Ha ocurrido un  error al registrar las estadísticas.");
+		}
+
+	}
+
+	public static Cancion nuevaCancion(Cancion cancionSeleccionada) {
+
+		s
+		
+		return null;
+
+	}
+
+	/*
+	 * public ArrayList<Musico> getBDaRTISTAS(String SQL) {
+	 * 
+	 * String sentenciaSQL = SQL; try { try { Class.forName(DRIVER);
+	 * 
+	 * } catch (ClassNotFoundException e1) {
+	 * 
+	 * e1.printStackTrace(); } // Cargamos el Driver para mysql y Abrimos la
+	 * conexión a BBDD Connection connection = (Connection)
+	 * DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
+	 * PreparedStatement st = (PreparedStatement)
+	 * connection.prepareStatement(sentenciaSQL); ResultSet rs = st.executeQuery();
+	 * 
+	 * artistas = new ArrayList<Musico>(); while (rs.next()) { Musico artista = new
+	 * Musico(); artista.setArtistaID(rs.getInt("IDMusico"));
+	 * artista.setNombreArtistico(rs.getString("NombreArtistico"));
+	 * artista.setImagenArtista(rs.getString("Imagen")); artistas.add(artista); }
+	 * 
+	 * rs.close(); st.close(); connection.close(); return artistas;
+	 * 
+	 * } catch (SQLException sqlException) { sqlException.printStackTrace(); }
+	 * return null; }
+	 */
 }
-
-

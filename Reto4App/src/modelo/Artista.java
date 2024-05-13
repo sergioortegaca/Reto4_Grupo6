@@ -7,6 +7,16 @@ public abstract class Artista {
 	protected String descripcionArtista;
 	protected String caracteristica;
 	protected int anoActivo;
+	
+	protected int reproducciones;
+
+	public int getReproducciones() {
+		return reproducciones;
+	}
+
+	public void setReproducciones(int reproducciones) {
+		this.reproducciones = reproducciones;
+	}
 
 	public int getArtistaID() {
 		return artistaID;

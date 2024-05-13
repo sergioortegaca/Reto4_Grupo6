@@ -1,26 +1,21 @@
 package vistaControlador;
 
 import java.awt.CardLayout;
+import java.awt.Font;
+import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.border.EtchedBorder;
 
 import modelo.Album;
 import modelo.Cancion;
 import modelo.Musico;
-import modelo.Podcaster;
-import modelo.Usuario;
 
 public class Metodos {
 
@@ -62,7 +57,6 @@ public class Metodos {
 	 *
 	 * @author in1dm3
 	 */
-
 	public void botonAtras(JLayeredPane layeredPane, String nombrePanel, JPanel variablePanel) {
 		JButton btnAtras = new JButton("Atrás");
 		btnAtras.addActionListener(new ActionListener() {
@@ -91,7 +85,6 @@ public class Metodos {
 	 *
 	 * @author in1dm3
 	 */
-
 	public void botonPerfil(JLayeredPane layeredPane, JPanel variablePanel, String user) {
 		JButton btnPerfil = new JButton(user);
 
@@ -113,7 +106,6 @@ public class Metodos {
 	 *
 	 * @author in1dm3
 	 */
-
 	public String bienvenidaMenu() {
 		String msgBienvenida = "";
 
@@ -131,181 +123,6 @@ public class Metodos {
 
 	}
 
-	public ArrayList<Musico> artistasBD(String DRIVER, String LinkBD, String usuarioBBDD, String contrasenaBBDD) {
-
-		String sentencia = "SELECT DISTINCT * FROM Musico;";
-
-		try {
-			try {
-				Class.forName(DRIVER);
-
-			} catch (ClassNotFoundException e1) {
-
-				e1.printStackTrace();
-			} // Cargamos el Driver para mysql y Abrimos la conexión a BBDD
-			Connection connection = (Connection) DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
-			PreparedStatement st = (PreparedStatement) connection.prepareStatement(sentencia);
-			ResultSet rs = st.executeQuery();
-
-			ArrayList<Musico> artistas = new ArrayList<Musico>();
-			while (rs.next()) {
-				Musico artista = new Musico();
-				artista.setArtistaID(rs.getInt("IDMusico"));
-				artista.setNombreArtistico(rs.getString("NombreArtistico"));
-				artista.setImagenArtista(rs.getString("Imagen"));
-				artista.setDescripcionArtista(rs.getString("Descripcion"));
-				artista.setCaracteristica(rs.getString("Caracteristica").toString());
-				artista.setAnoActivo(rs.getInt("AnoActivo"));
-				artistas.add(artista);
-			}
-
-			rs.close();
-			st.close();
-			connection.close();
-			return artistas;
-
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
-		}
-		return null;
-	}
-
-	public ArrayList<Album> albumesBD(String DRIVER, String LinkBD, String usuarioBBDD, String contrasenaBBDD,
-			String artistaSeleccionado) {
-
-		String sentencia = "SELECT DISTINCT Album.IDAlbum, Album.Titulo, Album.Ano, Album.Genero, Album.Genero, Album.Imagen FROM Album "
-				+ "JOIN Musico ON Album.IDMusico = Musico.IDMusico " + "WHERE Musico.NombreArtistico = '"
-				+ artistaSeleccionado + "';";
-
-		try {
-			Class.forName(DRIVER);
-			Connection connection = DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
-			PreparedStatement st = connection.prepareStatement(sentencia);
-			ResultSet rs = st.executeQuery();
-
-			ArrayList<Album> albumes = new ArrayList<>();
-			while (rs.next()) {
-				Album album = new Album();
-				album.setAlbumID(rs.getInt("IDAlbum"));
-				album.setTituloAlbum(rs.getString("Titulo"));
-				album.setAnoAlbum(rs.getDate("Ano"));
-				album.setGeneroAlbum(rs.getString("Genero"));
-				album.setImagenAlbum(rs.getString("Imagen"));
-				albumes.add(album);
-			}
-
-			rs.close();
-			st.close();
-			connection.close();
-			return albumes;
-
-		} catch (SQLException | ClassNotFoundException sqlException) {
-			sqlException.printStackTrace();
-		}
-		return null;
-	}
-
-	public ArrayList<Podcaster> artistas2BD(String DRIVER, String LinkBD, String usuarioBBDD, String contrasenaBBDD) {
-
-		String sentencia = "SELECT DISTINCT * FROM Podcaster;";
-
-		try {
-			try {
-				Class.forName(DRIVER);
-
-			} catch (ClassNotFoundException e1) {
-
-				e1.printStackTrace();
-			} // Cargamos el Driver para mysql y Abrimos la conexión a BBDD
-			Connection connection = (Connection) DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
-			PreparedStatement st = (PreparedStatement) connection.prepareStatement(sentencia);
-			ResultSet rs = st.executeQuery();
-
-			ArrayList<Podcaster> artistas = new ArrayList<Podcaster>();
-			while (rs.next()) {
-				Podcaster artista = new Podcaster();
-				artista.setArtistaID(rs.getInt("IDPodcaster"));
-				artista.setNombreArtistico(rs.getString("NombreArtistico"));
-				artistas.add(artista);
-
-				rs.close();
-				st.close();
-				connection.close();
-				return artistas;
-			}
-
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
-		}
-		return null;
-	}
-
-	public ArrayList<Cancion> cancionesBD(String DRIVER, String LinkBD, String usuarioBBDD, String contrasenaBBDD,
-			String albumSeleccionado) {
-
-		String sentencia = "SELECT Audio.Nombre, Audio.IDAudio, Audio.Duracion, Audio.Imagen,"
-				+ "       COUNT(Reproducciones.IDAudio) AS total_reproducciones " + "FROM Audio "
-				+ "JOIN Cancion ON Audio.IDAudio = Cancion.IDAudio " + "JOIN Album ON Cancion.IDAlbum = Album.IDAlbum "
-				+ "LEFT JOIN Reproducciones ON Audio.IDAudio = Reproducciones.IDAudio " + "WHERE Album.Titulo = '"
-				+ albumSeleccionado + "' GROUP BY Audio.Nombre, Audio.IDAudio, Audio.Duracion, Audio.Imagen;";
-
-		try {
-			Class.forName(DRIVER);
-			Connection connection = DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
-			PreparedStatement st = connection.prepareStatement(sentencia);
-			ResultSet rs = st.executeQuery();
-
-			ArrayList<Cancion> canciones = new ArrayList<>();
-
-			while (rs.next()) {
-				Cancion multimedia = new Cancion();
-				multimedia.setNombreMultimedia(rs.getString("Nombre"));
-				multimedia.setAudioID(rs.getInt("IDAudio"));
-				multimedia.setDuracion(rs.getTime("Duracion"));
-				multimedia.setReproducciones(rs.getInt("total_reproducciones"));
-				multimedia.setImagenMultimedia(rs.getString("Imagen"));
-				canciones.add(multimedia);
-
-			}
-
-			rs.close();
-			st.close();
-			connection.close();
-			return canciones;
-
-		} catch (SQLException | ClassNotFoundException sqlException) {
-			sqlException.printStackTrace();
-		}
-		return null;
-	}
-
-	public void reproduccionesBBDD(String DRIVER, String LinkBD, String usuarioBBDD, String contrasenaBBDD) {
-
-
-		String sentencia = "INSERT IGNORE INTO Reproducciones (IDCliente, IDAudio, FechaReproduccion) VALUES (?, ?, ?)";
-		
-		try {
-			Connection conexion = DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
-			
-			PreparedStatement preparedStatement = conexion.prepareStatement(sentencia);
-
-		/*	preparedStatement.setString(1, UsuarioNuevo.getNombre());
-			preparedStatement.setString(2, UsuarioNuevo.getApellido());
-			preparedStatement.setString(3, UsuarioNuevo.getUsuario());*/
-			preparedStatement.executeUpdate();
-			preparedStatement.close();
-			conexion.close();
-		
-		} catch (SQLException ex) {
-			System.out.println("SQLException: " + ex.getMessage());
-			System.out.println("SQLState: " + ex.getSQLState());
-			System.out.println("VendorError: " + ex.getErrorCode());
-			JOptionPane.showMessageDialog(null,
-					"Ha ocurrido un  error al registrar las estadísticas.");
-		}
-
-	}
-
 	public JLabel crearLabel(String texto, int x, int y, int anchura, int altura, JPanel panel) {
 		JLabel label = new JLabel(texto);
 		label.setBounds(x, y, anchura, altura);
@@ -313,4 +130,20 @@ public class Metodos {
 		return label;
 	}
 
+	public void estaSonando(Cancion cancionSeleccionada, Album albumSeleccionado, Musico artistaSeleccionado, JPanel panelReproduccion) {
+
+		JTextArea textAreaInfoCancion = new JTextArea("");
+		textAreaInfoCancion.setText("Está sonando " + cancionSeleccionada.getNombreMultimedia() + "\nDel disco "
+				+ albumSeleccionado.getTituloAlbum() + "\nDe " + artistaSeleccionado.getNombreArtistico());
+		textAreaInfoCancion.setLineWrap(true);
+		textAreaInfoCancion.setWrapStyleWord(true);
+		textAreaInfoCancion.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		textAreaInfoCancion.setFont(new Font("Tahoma", Font.BOLD, 11));
+		textAreaInfoCancion.setBackground(SystemColor.menu);
+		textAreaInfoCancion.setBounds(192, 348, 489, 92);
+		textAreaInfoCancion.setEditable(false);
+		panelReproduccion.add(textAreaInfoCancion);
+		panelReproduccion.updateUI();
+
+	}
 }
