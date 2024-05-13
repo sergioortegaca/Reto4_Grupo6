@@ -4,10 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Time;
-<<<<<<< HEAD
-
-=======
->>>>>>> refs/remotes/origin/Sergio
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
