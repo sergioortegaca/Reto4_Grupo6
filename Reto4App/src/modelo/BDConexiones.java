@@ -47,13 +47,26 @@ public class BDConexiones {
 		}
 	}
 
+	public void conexionInsertYDelete(String sentenciaSQL) {
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = conexion.prepareStatement(sentenciaSQL);
+			pS.executeUpdate();
+			JOptionPane.showMessageDialog(null, "Operación exitosa");
+			cerrarConexionBD(pS, conexion);
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Ha ocurrido un error");
+		}
+	}
+
 	public void conexionLogin(String textOk, String user, String pass, String menu, JLayeredPane layeredPane,
 			UsuarioFree Usuario) {
-		String sentenciaSQLSQL = "Select Usuario, Contrasena, IDCliente from Cliente where Usuario=? and Contrasena=?";
+		String sentenciaSQL = "Select Usuario, Contrasena, IDCliente from Cliente where Usuario=? and Contrasena=?";
 
 		try {
 			Connection conexion = conexionBD();
-			PreparedStatement pS = conexion.prepareStatement(sentenciaSQLSQL);
+			PreparedStatement pS = conexion.prepareStatement(sentenciaSQL);
 			pS.setString(1, user);
 			pS.setString(2, pass);
 			ResultSet rS = pS.executeQuery();
@@ -70,29 +83,6 @@ public class BDConexiones {
 		} catch (SQLException sqlException) {
 			sqlException.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Ha ocurrido un error al intentar iniciar sesión");
-		}
-	}
-
-	public void conexionRegistro(UsuarioFree UsuarioNuevo, String login, JLayeredPane layeredPane) {
-		String sentenciaSQLSQL = "INSERT IGNORE INTO Cliente (Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-		try {
-			Connection conexion = conexionBD();
-			PreparedStatement pS = conexion.prepareStatement(sentenciaSQLSQL);
-			pS.setString(1, UsuarioNuevo.getNombre());
-			pS.setString(2, UsuarioNuevo.getApellido());
-			pS.setString(3, UsuarioNuevo.getUsuario());
-			pS.setString(4, UsuarioNuevo.getContrasena());
-			pS.setString(5, UsuarioNuevo.getFechaNacimiento());
-			pS.setString(6, UsuarioNuevo.getFechaRegistro());
-			pS.setString(7, "Free");
-			pS.executeUpdate();
-			JOptionPane.showMessageDialog(null, "El usuario se ha creado correctamente");
-			cerrarConexionBD(pS, conexion);
-			metodos.cambiarDePanel(layeredPane, login);
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Ha ocurrido un  error al registrar el ususario en la base de datos");
 		}
 	}
 
@@ -206,6 +196,62 @@ public class BDConexiones {
 				multimedia.setDuracion(rS.getTime("Duracion"));
 				multimedia.setReproducciones(rS.getInt("total_reproducciones"));
 				multimedia.setImagenMultimedia(rS.getString("Imagen"));
+				cancionesArrayList.add(multimedia);
+
+			}
+
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+			return cancionesArrayList;
+
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+	}
+
+	public ArrayList<Album> conexionAlbumAdmin() {
+
+		String sentenciaSQL = "SELECT IDAlbum, Titulo FROM Album;";
+
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery();
+
+			ArrayList<Album> albumesArrayList = new ArrayList<>();
+			while (rS.next()) {
+				Album album = new Album();
+				album.setAlbumID(rS.getInt("IDAlbum"));
+				album.setTituloAlbum(rS.getString("Titulo"));
+				albumesArrayList.add(album);
+			}
+
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+			return albumesArrayList;
+
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+	}
+
+	public ArrayList<Cancion> conexionCancionAdmin() {
+
+		String sentenciaSQL = "SELECT IDAudio, Nombre FROM Audio WHERE Tipo = 'Cancion';";
+
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery();
+
+			ArrayList<Cancion> cancionesArrayList = new ArrayList<>();
+
+			while (rS.next()) {
+				Cancion multimedia = new Cancion();
+				multimedia.setNombreMultimedia(rS.getString("Nombre"));
+				multimedia.setAudioID(rS.getInt("IDAudio"));
 				cancionesArrayList.add(multimedia);
 
 			}
