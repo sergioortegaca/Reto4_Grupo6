@@ -87,6 +87,14 @@ public class Reto4Main extends JFrame {
 	Musico artistaSeleccionado;
 	UsuarioFree UsuarioNuevo, Usuario;
 
+	// LÍMITES DE FECHAS
+	Calendar ahoraMismo = Calendar.getInstance();
+	int ano = ahoraMismo.get(Calendar.YEAR);
+	int mes = ahoraMismo.get(Calendar.MONTH) + 1;
+	int dia = ahoraMismo.get(Calendar.DATE);
+	String minString = (ano - 100) + "-" + mes + "-" + dia;
+	String maxString = ano + "-" + mes + "-" + dia;
+
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -124,10 +132,7 @@ public class Reto4Main extends JFrame {
 		crearPanelMenu();
 
 		// DESCUBRIR MUSICA
-		crearPanelDescubrirMusica();
-
-		// DESCUBRIR PODCASTS
-		crearPanelDescubrirPodcasts();
+		// crearPanelDescubrirMusica();
 
 		// MIS PLAYLISTS
 		crearPanelMisPlaylists();
@@ -288,11 +293,6 @@ public class Reto4Main extends JFrame {
 
 		dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-		Calendar rightNow = Calendar.getInstance();
-		int year = rightNow.get(Calendar.YEAR) - 12;
-		String minString = "1905-01-01";
-		String maxString = year + "-12-31";
-
 		try {
 			fechaNacimientoCalendar.setMaxSelectableDate(dateFormat.parse(maxString));
 			fechaNacimientoCalendar.setMinSelectableDate(dateFormat.parse(minString));
@@ -311,8 +311,8 @@ public class Reto4Main extends JFrame {
 				UsuarioNuevo.setUsuario(txtUsuarioRegistro.getText());
 				UsuarioNuevo.setContrasena(new String(pswCrearContrasena.getPassword()));
 				UsuarioNuevo.setFechaNacimiento(dateFormat.format(fechaNacimientoCalendar.getDate()));
-
 				UsuarioNuevo.setFechaRegistro(timeStamp);
+
 				if (UsuarioNuevo.getNombre().length() <= 30 && UsuarioNuevo.getNombre().length() >= 1
 						&& UsuarioNuevo.getApellido().length() <= 30 && UsuarioNuevo.getApellido().length() >= 1
 						&& UsuarioNuevo.getUsuario().length() <= 30 && UsuarioNuevo.getUsuario().length() >= 1
@@ -430,59 +430,6 @@ public class Reto4Main extends JFrame {
 		});
 		btnMisPlayLists.setBounds(304, 265, 265, 23);
 		panelMenu.add(btnMisPlayLists);
-
-	}
-
-	private void crearPanelDescubrirMusica() {
-
-		panelDescubrirMusica = new JPanel();
-		panelDescubrirMusica.setBackground(new Color(255, 255, 255));
-		layeredPane.add(panelDescubrirMusica, descubrirMusica);
-		panelDescubrirMusica.setLayout(null);
-
-		// Botones
-		metodos.botonPerfil(layeredPane, panelDescubrirMusica, user);
-		metodos.botonAtras(layeredPane, menu, panelDescubrirMusica);
-
-		JLabel lblListaDeArtistas = new JLabel("Lista de Artistas");
-		lblListaDeArtistas.setHorizontalAlignment(SwingConstants.CENTER);
-		lblListaDeArtistas.setBounds(328, 61, 217, 14);
-		panelDescubrirMusica.add(lblListaDeArtistas);
-
-		JList<String> listaMusico = new JList<String>();
-		listaMusico.setBackground(SystemColor.menu);
-		listaMusico.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		DefaultListModel<String> modeloLista = new DefaultListModel<>();
-
-		ArrayList<Musico> musicoArrayList = conexionesBD.conexionMusico();
-
-		if (musicoArrayList != null) {
-			for (Musico musico : musicoArrayList) {
-
-				modeloLista.addElement(
-						musico.getNombreArtistico() + " (" + musico.getReproducciones() + " reproducciones)");
-
-			}
-		} else {
-			modeloLista.addElement("No se han encontrado artistas disponibles");
-		}
-		listaMusico.setModel(modeloLista);
-		listaMusico.setBounds(246, 120, 382, 295);
-		listaMusico.addMouseListener(new MouseAdapter() {
-			// AL HACER CLICK EN EL ARTISTA SE EJECUTA
-			public void mouseClicked(MouseEvent e) {
-
-				int index = listaMusico.getSelectedIndex();
-
-				artistaSeleccionado = musicoArrayList.get(index);
-				artistaSeleccionado.getNombreArtistico();
-				crearPanelArtista();
-				metodos.cambiarDePanel(layeredPane, artistaPanel);
-
-			}
-		});
-
-		panelDescubrirMusica.add(listaMusico);
 
 	}
 
@@ -724,49 +671,6 @@ public class Reto4Main extends JFrame {
 		});
 		btnAtras.setBounds(55, 28, 89, 23);
 		panelReproduccion.add(btnAtras);
-	}
-
-	private void crearPanelDescubrirPodcasts() {
-		panelDescubrirPodcasts = new JPanel();
-		panelDescubrirPodcasts.setBackground(new Color(255, 255, 255));
-		layeredPane.add(panelDescubrirPodcasts, descubrirPodcasts);
-		panelDescubrirPodcasts.setLayout(null);
-
-		metodos.botonPerfil(layeredPane, panelDescubrirPodcasts, user);
-		metodos.botonAtras(layeredPane, menu, panelDescubrirPodcasts);
-
-		JLabel lblListaDePodcasters = new JLabel("Lista de podcasters");
-		lblListaDePodcasters.setHorizontalAlignment(SwingConstants.CENTER);
-		lblListaDePodcasters.setBounds(328, 61, 217, 14);
-		panelDescubrirPodcasts.add(lblListaDePodcasters);
-
-		JList<String> listaPodcaster = new JList<String>();
-		listaPodcaster.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		listaPodcaster.setBackground(SystemColor.menu);
-		DefaultListModel<String> modeloLista2 = new DefaultListModel<>();
-
-		ArrayList<Podcaster> podcasterArrayList = conexionesBD.conexionPodcaster();
-
-		if (podcasterArrayList != null) {
-			for (Podcaster podcaster : podcasterArrayList) {
-				modeloLista2.addElement(podcaster.getNombreArtistico());
-			}
-		} else {
-			modeloLista2.addElement("No se han encontrado artistas disponibles");
-		}
-		listaPodcaster.setModel(modeloLista2);
-		listaPodcaster.setBounds(246, 120, 382, 295);
-		listaPodcaster.addMouseListener(new MouseAdapter() {
-
-			public void mouseClicked(MouseEvent e) {
-				int index2 = listaPodcaster.getSelectedIndex();
-				podcasterSeleccionado = modeloLista2.getElementAt(index2);
-
-			}
-		});
-
-		panelDescubrirPodcasts.add(listaPodcaster);
-
 	}
 
 	private void crearPanelMisPlaylists() {
@@ -1061,37 +965,10 @@ public class Reto4Main extends JFrame {
 		txtFormulario4.setBounds(450, 243, 175, 20);
 		panelFormularioAdmin.add(txtFormulario4);
 
-		JTextField txtFormulario5 = new JTextField();
-		txtFormulario5.setColumns(10);
-		txtFormulario5.setBounds(450, 274, 175, 20);
-		panelFormularioAdmin.add(txtFormulario5);
-
 		JComboBox comboBoxFormulario = new JComboBox();
-		comboBoxFormulario.setModel(new DefaultComboBoxModel(new String[] { "Solista", "Grupo" }));
 		comboBoxFormulario.setBounds(450, 274, 175, 20);
+		comboBoxFormulario.setModel(new DefaultComboBoxModel(new String[] { "Solista", "Grupo" }));
 		panelFormularioAdmin.add(comboBoxFormulario);
-
-		JDateChooser anoActivoCalendar = new JDateChooser();
-		anoActivoCalendar.setBounds(412, 248, 175, 20);
-		panelFormularioAdmin.add(anoActivoCalendar);
-
-		JTextFieldDateEditor editor = (JTextFieldDateEditor) anoActivoCalendar.getDateEditor();
-		editor.setEditable(false);
-
-		dateFormat = new SimpleDateFormat("yyyy");
-
-		Calendar rightNow = Calendar.getInstance();
-		int year = rightNow.get(Calendar.YEAR);
-		String minString = "1905";
-		String maxString = "" + year;
-
-		try {
-			anoActivoCalendar.setMaxSelectableDate(dateFormat.parse(maxString));
-			anoActivoCalendar.setMinSelectableDate(dateFormat.parse(minString));
-			anoActivoCalendar.setDate(dateFormat.parse(maxString));
-		} catch (ParseException e1) {
-			e1.printStackTrace();
-		}
 
 		JButton btnAnadirFormulario = new JButton("Aceptar");
 		btnAnadirFormulario.setBounds(387, 350, 100, 23);
@@ -1101,45 +978,97 @@ public class Reto4Main extends JFrame {
 		case swArtistas:
 			metodos.crearLabel("Nombre Artistico:", 260, 150, 148, 20, panelFormularioAdmin);
 			metodos.crearLabel("Imagen:", 260, 181, 148, 20, panelFormularioAdmin);
-			metodos.crearLabel("Caracteristica:", 260, 212, 148, 20, panelFormularioAdmin);
+			metodos.crearLabel("Año desde el que lleva activo:", 260, 212, 200, 20, panelFormularioAdmin);
 			metodos.crearLabel("Descripción:", 260, 243, 148, 20, panelFormularioAdmin);
-			metodos.crearLabel("Año desde el que lleva activo:", 260, 274, 200, 20, panelFormularioAdmin);
-			txtFormulario5.setVisible(false);
+			metodos.crearLabel("Característica:", 260, 274, 148, 20, panelFormularioAdmin);
+
+			comboBoxFormulario.setModel(new DefaultComboBoxModel(new String[] { "Solista", "Grupo" }));
 
 			btnAnadirFormulario.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					int anoActivo = 0;
-
 					try {
-						anoActivo = Integer.parseInt(txtFormulario4.getText());
+						int anoActivo = Integer.parseInt(txtFormulario3.getText());
+
+						Musico MusicoNuevo = new Musico();
+						MusicoNuevo.setNombreArtistico(txtFormulario1.getText());
+						MusicoNuevo.setImagenArtista(txtFormulario2.getText());
+						MusicoNuevo.setCaracteristica(comboBoxFormulario.getSelectedItem().toString());
+						MusicoNuevo.setCaracteristica(txtFormulario4.getText());
+						MusicoNuevo.setAnoActivo(anoActivo);
+
+						if (MusicoNuevo.getNombreArtistico().length() <= 30
+								&& MusicoNuevo.getNombreArtistico().length() >= 1
+								&& MusicoNuevo.getImagenArtista().length() <= 30
+								&& MusicoNuevo.getImagenArtista().length() >= 1
+								&& MusicoNuevo.getCaracteristica().length() <= 30
+								&& MusicoNuevo.getCaracteristica().length() >= 1 && anoActivo <= ano) {
+
+							String sentenciaSQL = "INSERT IGNORE INTO Musico (NombreArtistico, Imagen, Caracteristica, Descripcion, AnoActivo) VALUES ("
+									+ "'" + MusicoNuevo.getNombreArtistico() + "'" + ", " + "'"
+									+ MusicoNuevo.getImagenArtista() + "'" + ", " + "'"
+									+ MusicoNuevo.getCaracteristica() + "'" + ", " + "'"
+									+ MusicoNuevo.getDescripcionArtista() + "'" + ", " + "'"
+									+ MusicoNuevo.getAnoActivo() + "')";
+							conexionesBD.conexionInsertYDelete(sentenciaSQL);
+						} else
+							JOptionPane.showMessageDialog(null,
+									"Los campos no pueden estar vacíos y deben tener menos de 30 caracteres, y el año no puede superar el actual ("
+											+ ano + ")");
 					} catch (Exception e1) {
 						e1.printStackTrace();
 						JOptionPane.showMessageDialog(null, "El año debe ser un número");
-						txtFormulario3.setText("");
 					}
-
-					Musico MusicoNuevo = new Musico();
-					MusicoNuevo.setNombreArtistico(txtFormulario1.getText());
-					MusicoNuevo.setImagenArtista(txtFormulario2.getText());
-					MusicoNuevo.setCaracteristica(comboBoxFormulario.getSelectedItem().toString());
-					MusicoNuevo.setDescripcionArtista(txtFormulario3.getText());
-					MusicoNuevo.setAnoActivo(anoActivo);
-
-					String sentenciaSQL = "INSERT IGNORE INTO Musico (NombreArtistico, Imagen, Caracteristica, Descripcion, AnoActivo) VALUES ("
-							+ "'" + MusicoNuevo.getNombreArtistico() + "'" + ", " + "'" + MusicoNuevo.getImagenArtista()
-							+ "'" + ", " + "'" + MusicoNuevo.getCaracteristica() + "'" + ", " + "'"
-							+ MusicoNuevo.getDescripcionArtista() + "'" + ", " + "'" + MusicoNuevo.getAnoActivo() + "'";
-					conexionesBD.conexionInsertYDelete(sentenciaSQL);
+					txtFormulario1.setText("");
+					txtFormulario2.setText("");
+					txtFormulario3.setText("");
+					txtFormulario4.setText("");
 				}
 			});
 			break;
 
 		case swAlbumes:
 			metodos.crearLabel("Título:", 260, 150, 148, 20, panelFormularioAdmin);
-			metodos.crearLabel("Año:", 260, 181, 148, 20, panelFormularioAdmin);
+			metodos.crearLabel("Imagen:", 260, 181, 148, 20, panelFormularioAdmin);
 			metodos.crearLabel("Genero:", 260, 212, 148, 20, panelFormularioAdmin);
-			metodos.crearLabel("Imagen:", 260, 243, 148, 20, panelFormularioAdmin);
-			metodos.crearLabel("Músico al que pertenece:", 260, 274, 148, 20, panelFormularioAdmin);
+			metodos.crearLabel("Músico al que pertenece:", 260, 243, 148, 20, panelFormularioAdmin);
+			metodos.crearLabel("Año:", 260, 274, 148, 20, panelFormularioAdmin);
+			txtFormulario4.setVisible(false);
+
+			DefaultComboBoxModel<String> modeloLista = new DefaultComboBoxModel<>();
+
+			ArrayList<Musico> musicoArrayList = conexionesBD.conexionMusico();
+
+			if (musicoArrayList != null) {
+				for (Musico musico : musicoArrayList) {
+					modeloLista.addElement(musico.getNombreArtistico());
+				}
+			} else {
+				modeloLista.addElement("No se han encontrado artistas disponibles");
+			}
+			comboBoxFormulario.setModel(modeloLista);
+			comboBoxFormulario.setBounds(450, 243, 175, 20);
+
+			JDateChooser fechaPubliAlbum = new JDateChooser();
+			fechaPubliAlbum.setBounds(450, 274, 175, 20);
+			panelFormularioAdmin.add(fechaPubliAlbum);
+
+			JTextFieldDateEditor editor = (JTextFieldDateEditor) fechaPubliAlbum.getDateEditor();
+			editor.setEditable(false);
+
+			dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+			try {
+				fechaPubliAlbum.setMaxSelectableDate(dateFormat.parse(maxString));
+				fechaPubliAlbum.setMinSelectableDate(dateFormat.parse(minString));
+				fechaPubliAlbum.setDate(dateFormat.parse(maxString));
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+			}
+
+			btnAnadirFormulario.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				}
+			});
 			break;
 
 		case swCanciones:
@@ -1147,7 +1076,6 @@ public class Reto4Main extends JFrame {
 			metodos.crearLabel("Duración:", 260, 181, 148, 20, panelFormularioAdmin);
 			metodos.crearLabel("Imagen:", 260, 212, 148, 20, panelFormularioAdmin);
 			txtFormulario4.setVisible(false);
-			txtFormulario5.setVisible(false);
 
 			break;
 		case swPodcasters:
