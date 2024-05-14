@@ -16,7 +16,6 @@ public abstract class Audio {
 	@SuppressWarnings("unused")
 	private boolean paused;
 	private long clipTimePosition;
-
 	protected int audioID;
 	protected String nombreMultimedia;
 	protected Time duracion;
@@ -24,7 +23,6 @@ public abstract class Audio {
 	protected String tipoMultimedia;
 	protected int reproducciones;
 
-	
 	
 	public String getTipoMultimedia() {
 		return tipoMultimedia;

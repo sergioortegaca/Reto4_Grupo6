@@ -59,7 +59,7 @@ public class BDConexiones {
 			JOptionPane.showMessageDialog(null, "Ha ocurrido un error");
 		}
 	}
-	
+
 	public void conexionInsertYDeleteCancion(String sentenciaSQL) {
 		try {
 			Connection conexion = conexionBD();
@@ -165,32 +165,6 @@ public class BDConexiones {
 		return null;
 	}
 
-	public ArrayList<Podcaster> conexionPodcaster() {
-
-		String sentenciaSQL = "SELECT DISTINCT * FROM Podcaster;";
-
-		try {
-			Connection conexion = conexionBD();
-			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
-			ResultSet rS = pS.executeQuery();
-
-			ArrayList<Podcaster> podcasterArrayList = new ArrayList<Podcaster>();
-			while (rS.next()) {
-				Podcaster artista = new Podcaster();
-				artista.setArtistaID(rS.getInt("IDPodcaster"));
-				artista.setNombreArtistico(rS.getString("NombreArtistico"));
-				podcasterArrayList.add(artista);
-			}
-			rS.close();
-			cerrarConexionBD(pS, conexion);
-			return podcasterArrayList;
-
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
-		}
-		return null;
-	}
-
 	public ArrayList<Cancion> conexionCancion(String albumSeleccionado) {
 
 		String sentenciaSQL = "SELECT Audio.Nombre, Audio.IDAudio, Audio.Duracion, Audio.Imagen,"
@@ -288,10 +262,9 @@ public class BDConexiones {
 		/**
 		 * Inserción en la BBDD para grabar las estadísticas.
 		 */
-
-		conexionInsertYDeleteCancion("INSERT IGNORE INTO Reproducciones (IDCliente, IDAudio, FechaReproduccion) VALUES ('"+IDCliente+"', '"
-				+ IDAudio + "', '" + timeStamp + "')");
-
+		conexionInsertYDeleteCancion(
+				"INSERT IGNORE INTO Reproducciones (IDCliente, IDAudio, FechaReproduccion) VALUES ('" + IDCliente
+						+ "', '" + IDAudio + "', '" + timeStamp + "')");
 		/**
 		 * Grabación de las estadísticas se cambia de canción.
 		 */
@@ -325,6 +298,69 @@ public class BDConexiones {
 		}
 		return null;
 
+	}
+
+	public ArrayList<Podcaster> conexionPodcaster() {
+
+		String sentenciaSQL = "SELECT DISTINCT * FROM Podcaster;";
+
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery();
+
+			ArrayList<Podcaster> podcasterArrayList = new ArrayList<Podcaster>();
+			while (rS.next()) {
+				Podcaster artista = new Podcaster();
+				artista.setArtistaID(rS.getInt("IDPodcaster"));
+				artista.setNombreArtistico(rS.getString("NombreArtistico"));
+				artista.setImagenArtista(rS.getString("Imagen"));
+				artista.setDescripcionArtista(rS.getString("Descripcion"));
+				artista.setAnoActivo(rS.getInt("AnoActivo"));
+				podcasterArrayList.add(artista);
+			}
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+			return podcasterArrayList;
+
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+	}
+
+	public ArrayList<Podcast> conexionPodcast(int IDPodcaster) {
+
+		String sentenciaSQL = "SELECT A.* " + "FROM Podcast P " + "INNER JOIN Audio A ON P.IDAudio = A.IDAudio "
+				+ "WHERE P.IDPodcaster = (SELECT IDPodcaster " + "FROM Podcaster " + "WHERE IDPodcaster = "
+				+ IDPodcaster + ");";
+
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery();
+
+			ArrayList<Podcast> podcastsArrayList = new ArrayList<>();
+
+			while (rS.next()) {
+				Podcast multimedia = new Podcast();
+				multimedia.setNombreMultimedia(rS.getString("Nombre"));
+				multimedia.setAudioID(rS.getInt("IDAudio"));
+				multimedia.setDuracion(rS.getTime("Duracion"));
+				multimedia.setTipoMultimedia(rS.getString("Tipo"));
+				multimedia.setImagenMultimedia(rS.getString("Imagen"));
+				podcastsArrayList.add(multimedia);
+
+			}
+
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+			return podcastsArrayList;
+
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
 	}
 
 	/*
