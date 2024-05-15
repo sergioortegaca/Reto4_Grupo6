@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.nio.file.Paths;
+import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
@@ -33,6 +36,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import java.awt.event.MouseAdapter;
 import javax.swing.border.EtchedBorder;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.JTextArea;
 import modelo.*;
 import javax.swing.JComboBox;
@@ -140,7 +144,6 @@ public class Reto4Main extends JFrame {
 	}
 
 	private void crearPanelBienvenida() {
-
 		panelBienvenida = new JPanel();
 		panelBienvenida.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelBienvenida, bienvenida);
@@ -1067,8 +1070,39 @@ public class Reto4Main extends JFrame {
 
 			btnAnadirFormulario.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+					try {
+						Album AlbumNuevo = new Album();
+						AlbumNuevo.setTituloAlbum(txtFormulario1.getText());
+						AlbumNuevo.setImagenAlbum(txtFormulario2.getText());
+						AlbumNuevo.setGeneroAlbum(txtFormulario3.getText());
+						// AlbumNuevo.setArtistaID(comboBoxFormulario.getSelectedItem().toString());
+						AlbumNuevo.setAnoAlbum((Date) fechaPubliAlbum.getDate());
+
+						if (AlbumNuevo.getTituloAlbum().length() <= 30 && AlbumNuevo.getTituloAlbum().length() >= 1
+								&& AlbumNuevo.getImagenAlbum().length() <= 30
+								&& AlbumNuevo.getImagenAlbum().length() >= 1
+								&& AlbumNuevo.getGeneroAlbum().length() <= 30
+								&& AlbumNuevo.getGeneroAlbum().length() >= 1) {
+
+							String sentenciaSQL = "INSERT IGNORE INTO Album (Titulo, Ano, Genero, Imagen, artista) VALUES ("
+									+ "'" + AlbumNuevo.getTituloAlbum() + "'" + ", " + "'" + AlbumNuevo.getAnoAlbum()
+									+ "'" + ", " + "'" + AlbumNuevo.getGeneroAlbum() + "'" + ", " + "'"
+							// + AlbumNuevo.getImagenAlbum() + "'" + ", " + "'" + AlbumNuevo.get()
+									+ "')";
+							conexionesBD.conexionInsertYDelete(sentenciaSQL);
+						} else
+							JOptionPane.showMessageDialog(null,
+									"Los campos no pueden estar vacíos y deben tener menos de 30 caracteres, y el año no puede superar el actual ("
+											+ ano + ")");
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(null, "El año debe ser un número");
+					}
 				}
 			});
+			txtFormulario1.setText("");
+			txtFormulario2.setText("");
+			txtFormulario3.setText("");
 			break;
 
 		case swCanciones:
@@ -1204,6 +1238,11 @@ public class Reto4Main extends JFrame {
 				}
 			});
 			panelJlistAdmin.add(listaCancionesAdmin);
+
+			JScrollPane scrollPaneCanciones = new JScrollPane(listaCancionesAdmin);
+			scrollPaneCanciones.setSize(382, 295);
+			scrollPaneCanciones.setLocation(246, 120);
+			panelJlistAdmin.add(scrollPaneCanciones);
 			break;
 
 		case swPodcasters:
@@ -1216,6 +1255,7 @@ public class Reto4Main extends JFrame {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	private void crearPanelEstadisticas(String opcionEstadisticas) {
 		panelEstadisticas = new JPanel();
 		panelEstadisticas.setLayout(null);
@@ -1223,5 +1263,50 @@ public class Reto4Main extends JFrame {
 		layeredPane.add(panelEstadisticas, estadisticas);
 
 		metodos.botonAtras(layeredPane, menuGestionar, panelEstadisticas);
+
+		JLabel lblGestionarMusica = new JLabel();
+		lblGestionarMusica.setHorizontalAlignment(SwingConstants.CENTER);
+		lblGestionarMusica.setFont(new Font("Tahoma", Font.BOLD, 40));
+		lblGestionarMusica.setBounds(150, 40, 567, 83);
+		panelEstadisticas.add(lblGestionarMusica);
+
+		String[] titulos = new String[4];
+		Object[][] datos = new Object[9][9];
+
+		switch (opcionEstadisticas) {
+		case swCancionesMasGustadas:
+			lblGestionarMusica.setText("Canciones más gustadas");
+			break;
+
+		case swPodcastMasGustados:
+			lblGestionarMusica.setText("Podcast más gustados");
+			break;
+
+		case swMasEscuchados:
+			lblGestionarMusica.setText("Más escuchadas");
+			break;
+
+		case swTopPlaylist:
+			lblGestionarMusica.setText("Top PlayList");
+			break;
+
+		}
+
+		JTable tabla = new JTable();
+		tabla.setModel(new DefaultTableModel(datos, titulos) {
+			boolean[] columnEditables = new boolean[] { false, false, false, false };
+
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		});
+		tabla.setBounds(87, 153, 699, 144);
+		tabla.setRowSelectionAllowed(false);
+		panelEstadisticas.add(tabla);
+
+		JScrollPane scrollPane = new JScrollPane(tabla);
+		scrollPane.setSize(699, 167);
+		scrollPane.setLocation(87, 160);
+		panelEstadisticas.add(scrollPane);
 	}
 }

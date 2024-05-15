@@ -49,4 +49,5 @@ public class Album extends Musico {
 	public void setImagenAlbum(String imagenAlbum) {
 		this.imagenAlbum = imagenAlbum;
 	}
+	
 }

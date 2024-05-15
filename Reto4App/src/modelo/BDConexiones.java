@@ -60,7 +60,6 @@ public class BDConexiones {
 		}
 	}
 
-
 	public void conexionLogin(String textOk, String user, String pass, String menu, JLayeredPane layeredPane,
 			UsuarioFree Usuario) {
 		String sentenciaSQL = "Select Usuario, Contrasena, IDCliente from Cliente where Usuario=? and Contrasena=?";
@@ -300,6 +299,24 @@ public class BDConexiones {
 
 	}
 
+	public void conexionMasEscuchados() {
+		String sentenciaSQL = "SELECT IDAudio, Nombre FROM Audio WHERE Tipo = 'Cancion';";
+		
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = conexion.prepareStatement(sentenciaSQL);
+			pS.executeUpdate();
+			ResultSet rS = pS.executeQuery();
+			while (rS.next()) {
+				
+			}
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Ha ocurrido un error");
+		}
+	}
 	/*
 	 * public ArrayList<Musico> getBDaRTISTAS(String SQL) {
 	 * 
