@@ -14,7 +14,6 @@ import javax.swing.JTextArea;
 import javax.swing.border.EtchedBorder;
 import modelo.Album;
 import modelo.Audio;
-import modelo.Cancion;
 import modelo.Musico;
 import modelo.Podcaster;
 

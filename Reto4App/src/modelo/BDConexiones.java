@@ -363,6 +363,33 @@ public class BDConexiones {
 		return null;
 	}
 
+	public ArrayList<Playlist> conexionPlaylist(int usuario) {
+
+		String sentenciaSQL = "SELECT * FROM Playlist WHERE IDCliente='" + usuario + "';";
+
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery();
+
+			ArrayList<Playlist> playlistsArrayList = new ArrayList<>();
+			while (rS.next()) {
+				Playlist playlist = new Playlist();
+				playlist.setIDList(rS.getInt("IDList"));
+				playlist.setTitulo(rS.getString("Titulo"));
+				playlistsArrayList.add(playlist);
+			}
+
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+			return playlistsArrayList;
+
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+	}
+
 	/*
 	 * public ArrayList<Musico> getBDaRTISTAS(String SQL) {
 	 * 

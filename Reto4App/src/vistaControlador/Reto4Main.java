@@ -36,6 +36,7 @@ import java.awt.event.MouseAdapter;
 import javax.swing.border.EtchedBorder;
 import javax.swing.JTextArea;
 import modelo.*;
+import javax.swing.JProgressBar;
 
 public class Reto4Main extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -93,8 +94,12 @@ public class Reto4Main extends JFrame {
 	Podcast podcastSeleccionado;
 	Musico musicoSeleccionado;
 	Cancion cancionSeleccionada;
+	Playlist playlist;
 	UsuarioFree UsuarioNuevo, Usuario;
 	JTextArea textAreaInfoCancion = new JTextArea("");
+	JButton btnReproPlay;
+	private JProgressBar progressBar;
+	int i;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -133,12 +138,6 @@ public class Reto4Main extends JFrame {
 
 		// MENÚ
 		crearPanelMenu();
-
-		// DESCUBRIR MUSICA
-		// crearPanelDescubrir();
-
-		// MIS PLAYLISTS
-		crearPanelMisPlaylists();
 
 	}
 
@@ -438,6 +437,7 @@ public class Reto4Main extends JFrame {
 		JButton btnMisPlayLists = new JButton("Mis PlayLists");
 		btnMisPlayLists.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				crearPanelMisPlaylists();
 				metodos.cambiarDePanel(layeredPane, misPlayLists);
 			}
 		});
@@ -720,13 +720,114 @@ public class Reto4Main extends JFrame {
 		panelReproduccion.setBackground(new Color(255, 255, 255));
 		panelReproduccion.setLayout(null);
 
+		progressBar = new JProgressBar();
+		progressBar.setBounds(292, 280, 287, 8);
+		panelReproduccion.add(progressBar);
+		progressBar.setValue(0);
+
 		switch (ventanaReproduccion) {
 
 		case swVentanaCancion:
 			audioSeleccionado = cancionSeleccionada;
+
+			JButton btnReproAnterior = new JButton("<");
+			btnReproAnterior.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (atras == 0) {
+						audioSeleccionado.resume();
+						atras++;
+					} else if (atras == 1) {
+						progressBar.setValue(0);
+						audioSeleccionado.pause();
+						numAudio--;
+						audioSeleccionado.loadClip("/audio/" + numAudio + ".wav");
+						audioSeleccionado.setAudioID(numAudio);
+						atras = 0;
+						audioSeleccionado.play();
+						btnReproPlay.setText("Pause");
+
+						audioSeleccionado = conexionesBD.nuevaCancion(Usuario.getClienteID(),
+								audioSeleccionado.getAudioID(), timeStamp);
+
+						metodos.cancionSonando(textAreaInfoCancion, audioSeleccionado, albumSeleccionado,
+								musicoSeleccionado, panelReproduccion);
+					}
+
+				}
+			});
+			btnReproAnterior.setBounds(292, 299, 89, 28);
+			panelReproduccion.add(btnReproAnterior);
+
+			JButton btnReproAdelante = new JButton(">");
+			btnReproAdelante.setBounds(492, 299, 89, 28);
+			btnReproAdelante.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					progressBar.setValue(0);
+					audioSeleccionado.pause();
+					numAudio++;
+					audioSeleccionado.loadClip("/audio/" + numAudio + ".wav");
+					audioSeleccionado.setAudioID(numAudio);
+					audioSeleccionado.play();
+					btnReproPlay.setText("Pause");
+
+					audioSeleccionado = conexionesBD.nuevaCancion(Usuario.getClienteID(),
+							audioSeleccionado.getAudioID(), timeStamp);
+
+					metodos.cancionSonando(textAreaInfoCancion, audioSeleccionado, albumSeleccionado,
+							musicoSeleccionado, panelReproduccion);
+
+				}
+			});
+
+			JButton btnReproFavorito = new JButton("Favoritos");
+			btnReproFavorito.setBounds(592, 299, 89, 28);
+			panelReproduccion.add(btnReproFavorito);
+
+			JButton btnReproMenu = new JButton("Menu");
+			btnReproMenu.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					audioSeleccionado.pause();
+					metodos.cambiarDePanel(layeredPane, menu);
+				}
+			});
+			btnReproMenu.setBounds(192, 299, 89, 28);
+			panelReproduccion.add(btnReproMenu);
+
+			panelReproduccion.add(btnReproAdelante);
+
+			metodos.cancionSonando(textAreaInfoCancion, audioSeleccionado, albumSeleccionado, musicoSeleccionado,
+					panelReproduccion);
 			break;
+
 		case swVentanaPodcast:
 			audioSeleccionado = podcastSeleccionado;
+
+			JButton btn05 = new JButton("x0.5");
+			btn05.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					audioSeleccionado.pause();
+					audioSeleccionado.loadClip("/audio/" + numAudio + "x05.wav");
+					audioSeleccionado.play();
+					btnReproPlay.setText("Pause");
+				}
+			});
+			btn05.setBounds(292, 299, 89, 28);
+			panelReproduccion.add(btn05);
+
+			JButton btn15 = new JButton("x1.5");
+			btn15.setBounds(492, 299, 89, 28);
+			btn15.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					audioSeleccionado.pause();
+					audioSeleccionado.loadClip("/audio/" + numAudio + "x15.wav");
+					audioSeleccionado.play();
+					btnReproPlay.setText("Pause");
+				}
+			});
+			btn15.setBounds(492, 299, 89, 28);
+			panelReproduccion.add(btn15);
+
+			metodos.podcastSonando(textAreaInfoCancion, audioSeleccionado, podcasterSeleccionado, panelReproduccion);
 			break;
 		}
 
@@ -735,16 +836,9 @@ public class Reto4Main extends JFrame {
 		ImageIcon imagenEscalada = new ImageIcon(imagen.getScaledInstance(255, 235, Image.SCALE_SMOOTH));
 
 		JLabel lblImagen = new JLabel(imagenEscalada);
-		lblImagen.setBounds(292, 30, 287, 250);
+		lblImagen.setBounds(292, 25, 287, 250);
 		lblImagen.setIcon(imagenEscalada);
 		panelReproduccion.add(lblImagen);
-
-		if (ventanaReproduccion == swVentanaCancion) {
-			metodos.cancionSonando(textAreaInfoCancion, audioSeleccionado, albumSeleccionado, musicoSeleccionado,
-					panelReproduccion);
-		} else {
-			metodos.podcastSonando(textAreaInfoCancion, audioSeleccionado, podcasterSeleccionado, panelReproduccion);
-		}
 
 		metodos.botonPerfil(layeredPane, panelReproduccion, user);
 
@@ -755,17 +849,7 @@ public class Reto4Main extends JFrame {
 				"INSERT IGNORE INTO Reproducciones (IDCliente, IDAudio, FechaReproduccion) VALUES ('"
 						+ Usuario.getClienteID() + "', '" + numAudio + "', '" + timeStamp + "')");
 
-		JButton btnReproMenu = new JButton("Menu");
-		btnReproMenu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				audioSeleccionado.pause();
-				metodos.cambiarDePanel(layeredPane, menu);
-			}
-		});
-		btnReproMenu.setBounds(192, 299, 89, 28);
-		panelReproduccion.add(btnReproMenu);
-
-		JButton btnReproPlay = new JButton("Play");
+		btnReproPlay = new JButton("Play");
 		btnReproPlay.setBounds(392, 299, 89, 28);
 		btnReproPlay.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -782,65 +866,6 @@ public class Reto4Main extends JFrame {
 		});
 
 		panelReproduccion.add(btnReproPlay);
-
-		JButton btnReproAnterior = new JButton("<");
-		btnReproAnterior.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (atras == 0) {
-					audioSeleccionado.resume();
-					atras++;
-				} else if (atras == 1) {
-					audioSeleccionado.pause();
-					numAudio--;
-					audioSeleccionado.loadClip("/audio/" + numAudio + ".wav");
-					audioSeleccionado.setAudioID(numAudio);
-					atras = 0;
-					audioSeleccionado.play();
-					btnReproPlay.setText("Pause");
-
-					audioSeleccionado = conexionesBD.nuevaCancion(Usuario.getClienteID(),
-							audioSeleccionado.getAudioID(), timeStamp);
-
-					if (ventanaReproduccion == swVentanaCancion)
-						metodos.cancionSonando(textAreaInfoCancion, audioSeleccionado, albumSeleccionado,
-								musicoSeleccionado, panelReproduccion);
-				}
-
-			}
-		});
-		btnReproAnterior.setBounds(292, 299, 89, 28);
-		panelReproduccion.add(btnReproAnterior);
-
-		JButton btnReproAdelante = new JButton(">");
-		btnReproAdelante.setBounds(492, 299, 89, 28);
-		btnReproAdelante.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				audioSeleccionado.pause();
-				numAudio++;
-				audioSeleccionado.loadClip("/audio/" + numAudio + ".wav");
-				audioSeleccionado.setAudioID(numAudio);
-				audioSeleccionado.play();
-				btnReproPlay.setText("Pause");
-
-				audioSeleccionado = conexionesBD.nuevaCancion(Usuario.getClienteID(), audioSeleccionado.getAudioID(),
-						timeStamp);
-
-				if (ventanaReproduccion == swVentanaCancion) {
-					metodos.cancionSonando(textAreaInfoCancion, audioSeleccionado, albumSeleccionado,
-							musicoSeleccionado, panelReproduccion);
-				} else {
-					metodos.podcastSonando(textAreaInfoCancion, audioSeleccionado, podcasterSeleccionado,
-							panelReproduccion);
-				}
-
-			}
-		});
-
-		panelReproduccion.add(btnReproAdelante);
-
-		JButton btnReproFavorito = new JButton("Favoritos");
-		btnReproFavorito.setBounds(592, 299, 89, 28);
-		panelReproduccion.add(btnReproFavorito);
 
 		JButton btnAtras = new JButton("Atrás");
 		btnAtras.addActionListener(new ActionListener() {
@@ -861,6 +886,38 @@ public class Reto4Main extends JFrame {
 		panelMisPlaylists.setLayout(null);
 		metodos.botonPerfil(layeredPane, panelMisPlaylists, user);
 		metodos.botonAtras(layeredPane, menu, panelMisPlaylists);
+
+		JList<String> playlistLista = new JList<>();
+		playlistLista.setBackground(SystemColor.menu);
+		playlistLista.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		playlistLista.setBounds(10, 76, 600, 364);
+
+		DefaultListModel<String> playlistModelList = new DefaultListModel<>();
+
+		ArrayList<Playlist> playlistsArrayList = conexionesBD.conexionPlaylist(Usuario.getClienteID());
+
+		if (playlistsArrayList != null) {
+			for (Playlist playlist : playlistsArrayList) {
+				playlistModelList.addElement(playlist.getTitulo());
+			}
+		} else {
+			playlistModelList.addElement("No se han encontrado playlists disponibles");
+		}
+		playlistLista.setModel(playlistModelList);
+		panelMisPlaylists.add(playlistLista);
+
+		playlistLista.addMouseListener(new MouseAdapter() {
+
+			public void mouseClicked(MouseEvent e) {
+				int indexPlaylist = playlistLista.getSelectedIndex();
+				if (indexPlaylist != -1) {
+					playlist = playlistsArrayList.get(indexPlaylist);
+					crearPanelReproduccion(swVentanaCancion, albumPanel);
+					metodos.cambiarDePanel(layeredPane, reproduccion);
+
+				}
+			}
+		});
 
 		JButton btnNewButton = new JButton("Nueva PlayList");
 		btnNewButton.addActionListener(new ActionListener() {
@@ -894,12 +951,6 @@ public class Reto4Main extends JFrame {
 		});
 		btnExportar.setBounds(639, 216, 170, 35);
 		panelMisPlaylists.add(btnExportar);
-
-		JList<?> list_1 = new JList<Object>();
-		list_1.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		list_1.setBackground(SystemColor.menu);
-		list_1.setBounds(10, 76, 600, 364);
-		panelMisPlaylists.add(list_1);
 
 	}
 
