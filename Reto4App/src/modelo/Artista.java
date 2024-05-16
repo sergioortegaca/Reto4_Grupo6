@@ -1,6 +1,6 @@
 package modelo;
 
-public abstract class Artista {
+public abstract class Artista{
 	protected int artistaID;
 	protected String nombreArtistico;
 	protected String imagenArtista;

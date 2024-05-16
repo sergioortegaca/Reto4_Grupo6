@@ -10,7 +10,7 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-public abstract class Audio {
+public abstract class Audio extends Artista{
 
 	private Clip audio;
 	private boolean paused;
@@ -22,9 +22,8 @@ public abstract class Audio {
 	protected String imagenMultimedia;
 	protected String tipoMultimedia;
 	protected int reproducciones;
+	protected int numeroMeGustas;
 
-	
-	
 	public String getTipoMultimedia() {
 		return tipoMultimedia;
 	}
@@ -39,6 +38,14 @@ public abstract class Audio {
 
 	public void setReproducciones(int reproducciones) {
 		this.reproducciones = reproducciones;
+	}
+
+	public int getNumeroMeGustas() {
+		return numeroMeGustas;
+	}
+
+	public void setNumeroMeGustas(int numeroMeGustas) {
+		this.numeroMeGustas = numeroMeGustas;
 	}
 
 	public int getAudioID() {

@@ -36,6 +36,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import java.awt.event.MouseAdapter;
 import javax.swing.border.EtchedBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JTextArea;
 import modelo.*;
@@ -80,7 +81,7 @@ public class Reto4Main extends JFrame {
 			swArtistas = "swArtistas", swAlbumes = "swAlbumes", swCanciones = "swCanciones",
 			swPodcasters = "swPodcasters", swPodcasts2 = "swPodcasts2",
 			swCancionesMasGustadas = "swCancionesMasGustadas", swPodcastMasGustados = "swPodcastMasGustados",
-			swMasEscuchados = "swMasEscuchados", swTopPlaylist = "swTopPlaylist";
+			swMasEscuchados = "swMasEscuchados";
 
 	// VARIABLES BOTONES DE CAMBIAR DE CANCIÓN
 	int atras = 0, numCancion = 0;
@@ -796,10 +797,6 @@ public class Reto4Main extends JFrame {
 		btnGestionar3.setBounds(304, 267, 265, 23);
 		panelMenuGestionar.add(btnGestionar3);
 
-		JButton btnGestionar4 = new JButton();
-		btnGestionar4.setBounds(304, 315, 265, 23);
-		panelMenuGestionar.add(btnGestionar4);
-
 		switch (opcionMenu) {
 		case swMusica:
 			btnGestionar1.setText("Gestionar musicos");
@@ -825,8 +822,6 @@ public class Reto4Main extends JFrame {
 					metodos.cambiarDePanel(layeredPane, editar);
 				}
 			});
-
-			btnGestionar4.setVisible(false);
 			break;
 
 		case swPodcasts1:
@@ -847,8 +842,6 @@ public class Reto4Main extends JFrame {
 			});
 
 			btnGestionar3.setVisible(false);
-
-			btnGestionar4.setVisible(false);
 			break;
 
 		case swEstadisticas:
@@ -870,23 +863,13 @@ public class Reto4Main extends JFrame {
 				}
 			});
 
-			btnGestionar3.setText("Más Escuchados");
+			btnGestionar3.setText("Más Escuchadas");
 			btnGestionar3.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					crearPanelEstadisticas(swMasEscuchados);
 					metodos.cambiarDePanel(layeredPane, estadisticas);
 				}
 			});
-
-			btnGestionar4.setText("Top PlayLists");
-			btnGestionar4.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					crearPanelEstadisticas(swTopPlaylist);
-					metodos.cambiarDePanel(layeredPane, estadisticas);
-				}
-			});
-			break;
-
 		}
 	}
 
@@ -1255,7 +1238,6 @@ public class Reto4Main extends JFrame {
 		}
 	}
 
-	@SuppressWarnings("serial")
 	private void crearPanelEstadisticas(String opcionEstadisticas) {
 		panelEstadisticas = new JPanel();
 		panelEstadisticas.setLayout(null);
@@ -1270,43 +1252,103 @@ public class Reto4Main extends JFrame {
 		lblGestionarMusica.setBounds(150, 40, 567, 83);
 		panelEstadisticas.add(lblGestionarMusica);
 
-		String[] titulos = new String[4];
-		Object[][] datos = new Object[9][9];
-
 		switch (opcionEstadisticas) {
 		case swCancionesMasGustadas:
+			ArrayList<Cancion> masGustadas = conexionesBD.conexionMasGustadas();
+
+			Object[][] celdasMasGustadas = new Object[9][4];
+			String[] titulosMasGustadas = { "Posición", "Músico", "Canción", "Número de me gustas" };
+
+			JTable tablaMasGustadas = new JTable();
+			tablaMasGustadas.setDefaultEditor(Object.class, null);
+			tablaMasGustadas.setRowSelectionAllowed(false);
+
+			DefaultTableModel datosMasGustadas = new DefaultTableModel(celdasMasGustadas, titulosMasGustadas);
+
+			for (int i = 0; i < 9; i++) {
+				Cancion cancionMasEscuchada = masGustadas.get(i);
+				datosMasGustadas.setValueAt(i + 1, i, 0);
+				datosMasGustadas.setValueAt(cancionMasEscuchada.getNombreArtistico(), i, 1);
+				datosMasGustadas.setValueAt(cancionMasEscuchada.getNombreMultimedia(), i, 2);
+				datosMasGustadas.setValueAt(cancionMasEscuchada.getNumeroMeGustas(), i, 3);
+			}
+			tablaMasGustadas.setModel(datosMasGustadas);
+			tablaMasGustadas.setBounds(87, 153, 699, 144);
+			panelEstadisticas.add(tablaMasGustadas);
+
+			JScrollPane scrollPaneMasGustadas = new JScrollPane(tablaMasGustadas);
+			scrollPaneMasGustadas.setBounds(87, 160, 699, 167);
+			panelEstadisticas.add(scrollPaneMasGustadas);
+
 			lblGestionarMusica.setText("Canciones más gustadas");
 			break;
 
 		case swPodcastMasGustados:
+			ArrayList<Podcast> masGustados = conexionesBD.conexionMasGustados();
+
+			Object[][] celdasMasGustados = new Object[9][4];
+			String[] titulosMasGustados = { "Posición", "Podcaster", "Podcast", "Número de me gustas" };
+
+			JTable tablaMasGustados = new JTable();
+			tablaMasGustados.setDefaultEditor(Object.class, null);
+			tablaMasGustados.setRowSelectionAllowed(false);
+
+			DefaultTableModel datosMasGustados = new DefaultTableModel(celdasMasGustados, titulosMasGustados);
+
+			for (int i = 0; i < 9; i++) {
+				if (i < masGustados.size()) {
+					Podcast cancionMasEscuchada = masGustados.get(i);
+					datosMasGustados.setValueAt(i + 1, i, 0);
+					datosMasGustados.setValueAt(cancionMasEscuchada.getNombreArtistico(), i, 1);
+					datosMasGustados.setValueAt(cancionMasEscuchada.getNombreMultimedia(), i, 2);
+					datosMasGustados.setValueAt(cancionMasEscuchada.getNumeroMeGustas(), i, 3);
+				} else {
+					datosMasGustados.setValueAt(i + 1, i, 0);
+					datosMasGustados.setValueAt(null, i, 1);
+					datosMasGustados.setValueAt(null, i, 2);
+					datosMasGustados.setValueAt(null, i, 3);
+				}
+			}
+			tablaMasGustados.setModel(datosMasGustados);
+			tablaMasGustados.setBounds(87, 153, 699, 144);
+			panelEstadisticas.add(tablaMasGustados);
+
+			JScrollPane scrollPaneMasGustados = new JScrollPane(tablaMasGustados);
+			scrollPaneMasGustados.setBounds(87, 160, 699, 167);
+			panelEstadisticas.add(scrollPaneMasGustados);
+
 			lblGestionarMusica.setText("Podcast más gustados");
 			break;
 
 		case swMasEscuchados:
+			ArrayList<Cancion> masEscuchados = conexionesBD.conexionMasEscuchadas();
+
+			Object[][] celdasMasEscuchados = new Object[9][4];
+			String[] titulosMasEscuchados = { "Posición", "Músico", "Canción", "Reproducciones" };
+
+			JTable tablaMasEscuchados = new JTable();
+			tablaMasEscuchados.setDefaultEditor(Object.class, null);
+			tablaMasEscuchados.setRowSelectionAllowed(false);
+
+			DefaultTableModel datosMasEscuchados = new DefaultTableModel(celdasMasEscuchados, titulosMasEscuchados);
+
+			for (int i = 0; i < 9; i++) {
+				Cancion cancionMasEscuchada = masEscuchados.get(i);
+				datosMasEscuchados.setValueAt(i + 1, i, 0);
+				datosMasEscuchados.setValueAt(cancionMasEscuchada.getNombreArtistico(), i, 1);
+				datosMasEscuchados.setValueAt(cancionMasEscuchada.getNombreMultimedia(), i, 2);
+				datosMasEscuchados.setValueAt(cancionMasEscuchada.getReproducciones(), i, 3);
+			}
+			tablaMasEscuchados.setModel(datosMasEscuchados);
+			tablaMasEscuchados.setBounds(87, 153, 699, 144);
+			panelEstadisticas.add(tablaMasEscuchados);
+
+			JScrollPane scrollPaneMasEscuchados = new JScrollPane(tablaMasEscuchados);
+			scrollPaneMasEscuchados.setBounds(87, 160, 699, 167);
+			panelEstadisticas.add(scrollPaneMasEscuchados);
+
 			lblGestionarMusica.setText("Más escuchadas");
 			break;
-
-		case swTopPlaylist:
-			lblGestionarMusica.setText("Top PlayList");
-			break;
-
 		}
-
-		JTable tabla = new JTable();
-		tabla.setModel(new DefaultTableModel(datos, titulos) {
-			boolean[] columnEditables = new boolean[] { false, false, false, false };
-
-			public boolean isCellEditable(int row, int column) {
-				return columnEditables[column];
-			}
-		});
-		tabla.setBounds(87, 153, 699, 144);
-		tabla.setRowSelectionAllowed(false);
-		panelEstadisticas.add(tabla);
-
-		JScrollPane scrollPane = new JScrollPane(tabla);
-		scrollPane.setSize(699, 167);
-		scrollPane.setLocation(87, 160);
-		panelEstadisticas.add(scrollPane);
 	}
 }

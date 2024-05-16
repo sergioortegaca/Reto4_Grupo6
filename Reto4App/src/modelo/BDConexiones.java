@@ -46,7 +46,7 @@ public class BDConexiones {
 			sqlException.printStackTrace();
 		}
 	}
-	
+
 	public void conexionInsertYDelete(String sentenciaSQL) {
 		try {
 			Connection conexion = conexionBD();
@@ -214,7 +214,7 @@ public class BDConexiones {
 		}
 		return null;
 	}
-	
+
 	public ArrayList<Album> conexionAlbumAdmin() {
 
 		String sentenciaSQL = "SELECT IDAlbum, Titulo FROM Album;";
@@ -294,50 +294,86 @@ public class BDConexiones {
 	}
 
 	public static Cancion nuevaCancion(Cancion cancionSeleccionada) {
-		
+
 		return null;
 
 	}
 
-	public void conexionMasEscuchados() {
-		String sentenciaSQL = "SELECT IDAudio, Nombre FROM Audio WHERE Tipo = 'Cancion';";
-		
+	public ArrayList<Cancion> conexionMasEscuchadas() {
+		String sentenciaSQL = "SELECT Estadisticas.NumeroReproducciones, Musico.NombreArtistico, Audio.Nombre FROM Estadisticas INNER JOIN Cancion ON Estadisticas.IDAudio = Cancion.IDAudio INNER JOIN Album ON Cancion.IDAlbum = Album.IDAlbum INNER JOIN Musico ON Album.IDMusico = Musico.IDMusico INNER JOIN Audio ON Cancion.IDAudio = Audio.IDAudio WHERE Audio.Tipo = 'Cancion' ORDER BY NumeroReproducciones DESC LIMIT 9;";
+
 		try {
 			Connection conexion = conexionBD();
-			PreparedStatement pS = conexion.prepareStatement(sentenciaSQL);
-			pS.executeUpdate();
-			ResultSet rS = pS.executeQuery();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery(sentenciaSQL);
+
+			ArrayList<Cancion> masEscuchados = new ArrayList<Cancion>();
+
 			while (rS.next()) {
-				
+				Cancion cancionMasEscuchada = new Cancion();
+				cancionMasEscuchada.setNombreMultimedia(rS.getString("Audio.Nombre"));
+				cancionMasEscuchada.setNombreArtistico(rS.getString("Musico.NombreArtistico"));
+				cancionMasEscuchada.setReproducciones(rS.getInt("Estadisticas.NumeroReproducciones"));
+				masEscuchados.add(cancionMasEscuchada);
 			}
 			rS.close();
 			cerrarConexionBD(pS, conexion);
+			return masEscuchados;
 		} catch (SQLException sqlException) {
 			sqlException.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Ha ocurrido un error");
 		}
+		return null;
 	}
-	/*
-	 * public ArrayList<Musico> getBDaRTISTAS(String SQL) {
-	 * 
-	 * String sentenciaSQL = SQL; try { try { Class.forName(DRIVER);
-	 * 
-	 * } catch (ClassNotFoundException e1) {
-	 * 
-	 * e1.printStackTrace(); } // Cargamos el Driver para mysql y Abrimos la
-	 * conexión a BBDD Connection connection = (Connection)
-	 * DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
-	 * PreparedStatement st = (PreparedStatement)
-	 * connection.prepareStatement(sentenciaSQL); ResultSet rs = st.executeQuery();
-	 * 
-	 * artistas = new ArrayList<Musico>(); while (rs.next()) { Musico artista = new
-	 * Musico(); artista.setArtistaID(rs.getInt("IDMusico"));
-	 * artista.setNombreArtistico(rs.getString("NombreArtistico"));
-	 * artista.setImagenArtista(rs.getString("Imagen")); artistas.add(artista); }
-	 * 
-	 * rs.close(); st.close(); connection.close(); return artistas;
-	 * 
-	 * } catch (SQLException sqlException) { sqlException.printStackTrace(); }
-	 * return null; }
-	 */
+
+	public ArrayList<Cancion> conexionMasGustadas() {
+		String sentenciaSQL = "SELECT Estadisticas.NumeroMeGustas, Musico.NombreArtistico, Audio.Nombre FROM Estadisticas INNER JOIN Cancion ON Estadisticas.IDAudio = Cancion.IDAudio INNER JOIN Album ON Cancion.IDAlbum = Album.IDAlbum INNER JOIN Musico ON Album.IDMusico = Musico.IDMusico INNER JOIN Audio ON Cancion.IDAudio = Audio.IDAudio WHERE Audio.Tipo = 'Cancion' ORDER BY NumeroMeGustas DESC LIMIT 9;";
+
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery(sentenciaSQL);
+
+			ArrayList<Cancion> masGustadas = new ArrayList<Cancion>();
+
+			while (rS.next()) {
+				Cancion cancionMasGustada = new Cancion();
+				cancionMasGustada.setNombreMultimedia(rS.getString("Audio.Nombre"));
+				cancionMasGustada.setNombreArtistico(rS.getString("Musico.NombreArtistico"));
+				cancionMasGustada.setNumeroMeGustas(rS.getInt("Estadisticas.NumeroMeGustas"));
+				masGustadas.add(cancionMasGustada);
+			}
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+			return masGustadas;
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+	}
+
+	public ArrayList<Podcast> conexionMasGustados() {
+		String sentenciaSQL = "SELECT Estadisticas.NumeroMeGustas, Podcaster.NombreArtistico, Audio.Nombre FROM Estadisticas INNER JOIN Podcast ON Estadisticas.IDAudio = Podcast.IDAudio INNER JOIN Podcaster ON Podcast.IDPodcaster = Podcaster.IDPodcaster INNER JOIN Audio ON Podcast.IDAudio = Audio.IDAudio WHERE Audio.Tipo = 'Podcast' ORDER BY NumeroMeGustas DESC LIMIT 9;";
+
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery(sentenciaSQL);
+
+			ArrayList<Podcast> masGustados = new ArrayList<Podcast>();
+
+			while (rS.next()) {
+				Podcast podcastMasGustado = new Podcast();
+				podcastMasGustado.setNombreMultimedia(rS.getString("Audio.Nombre"));
+				podcastMasGustado.setNombreArtistico(rS.getString("Podcaster.NombreArtistico"));
+				podcastMasGustado.setNumeroMeGustas(rS.getInt("Estadisticas.NumeroMeGustas"));
+				masGustados.add(podcastMasGustado);
+			}
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+			return masGustados;
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+	}
 }
