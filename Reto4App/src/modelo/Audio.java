@@ -10,7 +10,7 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-public abstract class Audio {
+public abstract class Audio extends Artista{
 
 	private Clip audio;
 	@SuppressWarnings("unused")

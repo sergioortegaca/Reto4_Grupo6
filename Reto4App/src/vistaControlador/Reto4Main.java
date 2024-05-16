@@ -40,13 +40,14 @@ import javax.swing.JProgressBar;
 
 public class Reto4Main extends JFrame {
 	private static final long serialVersionUID = 1L;
-//CAMBIAR BOTON PERFIL
+
+	// CAMBIAR BOTON PERFIL
 	Metodos metodos = new Metodos();
 	BDConexiones conexionesBD = new BDConexiones();
 
 	JPanel contentPane, panelBienvenida, panelLogin, panelRegistro, panelPerfil, panelMenuAdmin, panelMenuGestionar,
 			panelEstadisticas, panelEditar, panelDescubrir, panelArtista, panelAlbum, panelReproduccion,
-			panelDescubrirPodcasts, panelMisPlaylists, panelMenu, panelMenuEditar, panelFormularioAdmin,
+			panelDescubrirPodcasts, panelMisPlaylists, panelPlaylist, panelMenu, panelMenuEditar, panelFormularioAdmin,
 			panelJlistAdmin;
 
 	JLayeredPane layeredPane;
@@ -61,7 +62,7 @@ public class Reto4Main extends JFrame {
 	String user = "";
 	String albumTit = "", albumAno = "", albumGen = "";
 
-	int reproduccionCont;
+	int reproduccionCont, i;
 
 	// COGER EL DIA ACTUAL PARA EL REGISTRO:
 	String timeStamp = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
@@ -69,11 +70,11 @@ public class Reto4Main extends JFrame {
 	// NOMBRES PANELES
 	String bienvenida = "bienvenida", login = "login", registro = "registro", menu = "menu", perfil = "perfil",
 			menuAdmin = "menuAdmin", descubrir = "descubrir", artistaPanel = "artista", albumPanel = "album",
-			reproduccion = "reproduccion", misPlayLists = "misPlayLists", estadisticas = "estadisticas",
-			editar = "editar", menuGestionar = "menugestionar", formularioAdmin = "formularioAdmin",
-			jlistAdmin = "jlistAdmin";
+			reproduccion = "reproduccion", misPlaylists = "misPlaylists", playlistPanel = "playlistPanel",
+			estadisticas = "estadisticas", editar = "editar", menuGestionar = "menugestionar",
+			formularioAdmin = "formularioAdmin", jlistAdmin = "jlistAdmin";
 
-	// VARIABLES PARA LOS SWITCH DE LOS PANELES DE MUSICA O PODCAST
+	// VARIABLES PARA LOS SWITCH DE LOS PANELES DE MUSICA/PODCAST
 	final String swVentanaMusico = "swVentanaMusico", swVentanaPodcaster = "swVentanaPodcaster",
 			swVentanaAudios = "swVentanaAudios", swVentanaAlbumes = "swVentanaAlbumes",
 			swVentanaPodcasts = "swVentanaPodcasts", swVentanaPodcast = "swVentanaPodcast",
@@ -95,11 +96,13 @@ public class Reto4Main extends JFrame {
 	Musico musicoSeleccionado;
 	Cancion cancionSeleccionada;
 	Playlist playlist;
+	Playlist playlistCanciones;
+	Playlist playlistFavorita;
 	UsuarioFree UsuarioNuevo, Usuario;
 	JTextArea textAreaInfoCancion = new JTextArea("");
 	JButton btnReproPlay;
 	private JProgressBar progressBar;
-	int i;
+	JTextArea textAreaInfo = new JTextArea("");
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -230,6 +233,7 @@ public class Reto4Main extends JFrame {
 					crearPanelesMain();
 					Usuario = new UsuarioFree();
 					conexionesBD.conexionLogin(textOk, user, pass, menu, layeredPane, Usuario);
+					conexionesBD.playlistFavorita(Usuario, Usuario.getClienteID());
 					txtUsuario.setText("");
 					pswContrasena.setText("");
 
@@ -438,7 +442,7 @@ public class Reto4Main extends JFrame {
 		btnMisPlayLists.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				crearPanelMisPlaylists();
-				metodos.cambiarDePanel(layeredPane, misPlayLists);
+				metodos.cambiarDePanel(layeredPane, misPlaylists);
 			}
 		});
 		btnMisPlayLists.setBounds(304, 265, 265, 23);
@@ -477,10 +481,8 @@ public class Reto4Main extends JFrame {
 
 			if (musicoArrayList != null) {
 				for (Musico musico : musicoArrayList) {
-
 					modeloLista.addElement(
 							musico.getNombreArtistico() + " (" + musico.getReproducciones() + " reproducciones)");
-
 				}
 			} else {
 				modeloLista.addElement("No se han encontrado artistas disponibles");
@@ -494,7 +496,6 @@ public class Reto4Main extends JFrame {
 					musicoSeleccionado = musicoArrayList.get(index);
 					crearPanelArtista(swVentanaAlbumes, musicoSeleccionado);
 					metodos.cambiarDePanel(layeredPane, artistaPanel);
-
 				}
 			});
 
@@ -528,10 +529,8 @@ public class Reto4Main extends JFrame {
 					podcasterSeleccionado = podcasterArrayList.get(indexPodcast);
 					crearPanelArtista(swVentanaPodcasts, podcasterSeleccionado);
 					metodos.cambiarDePanel(layeredPane, artistaPanel);
-
 				}
 			});
-
 			panelDescubrir.add(listaPodcaster);
 			break;
 		}
@@ -595,6 +594,9 @@ public class Reto4Main extends JFrame {
 					}
 				}
 			});
+
+			textAreaInfo.setText(tipo + "En activo desde: " + seleccion.getAnoActivo() + "\nDescripción: "
+					+ seleccion.getDescripcionArtista());
 			break;
 
 		case swVentanaPodcasts:
@@ -630,19 +632,20 @@ public class Reto4Main extends JFrame {
 				}
 			});
 
+			textAreaInfo.setText(tipo + "En activo desde: " + seleccion.getAnoActivo() + "\nDescripción: "
+					+ seleccion.getDescripcionArtista());
 			break;
 
 		}
 		// TextArea
-		JTextArea textAreaInfoArtista = new JTextArea(tipo + "En activo desde: " + seleccion.getAnoActivo()
-				+ "\nDescripción: " + seleccion.getDescripcionArtista());
-		textAreaInfoArtista.setLineWrap(true);
-		textAreaInfoArtista.setWrapStyleWord(true);
-		textAreaInfoArtista.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		textAreaInfoArtista.setBackground(SystemColor.menu);
-		textAreaInfoArtista.setBounds(529, 68, 298, 126);
-		textAreaInfoArtista.setEditable(false);
-		panelArtista.add(textAreaInfoArtista);
+
+		textAreaInfo.setLineWrap(true);
+		textAreaInfo.setWrapStyleWord(true);
+		textAreaInfo.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		textAreaInfo.setBackground(SystemColor.menu);
+		textAreaInfo.setBounds(529, 68, 298, 126);
+		textAreaInfo.setEditable(false);
+		panelArtista.add(textAreaInfo);
 
 	}
 
@@ -691,7 +694,6 @@ public class Reto4Main extends JFrame {
 				int indexCancion = listaCanciones.getSelectedIndex();
 				if (indexCancion != -1) {
 					cancionSeleccionada = cancionesArrayList.get(indexCancion);
-
 					crearPanelReproduccion(swVentanaCancion, albumPanel);
 					metodos.cambiarDePanel(layeredPane, reproduccion);
 
@@ -780,6 +782,15 @@ public class Reto4Main extends JFrame {
 			});
 
 			JButton btnReproFavorito = new JButton("Favoritos");
+			btnReproFavorito.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+
+					conexionesBD.conexionInsertYDeleteCancion(
+							"INSERT IGNORE INTO PlaylistCanciones (IDAudio, IDList, FechaPlaylistCancion) VALUES ('"
+									+ audioSeleccionado.getAudioID() + "', '" + Usuario.getPlaylistFavorita() + "', '"
+									+ timeStamp + "')");
+				}
+			});
 			btnReproFavorito.setBounds(592, 299, 89, 28);
 			panelReproduccion.add(btnReproFavorito);
 
@@ -845,9 +856,11 @@ public class Reto4Main extends JFrame {
 		numAudio = audioSeleccionado.getAudioID();
 		audioSeleccionado.loadClip("/audio/" + numAudio + ".wav");
 
-		conexionesBD.conexionInsertYDeleteCancion(
-				"INSERT IGNORE INTO Reproducciones (IDCliente, IDAudio, FechaReproduccion) VALUES ('"
-						+ Usuario.getClienteID() + "', '" + numAudio + "', '" + timeStamp + "')");
+		/*
+		 * conexionesBD.conexionInsertYDeleteCancion(
+		 * "INSERT IGNORE INTO Reproducciones (IDCliente, IDAudio, FechaReproduccion) VALUES ('"
+		 * + Usuario.getClienteID() + "', '" + numAudio + "', '" + timeStamp + "')");
+		 */
 
 		btnReproPlay = new JButton("Play");
 		btnReproPlay.setBounds(392, 299, 89, 28);
@@ -882,7 +895,7 @@ public class Reto4Main extends JFrame {
 	private void crearPanelMisPlaylists() {
 		panelMisPlaylists = new JPanel();
 		panelMisPlaylists.setBackground(new Color(255, 255, 255));
-		layeredPane.add(panelMisPlaylists, misPlayLists);
+		layeredPane.add(panelMisPlaylists, misPlaylists);
 		panelMisPlaylists.setLayout(null);
 		metodos.botonPerfil(layeredPane, panelMisPlaylists, user);
 		metodos.botonAtras(layeredPane, menu, panelMisPlaylists);
@@ -912,8 +925,8 @@ public class Reto4Main extends JFrame {
 				int indexPlaylist = playlistLista.getSelectedIndex();
 				if (indexPlaylist != -1) {
 					playlist = playlistsArrayList.get(indexPlaylist);
-					crearPanelReproduccion(swVentanaCancion, albumPanel);
-					metodos.cambiarDePanel(layeredPane, reproduccion);
+					crearPanelPlaylist();
+					metodos.cambiarDePanel(layeredPane, playlistPanel);
 
 				}
 			}
@@ -951,6 +964,49 @@ public class Reto4Main extends JFrame {
 		});
 		btnExportar.setBounds(639, 216, 170, 35);
 		panelMisPlaylists.add(btnExportar);
+
+	}
+
+	protected void crearPanelPlaylist() {
+
+		panelPlaylist = new JPanel();
+		panelPlaylist.setBackground(new Color(255, 255, 255));
+		layeredPane.add(panelPlaylist, playlistPanel);
+		panelPlaylist.setLayout(null);
+
+		metodos.botonPerfil(layeredPane, panelPlaylist, user);
+		metodos.botonAtras(layeredPane, misPlaylists, panelPlaylist);
+
+		JList<String> playlistCancionesLista = new JList<>();
+		playlistCancionesLista.setBackground(SystemColor.menu);
+		playlistCancionesLista.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		playlistCancionesLista.setBounds(10, 76, 600, 364);
+
+		DefaultListModel<String> playlistCancionesModelList = new DefaultListModel<>();
+
+		ArrayList<Playlist> playlistCancionessArrayList = conexionesBD.conexionPlaylistCanciones(playlist.getIDList());
+
+		if (playlistCancionessArrayList != null) {
+			for (Playlist playlistCancion : playlistCancionessArrayList) {
+				playlistCancionesModelList.addElement(playlistCancion.getNombreMultimedia());
+			}
+		} else {
+			playlistCancionesModelList.addElement("No se han encontrado playlists disponibles");
+		}
+		playlistCancionesLista.setModel(playlistCancionesModelList);
+		panelPlaylist.add(playlistCancionesLista);
+
+		playlistCancionesLista.addMouseListener(new MouseAdapter() {
+
+			public void mouseClicked(MouseEvent e) {
+				int indexPlaylistCanciones = playlistCancionesLista.getSelectedIndex();
+				if (indexPlaylistCanciones != -1) {
+					playlistCanciones = playlistCancionessArrayList.get(indexPlaylistCanciones);
+					metodos.cambiarDePanel(layeredPane, playlistPanel);
+
+				}
+			}
+		});
 
 	}
 

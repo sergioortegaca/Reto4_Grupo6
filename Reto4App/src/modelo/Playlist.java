@@ -7,6 +7,25 @@ public class Playlist extends Usuario {
 	protected int IDList;
 	protected String Titulo;
 	protected Date FechaCreacion;
+	
+	/*protected int IDAudio;
+	protected String NombreAudio;
+
+	public String getNombreAudio() {
+		return NombreAudio;
+	}
+
+	public void setNombreAudio(String nombreAudio) {
+		NombreAudio = nombreAudio;
+	}
+
+	public int getIDAudio() {
+		return IDAudio;
+	}
+
+	public void setIDAudio(int iDAudio) {
+		IDAudio = iDAudio;
+	}*/
 
 	public int getIDList() {
 		return IDList;
