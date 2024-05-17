@@ -887,16 +887,8 @@ public class Reto4Main extends JFrame {
 		lblMenuEditar.setBounds(153, 59, 567, 83);
 		panelMenuEditar.add(lblMenuEditar);
 
-		JButton btnModificar = new JButton("Modificar");
-		btnModificar.setBounds(304, 171, 265, 23);
-		btnModificar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		panelMenuEditar.add(btnModificar);
-
 		JButton btnAnadir = new JButton("Añadir");
-		btnAnadir.setBounds(304, 219, 265, 23);
+		btnAnadir.setBounds(304, 200, 265, 23);
 		btnAnadir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				crearPanelFormularioAdmin(opcionGestionar);
@@ -906,7 +898,7 @@ public class Reto4Main extends JFrame {
 		panelMenuEditar.add(btnAnadir);
 
 		JButton btnEliminar = new JButton("Eliminar");
-		btnEliminar.setBounds(304, 267, 265, 23);
+		btnEliminar.setBounds(304, 250, 265, 23);
 		btnEliminar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				crearPanelJlistAdmin(opcionGestionar);
