@@ -13,8 +13,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.EtchedBorder;
 import modelo.Album;
-import modelo.Cancion;
+import modelo.Audio;
 import modelo.Musico;
+import modelo.Podcaster;
 
 public class Metodos {
 
@@ -92,7 +93,7 @@ public class Metodos {
 				cambiarDePanel(layeredPane, "Perfil");
 			}
 		});
-		btnPerfil.setBounds(735, 28, 89, 23);
+		btnPerfil.setBounds(735, 28, 89, 30);
 		variablePanel.add(btnPerfil);
 	}
 
@@ -129,11 +130,12 @@ public class Metodos {
 		return label;
 	}
 
-	public void estaSonando(Cancion cancionSeleccionada, Album albumSeleccionado, Musico artistaSeleccionado, JPanel panelReproduccion) {
+	public void cancionSonando(JTextArea textAreaInfoCancion, Audio audioSeleccionado, Album albumSeleccionado,
+			Musico musicoSeleccionado, JPanel panelReproduccion) {
 
-		JTextArea textAreaInfoCancion = new JTextArea("");
-		textAreaInfoCancion.setText("Está sonando " + cancionSeleccionada.getNombreMultimedia() + "\nDel disco "
-				+ albumSeleccionado.getTituloAlbum() + "\nDe " + artistaSeleccionado.getNombreArtistico());
+		textAreaInfoCancion.setText("Está sonando " + audioSeleccionado.getNombreMultimedia() + "\nDel disco "
+				+ albumSeleccionado.getTituloAlbum() + "\nDe " + musicoSeleccionado.getNombreArtistico());
+
 		textAreaInfoCancion.setLineWrap(true);
 		textAreaInfoCancion.setWrapStyleWord(true);
 		textAreaInfoCancion.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
@@ -144,5 +146,21 @@ public class Metodos {
 		panelReproduccion.add(textAreaInfoCancion);
 		panelReproduccion.updateUI();
 
+	}
+
+	public void podcastSonando(JTextArea textAreaInfoCancion, Audio audioSeleccionado, Podcaster pocasterSeleccionado,
+			JPanel panelReproduccion) {
+
+		textAreaInfoCancion.setText("Estás reproduciendo " + audioSeleccionado.getNombreMultimedia()
+				+ "\nDel podcaster " + pocasterSeleccionado.getNombreArtistico());
+		textAreaInfoCancion.setLineWrap(true);
+		textAreaInfoCancion.setWrapStyleWord(true);
+		textAreaInfoCancion.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		textAreaInfoCancion.setFont(new Font("Tahoma", Font.BOLD, 11));
+		textAreaInfoCancion.setBackground(SystemColor.menu);
+		textAreaInfoCancion.setBounds(192, 348, 489, 92);
+		textAreaInfoCancion.setEditable(false);
+		panelReproduccion.add(textAreaInfoCancion);
+		panelReproduccion.updateUI();
 	}
 }

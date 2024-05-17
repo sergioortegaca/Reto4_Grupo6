@@ -60,6 +60,18 @@ public class BDConexiones {
 		}
 	}
 
+	public void conexionInsertYDeleteCancion(String sentenciaSQL) {
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = conexion.prepareStatement(sentenciaSQL);
+			pS.executeUpdate();
+			cerrarConexionBD(pS, conexion);
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Ha ocurrido un error");
+		}
+	}
+
 	public void conexionLogin(String textOk, String user, String pass, String menu, JLayeredPane layeredPane,
 			UsuarioFree Usuario) {
 		String sentenciaSQL = "Select Usuario, Contrasena, IDCliente from Cliente where Usuario=? and Contrasena=?";
@@ -88,12 +100,16 @@ public class BDConexiones {
 
 	public ArrayList<Musico> conexionMusico() {
 
-		String sentenciaSQL = "SELECT M.*, " + "COALESCE(R.TotalReproducciones, 0) AS TotalReproducciones "
-				+ "FROM Musico M " + "LEFT JOIN ( SELECT A.IDMusico, COUNT(*) AS TotalReproducciones "
-				+ "FROM Reproducciones R " + "INNER JOIN Cancion C ON R.IDAudio = C.IDAudio "
-				+ "INNER JOIN Album A ON C.IDAlbum = A.IDAlbum GROUP BY A.IDMusico ) R "
-				+ "ON M.IDMusico = R.IDMusico; ";
+		String sentenciaSQL = "SELECT * FROM Musico";
 
+		/*
+		 * "SELECT M.*, " + "COALESCE(R.TotalReproducciones, 0) AS TotalReproducciones "
+		 * + "FROM Musico M " +
+		 * "LEFT JOIN ( SELECT A.IDMusico, COUNT(*) AS TotalReproducciones " +
+		 * "FROM Estadisticas R " + "INNER JOIN Cancion C ON R.IDAudio = C.IDAudio " +
+		 * "INNER JOIN Album A ON C.IDAlbum = A.IDAlbum GROUP BY A.IDMusico ) R " +
+		 * "ON M.IDMusico = R.IDMusico; ";
+		 */
 		try {
 			Connection conexion = conexionBD();
 			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
@@ -108,7 +124,7 @@ public class BDConexiones {
 				artista.setDescripcionArtista(rS.getString("Descripcion"));
 				artista.setCaracteristica(rS.getString("Caracteristica").toString());
 				artista.setAnoActivo(rS.getInt("AnoActivo"));
-				artista.setReproducciones(rS.getInt("TotalReproducciones"));
+				// artista.setReproducciones(rS.getInt("TotalReproducciones"));
 				musicoArrayList.add(artista);
 			}
 
@@ -137,7 +153,7 @@ public class BDConexiones {
 				Album album = new Album();
 				album.setAlbumID(rS.getInt("IDAlbum"));
 				album.setTituloAlbum(rS.getString("Titulo"));
-				album.setAnoAlbum(rS.getDate("Ano"));
+				album.setAnoAlbum(rS.getString("Ano"));
 				album.setGeneroAlbum(rS.getString("Genero"));
 				album.setImagenAlbum(rS.getString("Imagen"));
 				albumesArrayList.add(album);
@@ -153,40 +169,22 @@ public class BDConexiones {
 		return null;
 	}
 
-	public ArrayList<Podcaster> conexionPodcaster() {
-
-		String sentenciaSQL = "SELECT DISTINCT * FROM Podcaster;";
-
-		try {
-			Connection conexion = conexionBD();
-			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
-			ResultSet rS = pS.executeQuery();
-
-			ArrayList<Podcaster> podcasterArrayList = new ArrayList<Podcaster>();
-			while (rS.next()) {
-				Podcaster artista = new Podcaster();
-				artista.setArtistaID(rS.getInt("IDPodcaster"));
-				artista.setNombreArtistico(rS.getString("NombreArtistico"));
-				podcasterArrayList.add(artista);
-			}
-			rS.close();
-			cerrarConexionBD(pS, conexion);
-			return podcasterArrayList;
-
-		} catch (SQLException sqlException) {
-			sqlException.printStackTrace();
-		}
-		return null;
-	}
-
 	public ArrayList<Cancion> conexionCancion(String albumSeleccionado) {
 
-		String sentenciaSQL = "SELECT Audio.Nombre, Audio.IDAudio, Audio.Duracion, Audio.Imagen,"
-				+ "       COUNT(Reproducciones.IDAudio) AS total_reproducciones " + "FROM Audio "
+		String sentenciaSQL = "SELECT Audio.Nombre, Audio.IDAudio, Audio.Duracion, Audio.Imagen " + "FROM Audio "
 				+ "JOIN Cancion ON Audio.IDAudio = Cancion.IDAudio " + "JOIN Album ON Cancion.IDAlbum = Album.IDAlbum "
-				+ "LEFT JOIN Reproducciones ON Audio.IDAudio = Reproducciones.IDAudio " + "WHERE Album.Titulo = '"
-				+ albumSeleccionado + "' GROUP BY Audio.Nombre, Audio.IDAudio, Audio.Duracion, Audio.Imagen;";
+				+ "WHERE Album.Titulo = '" + albumSeleccionado
+				+ "' GROUP BY Audio.Nombre, Audio.IDAudio, Audio.Duracion, Audio.Imagen;";
 
+		/*
+		 * "SELECT Audio.Nombre, Audio.IDAudio, Audio.Duracion, Audio.Imagen," +
+		 * "       COUNT(Reproducciones.IDAudio) AS total_reproducciones " +
+		 * "FROM Audio " + "JOIN Cancion ON Audio.IDAudio = Cancion.IDAudio " +
+		 * "JOIN Album ON Cancion.IDAlbum = Album.IDAlbum " +
+		 * "LEFT JOIN Reproducciones ON Audio.IDAudio = Reproducciones.IDAudio " +
+		 * "WHERE Album.Titulo = '" + albumSeleccionado +
+		 * "' GROUP BY Audio.Nombre, Audio.IDAudio, Audio.Duracion, Audio.Imagen;";
+		 */
 		try {
 			Connection conexion = conexionBD();
 			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
@@ -199,7 +197,6 @@ public class BDConexiones {
 				multimedia.setNombreMultimedia(rS.getString("Nombre"));
 				multimedia.setAudioID(rS.getInt("IDAudio"));
 				multimedia.setDuracion(rS.getTime("Duracion"));
-				multimedia.setReproducciones(rS.getInt("total_reproducciones"));
 				multimedia.setImagenMultimedia(rS.getString("Imagen"));
 				cancionesArrayList.add(multimedia);
 
@@ -271,32 +268,204 @@ public class BDConexiones {
 		return null;
 	}
 
-	public void reproduccionesBBDD() {
+	public Cancion nuevaCancion(int IDCliente, int IDAudio, String timeStamp) {
 
-		String sentenciaSQL = "INSERT IGNORE INTO Reproducciones (IDCliente, IDAudio, FechaReproduccion) VALUES (?, ?, ?)";
+		String sentenciaSQL = "SELECT * FROM Audio WHERE IDAudio='" + IDAudio + "';";
+
+		try {
+
+			Cancion multimedia = new Cancion();
+
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery();
+
+			while (rS.next()) {
+
+				multimedia.setNombreMultimedia(rS.getString("Nombre"));
+				multimedia.setAudioID(rS.getInt("IDAudio"));
+				multimedia.setDuracion(rS.getTime("Duracion"));
+				multimedia.setImagenMultimedia(rS.getString("Imagen"));
+				// cancionesArrayList.add(multimedia);
+
+			}
+
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+			return multimedia;
+
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+
+	}
+
+	public ArrayList<Podcaster> conexionPodcaster() {
+
+		String sentenciaSQL = "SELECT DISTINCT * FROM Podcaster;";
 
 		try {
 			Connection conexion = conexionBD();
 			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery();
 
-			/*
-			 * preparedStatement.setString(1, UsuarioNuevo.getNombre());
-			 * preparedStatement.setString(2, UsuarioNuevo.getApellido());
-			 * preparedStatement.setString(3, UsuarioNuevo.getUsuario());
-			 */
-			pS.executeUpdate();
+			ArrayList<Podcaster> podcasterArrayList = new ArrayList<Podcaster>();
+			while (rS.next()) {
+				Podcaster artista = new Podcaster();
+				artista.setArtistaID(rS.getInt("IDPodcaster"));
+				artista.setNombreArtistico(rS.getString("NombreArtistico"));
+				artista.setImagenArtista(rS.getString("Imagen"));
+				artista.setDescripcionArtista(rS.getString("Descripcion"));
+				artista.setAnoActivo(rS.getInt("AnoActivo"));
+				podcasterArrayList.add(artista);
+			}
+			rS.close();
 			cerrarConexionBD(pS, conexion);
-
-		} catch (SQLException ex) {
-			JOptionPane.showMessageDialog(null, "Ha ocurrido un error al registrar las estadísticas.");
+			return podcasterArrayList;
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
 		}
+		return null;
+	}
+
+	public ArrayList<Podcast> conexionPodcast(int IDPodcaster) {
+
+		String sentenciaSQL = "SELECT A.* " + "FROM Podcast P " + "INNER JOIN Audio A ON P.IDAudio = A.IDAudio "
+				+ "WHERE P.IDPodcaster = (SELECT IDPodcaster " + "FROM Podcaster " + "WHERE IDPodcaster = "
+				+ IDPodcaster + ");";
+
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery();
+
+			ArrayList<Podcast> podcastsArrayList = new ArrayList<>();
+
+			while (rS.next()) {
+				Podcast multimedia = new Podcast();
+				multimedia.setNombreMultimedia(rS.getString("Nombre"));
+				multimedia.setAudioID(rS.getInt("IDAudio"));
+				multimedia.setDuracion(rS.getTime("Duracion"));
+				multimedia.setTipoMultimedia(rS.getString("Tipo"));
+				multimedia.setImagenMultimedia(rS.getString("Imagen"));
+				podcastsArrayList.add(multimedia);
+
+			}
+
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+			return podcastsArrayList;
+
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+	}
+
+	public ArrayList<Podcast> conexionPodcastAdmin() {
+
+		String sentenciaSQL = "SELECT IDAudio, Nombre FROM Audio WHERE Tipo = 'Podcast';";
+
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery();
+
+			ArrayList<Podcast> podcastArrayList = new ArrayList<>();
+
+			while (rS.next()) {
+				Podcast multimedia = new Podcast();
+				multimedia.setNombreMultimedia(rS.getString("Nombre"));
+				multimedia.setAudioID(rS.getInt("IDAudio"));
+				podcastArrayList.add(multimedia);
+
+			}
+
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+			return podcastArrayList;
+
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+	}
+
+	public ArrayList<Playlist> conexionPlaylist(int usuario) {
+
+		String sentenciaSQL = "SELECT * FROM Playlist WHERE IDCliente='" + usuario + "';";
+
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery();
+
+			ArrayList<Playlist> playlistsArrayList = new ArrayList<>();
+			while (rS.next()) {
+				Playlist playlist = new Playlist();
+				playlist.setIDList(rS.getInt("IDList"));
+				playlist.setTitulo(rS.getString("Titulo"));
+				playlistsArrayList.add(playlist);
+			}
+
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+			return playlistsArrayList;
+
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
+	}
+
+	public ArrayList<Playlist> conexionPlaylistCanciones(int i) {
+		String sentenciaSQL = "SELECT PlaylistCanciones.*, Audio.Nombre " + "FROM PlaylistCanciones "
+				+ "INNER JOIN Audio ON PlaylistCanciones.IDAudio = Audio.IDAudio " + "WHERE IDList=" + i + ";";
+
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery();
+
+			ArrayList<Playlist> playlistsArrayList = new ArrayList<>();
+			while (rS.next()) {
+				Playlist playlistCanciones = new Playlist();
+				playlistCanciones.setAudioID(rS.getInt("IDAudio"));
+				playlistCanciones.setNombreMultimedia(rS.getString("Nombre"));
+				playlistsArrayList.add(playlistCanciones);
+			}
+
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+			return playlistsArrayList;
+
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return null;
 
 	}
 
-	public static Cancion nuevaCancion(Cancion cancionSeleccionada) {
+	public void playlistFavorita(UsuarioFree Usuario, int id) {
+		String sentenciaSQL = "SELECT * FROM Playlist WHERE Titulo='Favoritos' && IDCliente = " + id + ";";
 
-		return null;
+		try {
 
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery();
+			while (rS.next()) {
+				Usuario.setPlaylistFavorita(rS.getInt("IDList"));
+
+			}
+
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
 	}
 
 	public ArrayList<Cancion> conexionMasEscuchadas() {

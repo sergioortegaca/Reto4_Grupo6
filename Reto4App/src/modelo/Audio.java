@@ -10,12 +10,12 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-public abstract class Audio extends Artista{
+public abstract class Audio extends Album {
 
 	private Clip audio;
+	@SuppressWarnings("unused")
 	private boolean paused;
 	private long clipTimePosition;
-
 	protected int audioID;
 	protected String nombreMultimedia;
 	protected Time duracion;
@@ -100,8 +100,9 @@ public abstract class Audio extends Artista{
 	public void play() {
 		if (audio != null) {
 			audio.start();
+
 		}
-		
+
 	}
 
 	public void pause() {
