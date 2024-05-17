@@ -441,27 +441,28 @@ public class BDConexiones {
 
 	}
 
-	/*
-	 * public ArrayList<Musico> getBDaRTISTAS(String SQL) {
-	 * 
-	 * String sentenciaSQL = SQL; try { try { Class.forName(DRIVER);
-	 * 
-	 * } catch (ClassNotFoundException e1) {
-	 * 
-	 * e1.printStackTrace(); } // Cargamos el Driver para mysql y Abrimos la
-	 * conexión a BBDD Connection connection = (Connection)
-	 * DriverManager.getConnection(LinkBD, usuarioBBDD, contrasenaBBDD);
-	 * PreparedStatement st = (PreparedStatement)
-	 * connection.prepareStatement(sentenciaSQL); ResultSet rs = st.executeQuery();
-	 * 
-	 * artistas = new ArrayList<Musico>(); while (rs.next()) { Musico artista = new
-	 * Musico(); artista.setArtistaID(rs.getInt("IDMusico"));
-	 * artista.setNombreArtistico(rs.getString("NombreArtistico"));
-	 * artista.setImagenArtista(rs.getString("Imagen")); artistas.add(artista); }
-	 * 
-	 * rs.close(); st.close(); connection.close(); return artistas;
-	 * 
-	 * } catch (SQLException sqlException) { sqlException.printStackTrace(); }
-	 * return null; }
-	 */
+	public void asignacionPlaylistDefault(UsuarioFree Usuario, String usuario, String timeStamp) {
+		String sentenciaSQL = "SELECT * FROM Cliente WHERE Usuario='" + usuario + "';";
+
+		try {
+
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery();
+			while (rS.next()) {
+				Usuario.setClienteID(rS.getInt("IDCliente"));
+			}
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+
+		conexionInsertYDeleteCancion(
+				"INSERT IGNORE INTO Playlist (Titulo, FechaCreacion, IDCliente) VALUES ('Favoritos', '" + timeStamp
+						+ "', '" + Usuario.getClienteID() + "')");
+
+	}
+
 }
