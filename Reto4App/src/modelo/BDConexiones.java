@@ -392,8 +392,11 @@ public class BDConexiones {
 	}
 
 	public ArrayList<Playlist> conexionPlaylistCanciones(int i) {
-		String sentenciaSQL = "SELECT PlaylistCanciones.*, Audio.Nombre " + "FROM PlaylistCanciones "
-				+ "INNER JOIN Audio ON PlaylistCanciones.IDAudio = Audio.IDAudio " + "WHERE IDList=" + i + ";";
+		String sentenciaSQL = "SELECT PlaylistCanciones.*, Audio.*, Musico.*, Album.*, Cancion.* "
+				+ "FROM PlaylistCanciones " + "INNER JOIN Audio ON PlaylistCanciones.IDAudio = Audio.IDAudio "
+				+ "INNER JOIN Cancion ON Audio.IDAudio = Cancion.IDAudio  "
+				+ "INNER JOIN Album ON Cancion.IDAlbum = Album.IDAlbum "
+				+ "INNER JOIN Musico ON Album.IDMusico = Musico.IDMusico " + "WHERE IDList=" + i + ";";
 
 		try {
 			Connection conexion = conexionBD();
@@ -404,6 +407,8 @@ public class BDConexiones {
 			while (rS.next()) {
 				Playlist playlistCanciones = new Playlist();
 				playlistCanciones.setAudioID(rS.getInt("IDAudio"));
+				playlistCanciones.setNombreArtistico(rS.getString("NombreArtistico"));
+				playlistCanciones.setDuracion(rS.getTime("Duracion"));
 				playlistCanciones.setNombreMultimedia(rS.getString("Nombre"));
 				playlistsArrayList.add(playlistCanciones);
 			}

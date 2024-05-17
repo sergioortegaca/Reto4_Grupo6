@@ -7,10 +7,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.FileWriter;
 import java.nio.file.Paths;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -1084,6 +1088,36 @@ public class Reto4Main extends JFrame {
 		JButton btnExportar = new JButton("Exportar");
 		btnExportar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
+				try {
+					LocalDateTime horaActual = LocalDateTime.now();
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyyHHmmss");
+					String horaActualFormateada = horaActual.format(formatter);
+
+					File fichero = new File(Paths.get("").toAbsolutePath().toString() + "/src/playlists/"
+							+ horaActualFormateada + ".txt");
+					if (!fichero.exists()) {
+						fichero.createNewFile();
+					}
+					FileWriter fic = new FileWriter(fichero);
+					fic.write("**************  " + Usuario.getUsuario() + "'s Playlists  **************\n\n");
+					for (Playlist playlist : playlistsArrayList) {
+						fic.write(playlist.getTitulo() + "\n");
+
+						ArrayList<Playlist> playlistCancionessArrayList = conexionesBD
+								.conexionPlaylistCanciones(playlist.getIDList());
+						for (Playlist playlistCancion : playlistCancionessArrayList) {
+							fic.write("	-" + playlistCancion.getNombreMultimedia() + "\n");
+						}
+
+					}
+					fic.write("\n\n**************  Rhythmicity  **************");
+					fic.close();
+					JOptionPane.showMessageDialog(null, "Playlists exportadas correctamente.");
+					metodos.cambiarDePanel(layeredPane, menu);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
 			}
 		});
 		btnExportar.setBounds(639, 216, 170, 35);
@@ -1091,7 +1125,7 @@ public class Reto4Main extends JFrame {
 
 	}
 
-	protected void crearPanelPlaylist() {
+	private void crearPanelPlaylist() {
 
 		panelPlaylist = new JPanel();
 		panelPlaylist.setBackground(new Color(255, 255, 255));
@@ -1111,7 +1145,9 @@ public class Reto4Main extends JFrame {
 
 		if (playlistCancionessArrayList != null) {
 			for (Playlist playlistCancion : playlistCancionessArrayList) {
-				playlistCancionesModelList.addElement(playlistCancion.getNombreMultimedia());
+				playlistCancionesModelList
+						.addElement(playlistCancion.getNombreMultimedia() + " - " + playlistCancion.getNombreArtistico()
+								+ " - " + playlistCancion.getReproducciones() + " reproducciones - " + playlistCancion.getDuracion());
 			}
 		} else {
 			playlistCancionesModelList.addElement("No se han encontrado playlists disponibles");
