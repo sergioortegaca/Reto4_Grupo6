@@ -3,14 +3,13 @@ package modelo;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Time;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-public abstract class Audio extends Album {
+public abstract class Audio extends Album implements Reproducible {
 
 	private Clip audio;
 	@SuppressWarnings("unused")
@@ -18,7 +17,7 @@ public abstract class Audio extends Album {
 	private long clipTimePosition;
 	protected int audioID;
 	protected String nombreMultimedia;
-	protected Time duracion;
+	protected String duracion;
 	protected String imagenMultimedia;
 	protected String tipoMultimedia;
 	protected int reproducciones;
@@ -64,11 +63,11 @@ public abstract class Audio extends Album {
 		this.nombreMultimedia = nombreMultimedia;
 	}
 
-	public Time getDuracion() {
+	public String getDuracion() {
 		return duracion;
 	}
 
-	public void setDuracion(Time duracion) {
+	public void setDuracion(String duracion) {
 		this.duracion = duracion;
 	}
 
@@ -80,8 +79,7 @@ public abstract class Audio extends Album {
 		this.imagenMultimedia = imagenMultimedia;
 	}
 
-	// Cancion audio = new Cancion();
-
+	@Override
 	public void loadClip(String filePath) {
 		try {
 			InputStream audioInputStream = getClass().getResourceAsStream(filePath);
@@ -97,6 +95,7 @@ public abstract class Audio extends Album {
 		}
 	}
 
+	@Override
 	public void play() {
 		if (audio != null) {
 			audio.start();
@@ -105,6 +104,7 @@ public abstract class Audio extends Album {
 
 	}
 
+	@Override
 	public void pause() {
 		if (audio != null && audio.isRunning()) {
 			paused = true;
@@ -113,10 +113,11 @@ public abstract class Audio extends Album {
 		}
 	}
 
+	@Override
 	public void resume() {
 		if (audio != null && audio.isRunning()) {
 
-			clipTimePosition = 0; // Reiniciar desde el principio
+			clipTimePosition = 0;
 			audio.setMicrosecondPosition(clipTimePosition);
 			audio.start();
 			paused = false;

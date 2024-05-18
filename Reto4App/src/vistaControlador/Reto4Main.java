@@ -36,6 +36,7 @@ import javax.swing.ImageIcon;
 import java.awt.event.MouseAdapter;
 import javax.swing.border.EtchedBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.MaskFormatter;
 import javax.swing.JTextArea;
 import modelo.*;
 import javax.swing.JComboBox;
@@ -332,10 +333,10 @@ public class Reto4Main extends JFrame {
 						&& UsuarioNuevo.getContrasena().length() <= 30 && UsuarioNuevo.getContrasena().length() >= 1) {
 
 					String sentenciaSQL = "INSERT IGNORE INTO Cliente (Nombre, Apellido, Usuario, Contrasena, FechaNacimiento, FechaRegistro, Tipo) VALUES ("
-							+ "'" + UsuarioNuevo.getNombre() + "'" + ", " + "'" + UsuarioNuevo.getApellido() + "'"
-							+ ", " + "'" + UsuarioNuevo.getUsuario() + "'" + ", " + "'" + UsuarioNuevo.getContrasena()
-							+ "'" + ", " + "'" + UsuarioNuevo.getFechaNacimiento() + "'" + ", " + "'"
-							+ UsuarioNuevo.getFechaRegistro() + "'" + ", 'Free')";
+							+ "'" + UsuarioNuevo.getNombre() + "', '" + UsuarioNuevo.getApellido() + "'" + ", " + "'"
+							+ UsuarioNuevo.getUsuario() + "', '" + UsuarioNuevo.getContrasena() + "', '"
+							+ UsuarioNuevo.getFechaNacimiento() + "', '" + UsuarioNuevo.getFechaRegistro() + "'"
+							+ ", 'Free')";
 					conexionesBD.conexionInsertYDelete(sentenciaSQL);
 
 				} else {
@@ -778,7 +779,7 @@ public class Reto4Main extends JFrame {
 			btnReproFavorito.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 
-					conexionesBD.conexionInsertYDeleteCancion(
+					conexionesBD.conexionInsertYDeleteSinMensaje(
 							"INSERT IGNORE INTO PlaylistCanciones (IDAudio, IDList, FechaPlaylistCancion) VALUES ('"
 									+ audioSeleccionado.getAudioID() + "', '" + Usuario.getPlaylistFavorita() + "', '"
 									+ timeStamp + "')");
@@ -1219,6 +1220,18 @@ public class Reto4Main extends JFrame {
 		txtFormulario4.setBounds(450, 243, 175, 20);
 		panelFormularioAdmin.add(txtFormulario4);
 
+		MaskFormatter duracionFormato = null;
+		try {
+			duracionFormato = new MaskFormatter("##:##:##");
+			duracionFormato.setPlaceholderCharacter('#');
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		JFormattedTextField ftxtFormulario = new JFormattedTextField(duracionFormato);
+		ftxtFormulario.setBounds(450, 212, 175, 20);
+		panelFormularioAdmin.add(ftxtFormulario);
+
 		JComboBox comboBoxFormulario = new JComboBox();
 		comboBoxFormulario.setBounds(450, 274, 175, 20);
 		panelFormularioAdmin.add(comboBoxFormulario);
@@ -1234,6 +1247,8 @@ public class Reto4Main extends JFrame {
 			metodos.crearLabel("Año desde el que lleva activo:", 260, 212, 200, 20, panelFormularioAdmin);
 			metodos.crearLabel("Descripción:", 260, 243, 148, 20, panelFormularioAdmin);
 			metodos.crearLabel("Característica:", 260, 274, 148, 20, panelFormularioAdmin);
+
+			ftxtFormulario.setVisible(false);
 
 			comboBoxFormulario.setModel(new DefaultComboBoxModel(new String[] { "Solista", "Grupo" }));
 
@@ -1257,11 +1272,9 @@ public class Reto4Main extends JFrame {
 								&& musicoNuevo.getDescripcionArtista().length() >= 1 && anoActivo <= ano) {
 
 							String sentenciaSQL = "INSERT IGNORE INTO Musico (NombreArtistico, Imagen, Caracteristica, Descripcion, AnoActivo) VALUES ("
-									+ "'" + musicoNuevo.getNombreArtistico() + "'" + ", " + "'"
-									+ musicoNuevo.getImagenArtista() + "'" + ", " + "'"
-									+ musicoNuevo.getCaracteristica() + "'" + ", " + "'"
-									+ musicoNuevo.getDescripcionArtista() + "'" + ", " + "'"
-									+ musicoNuevo.getAnoActivo() + "')";
+									+ "'" + musicoNuevo.getNombreArtistico() + "', '" + musicoNuevo.getImagenArtista()
+									+ "', '" + musicoNuevo.getCaracteristica() + "', '"
+									+ musicoNuevo.getDescripcionArtista() + "', '" + musicoNuevo.getAnoActivo() + "')";
 							conexionesBD.conexionInsertYDelete(sentenciaSQL);
 							metodos.cambiarDePanel(layeredPane, menuAdmin);
 						} else
@@ -1282,7 +1295,9 @@ public class Reto4Main extends JFrame {
 			metodos.crearLabel("Genero:", 260, 212, 148, 20, panelFormularioAdmin);
 			metodos.crearLabel("Músico al que pertenece:", 260, 243, 148, 20, panelFormularioAdmin);
 			metodos.crearLabel("Año:", 260, 274, 148, 20, panelFormularioAdmin);
+
 			txtFormulario4.setVisible(false);
+			ftxtFormulario.setVisible(false);
 
 			DefaultComboBoxModel<String> modeloListaArtistas = new DefaultComboBoxModel<>();
 
@@ -1335,9 +1350,9 @@ public class Reto4Main extends JFrame {
 							&& albumNuevo.getGeneroAlbum().length() >= 1) {
 
 						String sentenciaSQL = "INSERT IGNORE INTO Album (Titulo, Ano, Genero, Imagen, IDMusico) VALUES ('"
-								+ albumNuevo.getTituloAlbum() + "'" + ", " + "'" + albumNuevo.getAnoAlbum() + "'" + ", "
-								+ "'" + albumNuevo.getGeneroAlbum() + "'" + ", " + "'" + albumNuevo.getImagenAlbum()
-								+ "'" + ", " + "'" + albumNuevo.getArtistaID() + "');";
+								+ albumNuevo.getTituloAlbum() + "', '" + albumNuevo.getAnoAlbum() + "'" + ", " + "'"
+								+ albumNuevo.getGeneroAlbum() + "', '" + albumNuevo.getImagenAlbum() + "', '"
+								+ albumNuevo.getArtistaID() + "');";
 						conexionesBD.conexionInsertYDelete(sentenciaSQL);
 						metodos.cambiarDePanel(layeredPane, menuAdmin);
 					} else
@@ -1350,10 +1365,11 @@ public class Reto4Main extends JFrame {
 
 		case swCanciones:
 			metodos.crearLabel("Nombre:", 260, 150, 148, 20, panelFormularioAdmin);
-			metodos.crearLabel("Duración:", 260, 181, 148, 20, panelFormularioAdmin);
-			metodos.crearLabel("Imagen:", 260, 212, 148, 20, panelFormularioAdmin);
+			metodos.crearLabel("Imagen:", 260, 181, 148, 20, panelFormularioAdmin);
+			metodos.crearLabel("Duración:", 260, 212, 148, 20, panelFormularioAdmin);
 			metodos.crearLabel("Album al que pertenece:", 260, 243, 148, 20, panelFormularioAdmin);
 
+			txtFormulario3.setVisible(false);
 			txtFormulario4.setVisible(false);
 
 			DefaultComboBoxModel<String> modeloListaAlbum = new DefaultComboBoxModel<>();
@@ -1381,8 +1397,8 @@ public class Reto4Main extends JFrame {
 			btnAnadirFormulario.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					cancionNueva.setNombreMultimedia(txtFormulario1.getText());
-					// cancionNueva.setDuracion(txtFormulario2.getText());
-					cancionNueva.setImagenMultimedia(txtFormulario3.getText());
+					cancionNueva.setImagenMultimedia(txtFormulario2.getText());
+					cancionNueva.setDuracion(ftxtFormulario.getText());
 					cancionNueva.setAlbumID(albumesArray[comboBoxFormulario.getSelectedIndex()]);
 
 					if (cancionNueva.getNombreMultimedia().length() <= 30
@@ -1391,14 +1407,20 @@ public class Reto4Main extends JFrame {
 							&& cancionNueva.getImagenMultimedia().length() >= 1) {
 
 						String sentenciaSQL = "INSERT IGNORE INTO Audio (Nombre, Duracion, Imagen, Tipo) VALUES ('"
-								+ cancionNueva.getNombreMultimedia() + "'" + ", " + "'" + cancionNueva.getDuracion()
-								+ "'" + ", " + "'" + cancionNueva.getImagenMultimedia() + "'" + ", " + "'Cancion');";
+								+ cancionNueva.getNombreMultimedia() + "', '" + cancionNueva.getDuracion() + "', '"
+								+ cancionNueva.getImagenMultimedia() + "'" + ", " + "'Cancion');";
+						conexionesBD.conexionInsertYDeleteSinMensaje(sentenciaSQL);
+
+						int idAudio = conexionesBD.conexionSelectIDAudio();
+
+						sentenciaSQL = "INSERT IGNORE INTO Cancion (IDAudio, IDAlbum) VALUES ('" + idAudio + "', '"
+								+ cancionNueva.getAlbumID() + "');";
 						conexionesBD.conexionInsertYDelete(sentenciaSQL);
+
 						metodos.cambiarDePanel(layeredPane, menuAdmin);
 					} else
 						JOptionPane.showMessageDialog(null,
-								"Los campos no pueden estar vacíos y deben tener menos de 30 caracteres, y el año no puede superar el actual ("
-										+ ano + ")");
+								"Los campos no pueden estar vacíos y deben tener menos de 30 caracteres");
 				}
 			});
 			break;
@@ -1410,6 +1432,7 @@ public class Reto4Main extends JFrame {
 			metodos.crearLabel("Descripción:", 260, 243, 148, 20, panelFormularioAdmin);
 
 			comboBoxFormulario.setVisible(false);
+			ftxtFormulario.setVisible(false);
 
 			btnAnadirFormulario.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -1430,10 +1453,10 @@ public class Reto4Main extends JFrame {
 								&& podcasterNuevo.getDescripcionArtista().length() >= 1 && anoActivo <= ano) {
 
 							String sentenciaSQL = "INSERT IGNORE INTO Podcaster (NombreArtistico, Imagen, Descripcion, AnoActivo) VALUES ("
-									+ "'" + podcasterNuevo.getNombreArtistico() + "'" + ", " + "'"
-									+ podcasterNuevo.getImagenArtista() + "'" + ", " + "'"
-									+ podcasterNuevo.getDescripcionArtista() + "'" + ", " + "'"
-									+ podcasterNuevo.getAnoActivo() + "')";
+									+ "'" + podcasterNuevo.getNombreArtistico() + "', '"
+									+ podcasterNuevo.getImagenArtista() + "', '"
+									+ podcasterNuevo.getDescripcionArtista() + "', '" + podcasterNuevo.getAnoActivo()
+									+ "')";
 							conexionesBD.conexionInsertYDelete(sentenciaSQL);
 							metodos.cambiarDePanel(layeredPane, menuAdmin);
 						} else
@@ -1450,11 +1473,64 @@ public class Reto4Main extends JFrame {
 
 		case swPodcasts2:
 			metodos.crearLabel("Nombre:", 260, 150, 148, 20, panelFormularioAdmin);
-			metodos.crearLabel("Duración:", 260, 181, 148, 20, panelFormularioAdmin);
-			metodos.crearLabel("Imagen:", 260, 212, 148, 20, panelFormularioAdmin);
+			metodos.crearLabel("Imagen:", 260, 181, 148, 20, panelFormularioAdmin);
+			metodos.crearLabel("Duración:", 260, 212, 148, 20, panelFormularioAdmin);
+			metodos.crearLabel("Podcaster al que pertenece:", 260, 243, 148, 20, panelFormularioAdmin);
 
+			txtFormulario3.setVisible(false);
 			txtFormulario4.setVisible(false);
-			comboBoxFormulario.setVisible(false);
+
+			DefaultComboBoxModel<String> modeloListaPodcaster = new DefaultComboBoxModel<>();
+
+			ArrayList<Podcaster> podcasterArrayList = conexionesBD.conexionPodcaster();
+
+			Podcast podcastNuevo = new Podcast();
+
+			int podcastersArray[] = new int[podcasterArrayList.size()];
+
+			if (podcasterArrayList != null) {
+				int cont = 0;
+				for (Podcaster podcaster : podcasterArrayList) {
+					modeloListaPodcaster.addElement(podcaster.getNombreArtistico());
+
+					podcastersArray[cont] = podcaster.getArtistaID();
+					cont++;
+				}
+			} else {
+				modeloListaPodcaster.addElement("No se han encontrado albumes disponibles");
+			}
+			comboBoxFormulario.setModel(modeloListaPodcaster);
+			comboBoxFormulario.setBounds(450, 243, 175, 20);
+
+			btnAnadirFormulario.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					podcastNuevo.setNombreMultimedia(txtFormulario1.getText());
+					podcastNuevo.setImagenMultimedia(txtFormulario2.getText());
+					podcastNuevo.setDuracion(ftxtFormulario.getText());
+					podcastNuevo.setArtistaID(podcastersArray[comboBoxFormulario.getSelectedIndex()]);
+
+					if (podcastNuevo.getNombreMultimedia().length() <= 30
+							&& podcastNuevo.getNombreMultimedia().length() >= 1
+							&& podcastNuevo.getImagenMultimedia().length() <= 30
+							&& podcastNuevo.getImagenMultimedia().length() >= 1) {
+
+						String sentenciaSQL = "INSERT IGNORE INTO Audio (Nombre, Duracion, Imagen, Tipo) VALUES ('"
+								+ podcastNuevo.getNombreMultimedia() + "', '" + podcastNuevo.getDuracion() + "', '"
+								+ podcastNuevo.getImagenMultimedia() + "'" + ", " + "'Podcast');";
+						conexionesBD.conexionInsertYDeleteSinMensaje(sentenciaSQL);
+
+						int idAudio = conexionesBD.conexionSelectIDAudio();
+
+						sentenciaSQL = "INSERT IGNORE INTO Podcast (IDAudio, IDPodcaster) VALUES ('" + idAudio + "', '"
+								+ podcastNuevo.getArtistaID() + "');";
+						conexionesBD.conexionInsertYDelete(sentenciaSQL);
+
+						metodos.cambiarDePanel(layeredPane, menuAdmin);
+					} else
+						JOptionPane.showMessageDialog(null,
+								"Los campos no pueden estar vacíos y deben tener menos de 30 caracteres");
+				}
+			});
 
 			break;
 		}

@@ -17,10 +17,12 @@ public class BDConexiones {
 
 	// Variables de conexión con la BBDD
 	final String driverBBDD = "jdbc:mysql";
-	final String servidorBBDD = "rhythmicity.duckdns.org";
+	final String servidorBBDD = "localhost";
+	// final String servidorBBDD = "rhythmicity.duckdns.org";
 	final String puertoBBDD = "3306";
 	final String nombreBBDD = "reto4_grupo6";
-	final String usuarioBBDD = "grupo6";
+	// final String usuarioBBDD = "grupo6";
+	final String usuarioBBDD = "root";
 	final String contrasenaBBDD = "julioespiaeritreo";
 	final String DRIVER = "com.mysql.cj.jdbc.Driver";
 	final String LinkBD = driverBBDD + "://" + servidorBBDD + ":" + puertoBBDD + "/" + nombreBBDD;
@@ -60,7 +62,7 @@ public class BDConexiones {
 		}
 	}
 
-	public void conexionInsertYDeleteCancion(String sentenciaSQL) {
+	public void conexionInsertYDeleteSinMensaje(String sentenciaSQL) {
 		try {
 			Connection conexion = conexionBD();
 			PreparedStatement pS = conexion.prepareStatement(sentenciaSQL);
@@ -196,7 +198,7 @@ public class BDConexiones {
 				Cancion multimedia = new Cancion();
 				multimedia.setNombreMultimedia(rS.getString("Nombre"));
 				multimedia.setAudioID(rS.getInt("IDAudio"));
-				multimedia.setDuracion(rS.getTime("Duracion"));
+				multimedia.setDuracion(rS.getString("Duracion"));
 				multimedia.setImagenMultimedia(rS.getString("Imagen"));
 				cancionesArrayList.add(multimedia);
 
@@ -284,7 +286,7 @@ public class BDConexiones {
 
 				multimedia.setNombreMultimedia(rS.getString("Nombre"));
 				multimedia.setAudioID(rS.getInt("IDAudio"));
-				multimedia.setDuracion(rS.getTime("Duracion"));
+				multimedia.setDuracion(rS.getString("Duracion"));
 				multimedia.setImagenMultimedia(rS.getString("Imagen"));
 				// cancionesArrayList.add(multimedia);
 
@@ -346,7 +348,7 @@ public class BDConexiones {
 				Podcast multimedia = new Podcast();
 				multimedia.setNombreMultimedia(rS.getString("Nombre"));
 				multimedia.setAudioID(rS.getInt("IDAudio"));
-				multimedia.setDuracion(rS.getTime("Duracion"));
+				multimedia.setDuracion(rS.getString("Duracion"));
 				multimedia.setTipoMultimedia(rS.getString("Tipo"));
 				multimedia.setImagenMultimedia(rS.getString("Imagen"));
 				podcastsArrayList.add(multimedia);
@@ -544,5 +546,27 @@ public class BDConexiones {
 			sqlException.printStackTrace();
 		}
 		return null;
+	}
+
+	public int conexionSelectIDAudio() {
+		String sentenciaSQL = "SELECT IDAudio FROM Audio ORDER BY IDAudio DESC LIMIT 1;";
+		int idAudio = 0;
+
+		try {
+			Connection conexion = conexionBD();
+			PreparedStatement pS = (PreparedStatement) conexion.prepareStatement(sentenciaSQL);
+			ResultSet rS = pS.executeQuery(sentenciaSQL);
+
+			while (rS.next()) {
+				idAudio = rS.getInt("Audio.IDAudio");
+			}
+
+			rS.close();
+			cerrarConexionBD(pS, conexion);
+			return idAudio;
+		} catch (SQLException sqlException) {
+			sqlException.printStackTrace();
+		}
+		return idAudio;
 	}
 }
