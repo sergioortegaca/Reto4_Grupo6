@@ -16,11 +16,10 @@ public class BDConexiones {
 
 	// Variables de conexión con la BD
 	public final String driverBBDD = "jdbc:mysql";
-	public final String servidorBBDD = "localhost";
-	//public final String servidorBBDD = "rhythmicity.duckdns.org";
+	public final String servidorBBDD = "rhythmicity.duckdns.org";
 	public final String puertoBBDD = "3306";
 	public final String nombreBBDD = "reto4_grupo6";
-	public final String usuarioBBDD = "root";
+	public final String usuarioBBDD = "grupo6";
 	public final String contrasenaBBDD = "julioespiaeritreo";
 	public final String DRIVER = "com.mysql.cj.jdbc.Driver";
 	public final String LinkBD = driverBBDD + "://" + servidorBBDD + ":" + puertoBBDD + "/" + nombreBBDD;
