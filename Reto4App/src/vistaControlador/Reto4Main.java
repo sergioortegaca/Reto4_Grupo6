@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.Calendar;
 import javax.swing.JButton;
@@ -207,8 +208,11 @@ public class Reto4Main extends JFrame {
 		lblInicioDeSesion.setBounds(0, 80, 874, 33);
 		panelLogin.add(lblInicioDeSesion);
 
+		/**
+		 * Creación de labels mediante un metodo al cual se le manda el texto, las
+		 * coordenadas y el panel donde se va a encontrar el label
+		 */
 		metodos.crearLabel("Usuario:", 310, 180, 109, 14, panelLogin);
-
 		metodos.crearLabel("Contraseña:", 310, 220, 109, 14, panelLogin);
 
 		txtUsuario = new JTextField();
@@ -222,6 +226,17 @@ public class Reto4Main extends JFrame {
 		JButton btnEntrar = new JButton("Entrar");
 		btnEntrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
+				/**
+				 * Al presionar el botón de entrar existirán dos casos diferentes, cuando el
+				 * nombre de usuario coincida con el de un administrador la ejecución del
+				 * programa será completamente diferente ya que se encargará de la gestión del
+				 * mismo.
+				 * 
+				 * Cuando sea un cliente el que acceda, se comprobarán sus credenciales en la
+				 * base de datos y se le asignarán los datos correspondientes al objeto cliente.
+				 */
+
 				char[] contrasenaAdmin = { '1', '2', '3' };
 				String textOk = "Has iniciado sesión correctamente";
 				user = txtUsuario.getText();
@@ -323,6 +338,13 @@ public class Reto4Main extends JFrame {
 		JButton btnCrearUsuario = new JButton("Crear Usuario");
 		btnCrearUsuario.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
+				/**
+				 * Al crear usuarios se asignarán los datos a un objeto. Para que el usuario
+				 * nuevo se cree pasará por unas validaciones previas antes de insertar los
+				 * datos en la base de datos. Una vez creado el usuario, este mismo tendrá que
+				 * acceder al programa mediante el LogIn.
+				 */
 
 				UsuarioFree UsuarioNuevo = new UsuarioFree();
 				UsuarioNuevo.setNombre(txtNombre.getText());
@@ -720,13 +742,14 @@ public class Reto4Main extends JFrame {
 
 	}
 
-	@SuppressWarnings({})
 	private void crearPanelReproduccion(String ventanaReproduccion, String anterior) {
 
 		panelReproduccion = new JPanel();
 		layeredPane.add(panelReproduccion, reproduccion);
 		panelReproduccion.setBackground(new Color(255, 255, 255));
 		panelReproduccion.setLayout(null);
+
+		metodos.botonPerfil(layeredPane, panelReproduccion, user);
 
 		progressBar = new JProgressBar();
 		progressBar.setBounds(292, 280, 287, 8);
@@ -736,29 +759,43 @@ public class Reto4Main extends JFrame {
 		switch (ventanaReproduccion) {
 
 		case swVentanaCancion:
-			audioSeleccionado = cancionSeleccionada;
+
+			Image imagen = new ImageIcon(
+					Paths.get("").toAbsolutePath().toString() + cancionSeleccionada.getImagenMultimedia()).getImage();
+			ImageIcon imagenEscalada = new ImageIcon(imagen.getScaledInstance(255, 235, Image.SCALE_SMOOTH));
+
+			JLabel lblImagen = new JLabel(imagenEscalada);
+			lblImagen.setBounds(292, 25, 287, 250);
+			lblImagen.setIcon(imagenEscalada);
+			panelReproduccion.add(lblImagen);
+
+			numAudio = cancionSeleccionada.getAudioID();
+			cancionSeleccionada.loadClip("/audio/" + numAudio + ".wav");
 
 			JButton btnReproAnterior = new JButton("<");
 			btnReproAnterior.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (atras == 0) {
-						audioSeleccionado.resume();
+						cancionSeleccionada.resume();
 						atras++;
 					} else if (atras == 1) {
 						progressBar.setValue(0);
-						audioSeleccionado.pause();
+
+						cancionSeleccionada.pause();
 						numAudio--;
-						audioSeleccionado.loadClip("/audio/" + numAudio + ".wav");
-						audioSeleccionado.setAudioID(numAudio);
+						cancionSeleccionada.setAudioID(numAudio);
+
+						cancionSeleccionada = conexionesBD.nuevaCancion(cancionSeleccionada.getAudioID());
+
+						cancionSeleccionada.loadClip("/audio/" + numAudio + ".wav");
+
+						metodos.cancionSonando(textAreaInfoCancion, cancionSeleccionada, albumSeleccionado,
+								musicoSeleccionado, panelReproduccion);
+
 						atras = 0;
-						audioSeleccionado.play();
+						cancionSeleccionada.play();
 						btnReproPlay.setText("Pause");
 
-						audioSeleccionado = conexionesBD.nuevaCancion(Usuario.getClienteID(),
-								audioSeleccionado.getAudioID(), timeStamp);
-
-						metodos.cancionSonando(textAreaInfoCancion, audioSeleccionado, albumSeleccionado,
-								musicoSeleccionado, panelReproduccion);
 					}
 
 				}
@@ -766,26 +803,47 @@ public class Reto4Main extends JFrame {
 			btnReproAnterior.setBounds(292, 299, 89, 28);
 			panelReproduccion.add(btnReproAnterior);
 
+			btnReproPlay = new JButton("Play");
+			btnReproPlay.setBounds(392, 299, 89, 28);
+			btnReproPlay.addActionListener(new ActionListener() {
+
+				public void actionPerformed(ActionEvent e) {
+					if (btnReproPlay.getText() == "Play") {
+						cancionSeleccionada.play();
+						btnReproPlay.setText("Pause");
+
+					} else {
+						cancionSeleccionada.pause();
+						btnReproPlay.setText("Play");
+
+					}
+				}
+			});
+			panelReproduccion.add(btnReproPlay);
+
 			JButton btnReproAdelante = new JButton(">");
 			btnReproAdelante.setBounds(492, 299, 89, 28);
 			btnReproAdelante.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					progressBar.setValue(0);
-					audioSeleccionado.pause();
+					// progressBar.setValue(0);
+
+					cancionSeleccionada.pause();
 					numAudio++;
-					audioSeleccionado.loadClip("/audio/" + numAudio + ".wav");
-					audioSeleccionado.setAudioID(numAudio);
-					audioSeleccionado.play();
-					btnReproPlay.setText("Pause");
+					cancionSeleccionada.setAudioID(numAudio);
 
-					audioSeleccionado = conexionesBD.nuevaCancion(Usuario.getClienteID(),
-							audioSeleccionado.getAudioID(), timeStamp);
+					cancionSeleccionada = conexionesBD.nuevaCancion(cancionSeleccionada.getAudioID());
 
-					metodos.cancionSonando(textAreaInfoCancion, audioSeleccionado, albumSeleccionado,
+					cancionSeleccionada.loadClip("/audio/" + numAudio + ".wav");
+
+					metodos.cancionSonando(textAreaInfoCancion, cancionSeleccionada, albumSeleccionado,
 							musicoSeleccionado, panelReproduccion);
+
+					cancionSeleccionada.play();
+					btnReproPlay.setText("Pause");
 
 				}
 			});
+			panelReproduccion.add(btnReproAdelante);
 
 			JButton btnReproFavorito = new JButton("Favoritos");
 			btnReproFavorito.addActionListener(new ActionListener() {
@@ -793,7 +851,7 @@ public class Reto4Main extends JFrame {
 
 					conexionesBD.conexionInsertYDeleteCancion(
 							"INSERT IGNORE INTO PlaylistCanciones (IDAudio, IDList, FechaPlaylistCancion) VALUES ('"
-									+ audioSeleccionado.getAudioID() + "', '" + Usuario.getPlaylistFavorita() + "', '"
+									+ cancionSeleccionada.getAudioID() + "', '" + Usuario.getPlaylistFavorita() + "', '"
 									+ timeStamp + "')");
 					JOptionPane.showMessageDialog(null, "Añadida a favoritos con éxito");
 				}
@@ -842,7 +900,7 @@ public class Reto4Main extends JFrame {
 								playlist = playlistsArrayList.get(indexPlaylist);
 								conexionesBD.conexionInsertYDeleteCancion(
 										"INSERT IGNORE INTO PlaylistCanciones (IDAudio, IDList, FechaPlaylistCancion) VALUES ('"
-												+ audioSeleccionado.getAudioID() + "', '" + playlist.getIDList()
+												+ cancionSeleccionada.getAudioID() + "', '" + playlist.getIDList()
 												+ "', '" + timeStamp + "')");
 
 								metodos.cambiarDePanel(layeredPane, reproduccion);
@@ -855,14 +913,54 @@ public class Reto4Main extends JFrame {
 			btnMenuAnadirPlaylist.setBounds(192, 299, 89, 28);
 			panelReproduccion.add(btnMenuAnadirPlaylist);
 
-			panelReproduccion.add(btnReproAdelante);
-
-			metodos.cancionSonando(textAreaInfoCancion, audioSeleccionado, albumSeleccionado, musicoSeleccionado,
+			metodos.cancionSonando(textAreaInfoCancion, cancionSeleccionada, albumSeleccionado, musicoSeleccionado,
 					panelReproduccion);
+
+			JButton btnAtras = new JButton("Atrás");
+			btnAtras.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					metodos.cambiarDePanel(layeredPane, anterior);
+					cancionSeleccionada.pause();
+				}
+			});
+			btnAtras.setBounds(55, 28, 89, 23);
+			panelReproduccion.add(btnAtras);
+
 			break;
 
 		case swVentanaPodcast:
 			audioSeleccionado = podcastSeleccionado;
+
+			Image imagenPodcast = new ImageIcon(
+					Paths.get("").toAbsolutePath().toString() + audioSeleccionado.getImagenMultimedia()).getImage();
+			ImageIcon imagenEscaladaPodcast = new ImageIcon(
+					imagenPodcast.getScaledInstance(255, 235, Image.SCALE_SMOOTH));
+
+			JLabel lblImagenPodcast = new JLabel(imagenEscaladaPodcast);
+			lblImagenPodcast.setBounds(292, 25, 287, 250);
+			lblImagenPodcast.setIcon(imagenEscaladaPodcast);
+			panelReproduccion.add(lblImagenPodcast);
+
+			btnReproPlay = new JButton("Play");
+			btnReproPlay.setBounds(392, 299, 89, 28);
+			btnReproPlay.addActionListener(new ActionListener() {
+
+				public void actionPerformed(ActionEvent e) {
+					if (btnReproPlay.getText() == "Play") {
+						audioSeleccionado.play();
+						btnReproPlay.setText("Pause");
+
+					} else {
+						audioSeleccionado.pause();
+						btnReproPlay.setText("Play");
+
+					}
+				}
+			});
+			panelReproduccion.add(btnReproPlay);
+
+			numAudio = audioSeleccionado.getAudioID();
+			audioSeleccionado.loadClip("/audio/" + numAudio + ".wav");
 
 			JButton btn05 = new JButton("x0.5");
 			btn05.addActionListener(new ActionListener() {
@@ -890,50 +988,48 @@ public class Reto4Main extends JFrame {
 			panelReproduccion.add(btn15);
 
 			metodos.podcastSonando(textAreaInfoCancion, audioSeleccionado, podcasterSeleccionado, panelReproduccion);
+
+			btnReproPlay = new JButton("Play");
+			btnReproPlay.setBounds(392, 299, 89, 28);
+			btnReproPlay.addActionListener(new ActionListener() {
+
+				public void actionPerformed(ActionEvent e) {
+					if (btnReproPlay.getText() == "Play") {
+						audioSeleccionado.play();
+						btnReproPlay.setText("Pause");
+
+					} else {
+						audioSeleccionado.pause();
+						btnReproPlay.setText("Play");
+					}
+				}
+			});
+
+			/*
+			 * Image imagen = new ImageIcon( Paths.get("").toAbsolutePath().toString() +
+			 * audioSeleccionado.getImagenMultimedia()).getImage(); ImageIcon imagenEscalada
+			 * = new ImageIcon(imagen.getScaledInstance(255, 235, Image.SCALE_SMOOTH));
+			 * 
+			 * JLabel lblImagen = new JLabel(imagenEscalada); lblImagen.setBounds(292, 25,
+			 * 287, 250); lblImagen.setIcon(imagenEscalada);
+			 * panelReproduccion.add(lblImagen);
+			 * 
+			 * metodos.botonPerfil(layeredPane, panelReproduccion, user);
+			 * 
+			 * numAudio = audioSeleccionado.getAudioID();
+			 * audioSeleccionado.loadClip("/audio/" + numAudio + ".wav");
+			 * 
+			 * panelReproduccion.add(btnReproPlay);
+			 * 
+			 * JButton btnAtras = new JButton("Atrás"); btnAtras.addActionListener(new
+			 * ActionListener() { public void actionPerformed(ActionEvent e) {
+			 * metodos.cambiarDePanel(layeredPane, anterior); audioSeleccionado.pause(); }
+			 * }); btnAtras.setBounds(55, 28, 89, 23); panelReproduccion.add(btnAtras);
+			 */
+
 			break;
 		}
 
-		Image imagen = new ImageIcon(
-				Paths.get("").toAbsolutePath().toString() + audioSeleccionado.getImagenMultimedia()).getImage();
-		ImageIcon imagenEscalada = new ImageIcon(imagen.getScaledInstance(255, 235, Image.SCALE_SMOOTH));
-
-		JLabel lblImagen = new JLabel(imagenEscalada);
-		lblImagen.setBounds(292, 25, 287, 250);
-		lblImagen.setIcon(imagenEscalada);
-		panelReproduccion.add(lblImagen);
-
-		metodos.botonPerfil(layeredPane, panelReproduccion, user);
-
-		numAudio = audioSeleccionado.getAudioID();
-		audioSeleccionado.loadClip("/audio/" + numAudio + ".wav");
-
-		btnReproPlay = new JButton("Play");
-		btnReproPlay.setBounds(392, 299, 89, 28);
-		btnReproPlay.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				if (btnReproPlay.getText() == "Play") {
-					audioSeleccionado.play();
-					btnReproPlay.setText("Pause");
-
-				} else {
-					audioSeleccionado.pause();
-					btnReproPlay.setText("Play");
-				}
-			}
-		});
-
-		panelReproduccion.add(btnReproPlay);
-
-		JButton btnAtras = new JButton("Atrás");
-		btnAtras.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				metodos.cambiarDePanel(layeredPane, anterior);
-				audioSeleccionado.pause();
-			}
-		});
-		btnAtras.setBounds(55, 28, 89, 23);
-		panelReproduccion.add(btnAtras);
 	}
 
 	private void crearPanelMisPlaylists() {
@@ -1145,9 +1241,9 @@ public class Reto4Main extends JFrame {
 
 		if (playlistCancionessArrayList != null) {
 			for (Playlist playlistCancion : playlistCancionessArrayList) {
-				playlistCancionesModelList
-						.addElement(playlistCancion.getNombreMultimedia() + " - " + playlistCancion.getNombreArtistico()
-								+ " - " + playlistCancion.getReproducciones() + " reproducciones - " + playlistCancion.getDuracion());
+				playlistCancionesModelList.addElement(playlistCancion.getNombreMultimedia() + " - "
+						+ playlistCancion.getNombreArtistico() + " - " + playlistCancion.getReproducciones()
+						+ " reproducciones - " + playlistCancion.getDuracion());
 			}
 		} else {
 			playlistCancionesModelList.addElement("No se han encontrado playlists disponibles");
