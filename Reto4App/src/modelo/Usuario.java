@@ -8,10 +8,7 @@ public abstract class Usuario extends Audio {
 	protected String contrasena;
 	protected String fechaNacimiento;
 	protected String fechaRegistro;
-
-	protected enum tipoUsuario {
-		Free, Premium
-	}
+	protected int playlistFavorita;
 
 	public int getPlaylistFavorita() {
 		return playlistFavorita;
@@ -20,8 +17,6 @@ public abstract class Usuario extends Audio {
 	public void setPlaylistFavorita(int playlistFavorita) {
 		this.playlistFavorita = playlistFavorita;
 	}
-
-	protected int playlistFavorita;
 
 	public int getClienteID() {
 		return clienteID;

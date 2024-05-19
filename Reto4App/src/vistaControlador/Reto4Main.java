@@ -38,38 +38,29 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 import javax.swing.JTextArea;
-import modelo.*;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JProgressBar;
 import javax.swing.JFormattedTextField;
+import modelo.*;
 
 public class Reto4Main extends JFrame {
 	private static final long serialVersionUID = 1L;
 
-	// CAMBIAR BOTON PERFIL
 	Metodos metodos = new Metodos();
 	BDConexiones conexionesBD = new BDConexiones();
 
+	// PANELES
+	JLayeredPane layeredPane;
 	JPanel contentPane, panelBienvenida, panelLogin, panelRegistro, panelPerfil, panelMenuAdmin, panelMenuGestionar,
 			panelEstadisticas, panelEditar, panelDescubrir, panelArtista, panelAlbum, panelReproduccion,
 			panelDescubrirPodcasts, panelMisPlaylists, panelPlaylist, panelMenu, panelMenuEditar, panelFormularioAdmin,
 			panelJlistAdmin;
 
-	JLayeredPane layeredPane;
+	// FORMATO DE FECHA
+	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-	JTextField txtUsuario, txtNombre, txtApellidos, txtUsuarioRegistro;
-
-	JPasswordField pswContrasena, pswCrearContrasena;
-
-	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");;
-
-	String user = "";
-	String albumTit = "", albumAno = "", albumGen = "";
-
-	int reproduccionCont, i;
-
-	// COGER EL DIA ACTUAL PARA EL REGISTRO:
+	// COGER EL DIA ACTUAL PARA EL REGISTRO
 	String timeStamp = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
 
 	// NOMBRES PANELES
@@ -92,6 +83,11 @@ public class Reto4Main extends JFrame {
 			swCancionesMasGustadas = "swCancionesMasGustadas", swPodcastMasGustados = "swPodcastMasGustados",
 			swMasEscuchados = "swMasEscuchados";
 
+	String user = "";
+	String albumTit = "", albumAno = "", albumGen = "";
+
+	int reproduccionCont, i;
+
 	// VARIABLES BOTONES DE CAMBIAR DE CANCIÓN
 	int atras = 0, numAudio = 0;
 	Album albumSeleccionado;
@@ -104,7 +100,6 @@ public class Reto4Main extends JFrame {
 	Playlist playlistCanciones;
 	Playlist playlistFavorita;
 	UsuarioFree UsuarioNuevo, Usuario;
-	JTextArea textAreaInfoCancion = new JTextArea("");
 	JButton btnReproPlay;
 	private JProgressBar progressBar;
 	JTextArea textAreaInfo = new JTextArea("");
@@ -145,15 +140,6 @@ public class Reto4Main extends JFrame {
 		crearPanelBienvenida();
 	}
 
-	public void crearPanelesMain() {
-
-		// PERFIL
-		crearPanelPerfil();
-
-		// MENÚ
-		crearPanelMenu();
-	}
-
 	private void crearPanelBienvenida() {
 		panelBienvenida = new JPanel();
 		panelBienvenida.setBackground(new Color(255, 255, 255));
@@ -161,12 +147,6 @@ public class Reto4Main extends JFrame {
 		panelBienvenida.addMouseListener((MouseListener) new MouseListener() {
 			public void mouseClicked(MouseEvent e) {
 				// INICIO DE SESIÓN
-				/**
-				 * Dentro del metodo creador del incio de sesión se encuentra otro metodo el
-				 * cual crea los demás paneles de la aplicación para que así los botones como el
-				 * botón del perfil muestre el nombre de usuario de la persona que esté usando
-				 * el programa.
-				 */
 				crearPanelLogin();
 				metodos.cambiarDePanel(layeredPane, login);
 			}
@@ -198,7 +178,7 @@ public class Reto4Main extends JFrame {
 		panelBienvenida.add(lblRhythmicity);
 	}
 
-	private void crearPanelLogin() {
+	public void crearPanelLogin() {
 		panelLogin = new JPanel();
 		panelLogin.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelLogin, login);
@@ -214,11 +194,11 @@ public class Reto4Main extends JFrame {
 
 		metodos.crearLabel("Contraseña:", 310, 220, 109, 14, panelLogin);
 
-		txtUsuario = new JTextField();
+		JTextField txtUsuario = new JTextField();
 		txtUsuario.setBounds(410, 180, 148, 20);
 		panelLogin.add(txtUsuario);
 
-		pswContrasena = new JPasswordField();
+		JPasswordField pswContrasena = new JPasswordField();
 		pswContrasena.setBounds(410, 220, 148, 20);
 		panelLogin.add(pswContrasena);
 
@@ -237,13 +217,14 @@ public class Reto4Main extends JFrame {
 					pswContrasena.setText("");
 				} else {
 					String pass = new String(pswContrasena.getPassword());
-					crearPanelesMain();
+					crearPanelMenu();
 					Usuario = new UsuarioFree();
-					conexionesBD.conexionLogin(textOk, user, pass, menu, layeredPane, Usuario);
+					Usuario = conexionesBD.conexionLogin(textOk, user, pass, menu, layeredPane, Usuario);
 					conexionesBD.playlistFavorita(Usuario, Usuario.getClienteID());
+					crearPanelPerfil(Usuario);
+					crearPanelMenu();
 					txtUsuario.setText("");
 					pswContrasena.setText("");
-
 				}
 			}
 		});
@@ -261,7 +242,7 @@ public class Reto4Main extends JFrame {
 		panelLogin.add(btnCrear);
 	}
 
-	private void crearPanelRegistro() {
+	public void crearPanelRegistro() {
 		panelRegistro = new JPanel();
 		panelRegistro.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelRegistro, registro);
@@ -275,22 +256,22 @@ public class Reto4Main extends JFrame {
 		lblTituloCrear.setBounds(0, 40, 874, 33);
 		panelRegistro.add(lblTituloCrear);
 
-		txtNombre = new JTextField();
+		JTextField txtNombre = new JTextField();
 		txtNombre.setColumns(10);
 		txtNombre.setBounds(412, 125, 175, 20);
 		panelRegistro.add(txtNombre);
 
-		txtApellidos = new JTextField();
+		JTextField txtApellidos = new JTextField();
 		txtApellidos.setColumns(10);
 		txtApellidos.setBounds(412, 156, 175, 20);
 		panelRegistro.add(txtApellidos);
 
-		txtUsuarioRegistro = new JTextField();
+		JTextField txtUsuarioRegistro = new JTextField();
 		txtUsuarioRegistro.setColumns(10);
 		txtUsuarioRegistro.setBounds(412, 187, 175, 20);
 		panelRegistro.add(txtUsuarioRegistro);
 
-		pswCrearContrasena = new JPasswordField();
+		JPasswordField pswCrearContrasena = new JPasswordField();
 		pswCrearContrasena.setBounds(412, 218, 175, 20);
 		panelRegistro.add(pswCrearContrasena);
 
@@ -354,7 +335,7 @@ public class Reto4Main extends JFrame {
 
 	}
 
-	private void crearPanelPerfil() {
+	public void crearPanelPerfil(UsuarioFree Usuario) {
 		panelPerfil = new JPanel();
 		panelPerfil.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelPerfil, perfil);
@@ -362,47 +343,33 @@ public class Reto4Main extends JFrame {
 
 		metodos.botonAtras(layeredPane, menu, panelPerfil);
 
-		JLabel lblTituloCrear = new JLabel("Crear Usuario");
-		lblTituloCrear.setFont(new Font("Tahoma", Font.PLAIN, 22));
-		lblTituloCrear.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTituloCrear.setBounds(0, 40, 874, 33);
-		panelPerfil.add(lblTituloCrear);
+		JLabel lblInformacionPerfil = new JLabel("Datos del usuario:");
+		lblInformacionPerfil.setFont(new Font("Tahoma", Font.PLAIN, 22));
+		lblInformacionPerfil.setHorizontalAlignment(SwingConstants.CENTER);
+		lblInformacionPerfil.setBounds(0, 40, 874, 33);
+		panelPerfil.add(lblInformacionPerfil);
 
-		txtNombre = new JTextField();
-		txtNombre.setColumns(10);
-		txtNombre.setBounds(412, 125, 175, 20);
-		panelPerfil.add(txtNombre);
-
-		txtApellidos = new JTextField();
-		txtApellidos.setColumns(10);
-		txtApellidos.setBounds(412, 156, 175, 20);
-		panelPerfil.add(txtApellidos);
-
-		txtUsuarioRegistro = new JTextField();
-		txtUsuarioRegistro.setColumns(10);
-		txtUsuarioRegistro.setBounds(412, 187, 175, 20);
-		panelPerfil.add(txtUsuarioRegistro);
-
-		pswCrearContrasena = new JPasswordField();
-		pswCrearContrasena.setBounds(412, 218, 175, 20);
-		panelPerfil.add(pswCrearContrasena);
-
-		metodos.crearLabel("Nombre:", 274, 125, 148, 20, panelPerfil);
-		metodos.crearLabel("Apellidos:", 274, 156, 148, 20, panelPerfil);
-		metodos.crearLabel("Nombre de usuario:", 274, 187, 148, 20, panelPerfil);
-		metodos.crearLabel("Contraseña:", 274, 218, 148, 20, panelPerfil);
-		metodos.crearLabel("Fecha de nacimiento:", 274, 250, 148, 20, panelPerfil);
-
+		metodos.crearLabel("Nombre:", 274, 130, 148, 20, panelPerfil);
+		metodos.crearLabel("Apellidos:", 274, 170, 148, 20, panelPerfil);
+		metodos.crearLabel("Nombre de usuario:", 274, 210, 148, 20, panelPerfil);
+		metodos.crearLabel("Contraseña:", 274, 250, 148, 20, panelPerfil);
+		metodos.crearLabel("Fecha de nacimiento:", 274, 290, 148, 20, panelPerfil);
+		metodos.crearLabel("Fecha de registro:", 274, 330, 148, 20, panelPerfil);
+		metodos.crearLabel(Usuario.getNombre(), 450, 130, 148, 20, panelPerfil);
+		metodos.crearLabel(Usuario.getApellido(), 450, 170, 148, 20, panelPerfil);
+		metodos.crearLabel(Usuario.getUsuario(), 450, 210, 148, 20, panelPerfil);
+		metodos.crearLabel("********", 450, 250, 148, 20, panelPerfil);
+		metodos.crearLabel(Usuario.getFechaNacimiento(), 450, 290, 148, 20, panelPerfil);
+		metodos.crearLabel(Usuario.getFechaRegistro(), 450, 330, 148, 20, panelPerfil);
 	}
 
-	private void crearPanelMenu() {
-
+	public void crearPanelMenu() {
 		panelMenu = new JPanel();
 		panelMenu.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelMenu, menu);
 		panelMenu.setLayout(null);
 
-		metodos.botonPerfil(layeredPane, panelMenu, user);
+		metodos.botonPerfil(layeredPane, panelMenu, user, perfil);
 		metodos.botonAtras(layeredPane, login, panelMenu);
 
 		JLabel lblMenu = new JLabel(metodos.bienvenidaMenu());
@@ -446,15 +413,14 @@ public class Reto4Main extends JFrame {
 
 	}
 
-	private void crearPanelDescubrir(String swVentana) {
+	public void crearPanelDescubrir(String swVentana) {
 
 		panelDescubrir = new JPanel();
 		panelDescubrir.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelDescubrir, descubrir);
 		panelDescubrir.setLayout(null);
 
-		// Botones
-		metodos.botonPerfil(layeredPane, panelDescubrir, user);
+		metodos.botonPerfil(layeredPane, panelDescubrir, user, perfil);
 		metodos.botonAtras(layeredPane, menu, panelDescubrir);
 
 		JLabel lblListaDeArtistas = new JLabel();
@@ -533,15 +499,14 @@ public class Reto4Main extends JFrame {
 
 	}
 
-	private void crearPanelArtista(String swVentanaAudios, Artista seleccion) {
+	public void crearPanelArtista(String swVentanaAudios, Artista seleccion) {
 		String tipo = "";
 		panelArtista = new JPanel();
 		layeredPane.add(panelArtista, artistaPanel);
 		panelArtista.setBackground(Color.WHITE);
 		panelArtista.setLayout(null);
 
-		// Botones
-		metodos.botonPerfil(layeredPane, panelArtista, user);
+		metodos.botonPerfil(layeredPane, panelArtista, user, perfil);
 		metodos.botonAtras(layeredPane, descubrir, panelArtista);
 
 		// Imagen
@@ -643,13 +608,13 @@ public class Reto4Main extends JFrame {
 
 	}
 
-	private void crearPanelAlbum() {
+	public void crearPanelAlbum() {
 		panelAlbum = new JPanel();
 		layeredPane.add(panelAlbum, albumPanel);
 		panelAlbum.setBackground(new Color(255, 255, 255));
 		panelAlbum.setLayout(null);
 
-		metodos.botonPerfil(layeredPane, panelAlbum, user);
+		metodos.botonPerfil(layeredPane, panelAlbum, user, perfil);
 		metodos.botonAtras(layeredPane, artistaPanel, panelAlbum);
 
 		// Imagen
@@ -709,12 +674,21 @@ public class Reto4Main extends JFrame {
 
 	}
 
-	private void crearPanelReproduccion(String ventanaReproduccion, String anterior) {
-
+	public void crearPanelReproduccion(String ventanaReproduccion, String anterior) {
 		panelReproduccion = new JPanel();
 		layeredPane.add(panelReproduccion, reproduccion);
 		panelReproduccion.setBackground(new Color(255, 255, 255));
 		panelReproduccion.setLayout(null);
+
+		JTextArea textAreaInfoReproduciendo = new JTextArea();
+		textAreaInfoReproduciendo.setLineWrap(true);
+		textAreaInfoReproduciendo.setWrapStyleWord(true);
+		textAreaInfoReproduciendo.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		textAreaInfoReproduciendo.setFont(new Font("Tahoma", Font.BOLD, 11));
+		textAreaInfoReproduciendo.setBackground(SystemColor.menu);
+		textAreaInfoReproduciendo.setBounds(192, 348, 489, 92);
+		textAreaInfoReproduciendo.setEditable(false);
+		panelReproduccion.add(textAreaInfoReproduciendo);
 
 		progressBar = new JProgressBar();
 		progressBar.setBounds(292, 280, 287, 8);
@@ -745,7 +719,7 @@ public class Reto4Main extends JFrame {
 						audioSeleccionado = conexionesBD.nuevaCancion(Usuario.getClienteID(),
 								audioSeleccionado.getAudioID(), timeStamp);
 
-						metodos.cancionSonando(textAreaInfoCancion, audioSeleccionado, albumSeleccionado,
+						metodos.cancionSonando(textAreaInfoReproduciendo, audioSeleccionado, albumSeleccionado,
 								musicoSeleccionado, panelReproduccion);
 					}
 
@@ -769,7 +743,7 @@ public class Reto4Main extends JFrame {
 					audioSeleccionado = conexionesBD.nuevaCancion(Usuario.getClienteID(),
 							audioSeleccionado.getAudioID(), timeStamp);
 
-					metodos.cancionSonando(textAreaInfoCancion, audioSeleccionado, albumSeleccionado,
+					metodos.cancionSonando(textAreaInfoReproduciendo, audioSeleccionado, albumSeleccionado,
 							musicoSeleccionado, panelReproduccion);
 
 				}
@@ -800,7 +774,7 @@ public class Reto4Main extends JFrame {
 
 			panelReproduccion.add(btnReproAdelante);
 
-			metodos.cancionSonando(textAreaInfoCancion, audioSeleccionado, albumSeleccionado, musicoSeleccionado,
+			metodos.cancionSonando(textAreaInfoReproduciendo, audioSeleccionado, albumSeleccionado, musicoSeleccionado,
 					panelReproduccion);
 			break;
 
@@ -832,7 +806,8 @@ public class Reto4Main extends JFrame {
 			btn15.setBounds(492, 299, 89, 28);
 			panelReproduccion.add(btn15);
 
-			metodos.podcastSonando(textAreaInfoCancion, audioSeleccionado, podcasterSeleccionado, panelReproduccion);
+			metodos.podcastSonando(textAreaInfoReproduciendo, audioSeleccionado, podcasterSeleccionado,
+					panelReproduccion);
 			break;
 		}
 
@@ -845,7 +820,7 @@ public class Reto4Main extends JFrame {
 		lblImagen.setIcon(imagenEscalada);
 		panelReproduccion.add(lblImagen);
 
-		metodos.botonPerfil(layeredPane, panelReproduccion, user);
+		metodos.botonPerfil(layeredPane, panelReproduccion, user, perfil);
 
 		numAudio = audioSeleccionado.getAudioID();
 		audioSeleccionado.loadClip("/audio/" + numAudio + ".wav");
@@ -859,6 +834,7 @@ public class Reto4Main extends JFrame {
 		btnReproPlay = new JButton("Play");
 		btnReproPlay.setBounds(392, 299, 89, 28);
 		btnReproPlay.addActionListener(new ActionListener() {
+
 			public void actionPerformed(ActionEvent e) {
 				if (btnReproPlay.getText() == "Play") {
 					audioSeleccionado.play();
@@ -885,12 +861,12 @@ public class Reto4Main extends JFrame {
 		panelReproduccion.add(btnAtras);
 	}
 
-	private void crearPanelMisPlaylists() {
+	public void crearPanelMisPlaylists() {
 		panelMisPlaylists = new JPanel();
 		panelMisPlaylists.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelMisPlaylists, misPlaylists);
 		panelMisPlaylists.setLayout(null);
-		metodos.botonPerfil(layeredPane, panelMisPlaylists, user);
+		metodos.botonPerfil(layeredPane, panelMisPlaylists, user, perfil);
 		metodos.botonAtras(layeredPane, menu, panelMisPlaylists);
 
 		JList<String> playlistLista = new JList<>();
@@ -960,14 +936,14 @@ public class Reto4Main extends JFrame {
 
 	}
 
-	private void crearPanelPlaylist() {
+	public void crearPanelPlaylist() {
 
 		panelPlaylist = new JPanel();
 		panelPlaylist.setBackground(new Color(255, 255, 255));
 		layeredPane.add(panelPlaylist, playlistPanel);
 		panelPlaylist.setLayout(null);
 
-		metodos.botonPerfil(layeredPane, panelPlaylist, user);
+		metodos.botonPerfil(layeredPane, panelPlaylist, user, perfil);
 		metodos.botonAtras(layeredPane, misPlaylists, panelPlaylist);
 
 		JList<String> playlistCancionesLista = new JList<>();
@@ -1003,7 +979,7 @@ public class Reto4Main extends JFrame {
 
 	}
 
-	private void crearPanelMenuAdmin() {
+	public void crearPanelMenuAdmin() {
 		panelMenuAdmin = new JPanel();
 		panelMenuAdmin.setLayout(null);
 		panelMenuAdmin.setBackground(Color.WHITE);
@@ -1048,7 +1024,7 @@ public class Reto4Main extends JFrame {
 		panelMenuAdmin.add(btnEstadisticas);
 	}
 
-	private void crearPanelMenuGestionar(String opcionMenu) {
+	public void crearPanelMenuGestionar(String opcionMenu) {
 		panelMenuGestionar = new JPanel();
 		panelMenuGestionar.setLayout(null);
 		panelMenuGestionar.setBackground(Color.WHITE);
@@ -1150,7 +1126,7 @@ public class Reto4Main extends JFrame {
 		}
 	}
 
-	private void crearPanelMenuEditar(String opcionGestionar) {
+	public void crearPanelMenuEditar(String opcionGestionar) {
 		panelMenuEditar = new JPanel();
 		panelMenuEditar.setLayout(null);
 		panelMenuEditar.setBackground(Color.WHITE);
@@ -1186,7 +1162,7 @@ public class Reto4Main extends JFrame {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked", "unused" })
-	private void crearPanelFormularioAdmin(String opcionGestionar) {
+	public void crearPanelFormularioAdmin(String opcionGestionar) {
 		panelFormularioAdmin = new JPanel();
 		panelFormularioAdmin.setLayout(null);
 		panelFormularioAdmin.setBackground(Color.WHITE);
@@ -1242,7 +1218,7 @@ public class Reto4Main extends JFrame {
 
 		switch (opcionGestionar) {
 		case swArtistas:
-			metodos.crearLabel("Nombre Artistico:", 260, 150, 148, 20, panelFormularioAdmin);
+			metodos.crearLabel("Nombre artistico:", 260, 150, 148, 20, panelFormularioAdmin);
 			metodos.crearLabel("Imagen:", 260, 181, 148, 20, panelFormularioAdmin);
 			metodos.crearLabel("Año desde el que lleva activo:", 260, 212, 200, 20, panelFormularioAdmin);
 			metodos.crearLabel("Descripción:", 260, 243, 148, 20, panelFormularioAdmin);
@@ -1277,13 +1253,16 @@ public class Reto4Main extends JFrame {
 									+ musicoNuevo.getDescripcionArtista() + "', '" + musicoNuevo.getAnoActivo() + "')";
 							conexionesBD.conexionInsertYDelete(sentenciaSQL);
 							metodos.cambiarDePanel(layeredPane, menuAdmin);
-						} else
+						} else {
 							JOptionPane.showMessageDialog(null,
 									"Los campos no pueden estar vacíos y deben tener menos de 30 caracteres, y el año no puede superar el actual ("
 											+ ano + ")");
+							throw new PasarStringAintException();
+						}
+					} catch (PasarStringAintException e1) {
+						e1.getMessage();
 					} catch (Exception e1) {
 						e1.printStackTrace();
-						JOptionPane.showMessageDialog(null, "El año debe ser un número");
 					}
 				}
 			});
@@ -1411,7 +1390,13 @@ public class Reto4Main extends JFrame {
 								+ cancionNueva.getImagenMultimedia() + "'" + ", " + "'Cancion');";
 						conexionesBD.conexionInsertYDeleteSinMensaje(sentenciaSQL);
 
-						int idAudio = conexionesBD.conexionSelectIDAudio();
+						int idAudio = 0;
+
+						try {
+							idAudio = conexionesBD.conexionSelectIDAudio();
+						} catch (ConexionFallidaException e1) {
+							e1.getMessage();
+						}
 
 						sentenciaSQL = "INSERT IGNORE INTO Cancion (IDAudio, IDAlbum) VALUES ('" + idAudio + "', '"
 								+ cancionNueva.getAlbumID() + "');";
@@ -1459,10 +1444,14 @@ public class Reto4Main extends JFrame {
 									+ "')";
 							conexionesBD.conexionInsertYDelete(sentenciaSQL);
 							metodos.cambiarDePanel(layeredPane, menuAdmin);
-						} else
+						} else {
 							JOptionPane.showMessageDialog(null,
 									"Los campos no pueden estar vacíos y deben tener menos de 30 caracteres, y el año no puede superar el actual ("
 											+ ano + ")");
+							throw new PasarStringAintException();
+						}
+					} catch (PasarStringAintException e1) {
+						e1.getMessage();
 					} catch (Exception e1) {
 						e1.printStackTrace();
 						JOptionPane.showMessageDialog(null, "El año debe ser un número");
@@ -1503,6 +1492,7 @@ public class Reto4Main extends JFrame {
 			comboBoxFormulario.setBounds(450, 243, 175, 20);
 
 			btnAnadirFormulario.addActionListener(new ActionListener() {
+
 				public void actionPerformed(ActionEvent e) {
 					podcastNuevo.setNombreMultimedia(txtFormulario1.getText());
 					podcastNuevo.setImagenMultimedia(txtFormulario2.getText());
@@ -1519,7 +1509,13 @@ public class Reto4Main extends JFrame {
 								+ podcastNuevo.getImagenMultimedia() + "'" + ", " + "'Podcast');";
 						conexionesBD.conexionInsertYDeleteSinMensaje(sentenciaSQL);
 
-						int idAudio = conexionesBD.conexionSelectIDAudio();
+						int idAudio = 0;
+
+						try {
+							idAudio = conexionesBD.conexionSelectIDAudio();
+						} catch (ConexionFallidaException e1) {
+							e1.getMessage();
+						}
 
 						sentenciaSQL = "INSERT IGNORE INTO Podcast (IDAudio, IDPodcaster) VALUES ('" + idAudio + "', '"
 								+ podcastNuevo.getArtistaID() + "');";
@@ -1530,6 +1526,7 @@ public class Reto4Main extends JFrame {
 						JOptionPane.showMessageDialog(null,
 								"Los campos no pueden estar vacíos y deben tener menos de 30 caracteres");
 				}
+
 			});
 
 			break;
@@ -1537,7 +1534,7 @@ public class Reto4Main extends JFrame {
 
 	}
 
-	private void crearPanelJlistAdmin(String opcionGestionar) {
+	public void crearPanelJlistAdmin(String opcionGestionar) {
 		panelJlistAdmin = new JPanel();
 		panelJlistAdmin.setLayout(null);
 		panelJlistAdmin.setBackground(Color.WHITE);
@@ -1734,7 +1731,7 @@ public class Reto4Main extends JFrame {
 		}
 	}
 
-	private void crearPanelEstadisticas(String opcionEstadisticas) {
+	public void crearPanelEstadisticas(String opcionEstadisticas) {
 		panelEstadisticas = new JPanel();
 		panelEstadisticas.setLayout(null);
 		panelEstadisticas.setBackground(Color.WHITE);
