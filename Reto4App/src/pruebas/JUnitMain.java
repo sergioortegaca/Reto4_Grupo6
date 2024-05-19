@@ -2,8 +2,6 @@ package pruebas;
 
 import static org.junit.Assert.*;
 import java.awt.Component;
-import java.text.ParseException;
-
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
