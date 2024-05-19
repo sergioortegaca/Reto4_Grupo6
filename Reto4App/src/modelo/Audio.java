@@ -99,7 +99,6 @@ public abstract class Audio extends Album implements Reproducible {
 	public void play() {
 		if (audio != null) {
 			audio.start();
-
 		}
 
 	}
