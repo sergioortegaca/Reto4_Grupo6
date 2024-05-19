@@ -281,6 +281,15 @@ public class BDConexiones {
 		return null;
 	}
 
+	/**
+	 * Descripción: Selecciona todos los atributos de la tabla Podcaster. Cada
+	 * resultado lo registra en un objeto artista de tipo Podcaster y añade dicho
+	 * objeto a un ArrayList de objetos de tipo Podcaster.
+	 * 
+	 * @return Devuelve el ArrayList podcasterArrayList, que contiene los registros
+	 *         obtenidos de la BD.
+	 * @author grupo6
+	 */
 	public ArrayList<Podcaster> conexionPodcaster() {
 
 		String sentenciaSQL = "SELECT * FROM Podcaster;";
@@ -309,6 +318,17 @@ public class BDConexiones {
 		return null;
 	}
 
+	/**
+	 * Descripción: Selecciona todos los atributos de la tabla Podcast en función
+	 * del IDPodcaster. Cada resultado lo registra en un objeto multimedia de tipo
+	 * Podcast y añade dicho objeto a un ArrayList de objetos de tipo Podcast.
+	 * 
+	 * @param IDPodcaster int. Es el número con el que se identififca a un
+	 *                    podcaster.
+	 * @return Devuelve el ArrayList podcastsArrayList, que contiene los registros
+	 *         obtenidos de la BD.
+	 * @author grupo6
+	 */
 	public ArrayList<Podcast> conexionPodcast(int IDPodcaster) {
 
 		String sentenciaSQL = "SELECT A.* " + "FROM Podcast P " + "INNER JOIN Audio A ON P.IDAudio = A.IDAudio "
@@ -343,6 +363,16 @@ public class BDConexiones {
 		return null;
 	}
 
+	/**
+	 * Descripción: Selecciona todos los atributos de la tabla Playlist en función
+	 * del IDCliente. Cada resultado lo registra en un objeto playlist de tipo
+	 * Playlist y añade dicho objeto a un ArrayList de objetos de tipo Playlist.
+	 * 
+	 * @param usuario int. Es el número con el que se identififca a un usuario.
+	 * @return Devuelve el ArrayList playlistsArrayList, que contiene los registros
+	 *         obtenidos de la BD.
+	 * @author grupo6
+	 */
 	public ArrayList<Playlist> conexionPlaylist(int usuario) {
 
 		String sentenciaSQL = "SELECT * FROM Playlist WHERE IDCliente='" + usuario + "';";
@@ -370,6 +400,16 @@ public class BDConexiones {
 		return null;
 	}
 
+	/**
+	 * Descripción: Selecciona todos los atributos de la tabla PlaylistCanciones en función
+	 * del IDList. Cada resultado lo registra en un objeto playlistCanciones de tipo
+	 * Playlist y añade dicho objeto a un ArrayList de objetos de tipo Playlist.
+	 * 
+	 * @param i int. Es el número con el que se identififca a una Playlist.
+	 * @return Devuelve el ArrayList playlistsArrayList, que contiene los registros
+	 *         obtenidos de la BD.
+	 * @author grupo6
+	 */
 	public ArrayList<Playlist> conexionPlaylistCanciones(int i) {
 		String sentenciaSQL = "SELECT PlaylistCanciones.*, Audio.Nombre " + "FROM PlaylistCanciones "
 				+ "INNER JOIN Audio ON PlaylistCanciones.IDAudio = Audio.IDAudio " + "WHERE IDList=" + i + ";";
@@ -685,7 +725,7 @@ public class BDConexiones {
 	 * 
 	 * @return Devuelve una variable de tipo int con el IDAudio.
 	 * @author grupo6
-	 * @throws ConexionFallidaException 
+	 * @throws ConexionFallidaException
 	 */
 	public int conexionSelectIDAudio() throws ConexionFallidaException {
 		String sentenciaSQL = "SELECT IDAudio FROM Audio ORDER BY IDAudio DESC LIMIT 1;";
