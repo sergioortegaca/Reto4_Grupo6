@@ -1,12 +1,10 @@
 package modelo;
 
-import java.sql.Date;
-
 public class Album extends Musico {
 
 	protected int albumID;
 	protected String tituloAlbum;
-	protected Date anoAlbum;
+	protected String anoAlbum;
 	protected String generoAlbum;
 	protected String imagenAlbum;
 
@@ -26,12 +24,12 @@ public class Album extends Musico {
 		this.tituloAlbum = tituloAlbum;
 	}
 
-	public Date getAnoAlbum() {
+	public String getAnoAlbum() {
 		return anoAlbum;
 	}
 
-	public void setAnoAlbum(Date anoAlbum) {
-		this.anoAlbum = anoAlbum;
+	public void setAnoAlbum(String string) {
+		this.anoAlbum = string;
 	}
 
 	public String getGeneroAlbum() {
@@ -49,4 +47,5 @@ public class Album extends Musico {
 	public void setImagenAlbum(String imagenAlbum) {
 		this.imagenAlbum = imagenAlbum;
 	}
+
 }

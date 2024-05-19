@@ -1,6 +1,6 @@
 package modelo;
 
-public abstract class Usuario {
+public abstract class Usuario extends Audio {
 	protected int clienteID;
 	protected String nombre;
 	protected String apellido;
@@ -8,11 +8,16 @@ public abstract class Usuario {
 	protected String contrasena;
 	protected String fechaNacimiento;
 	protected String fechaRegistro;
+	protected int playlistFavorita;
 
-	protected enum tipoUsuario {
-		Free, Premium
+	public int getPlaylistFavorita() {
+		return playlistFavorita;
 	}
-	
+
+	public void setPlaylistFavorita(int playlistFavorita) {
+		this.playlistFavorita = playlistFavorita;
+	}
+
 	public int getClienteID() {
 		return clienteID;
 	}
